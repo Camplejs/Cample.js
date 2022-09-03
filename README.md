@@ -63,7 +63,7 @@ npm i -D cample
 
 - Supporting component approach
 - Cycle
-- Operators like in vanilla js for working with components
+- Some operators like in vanilla js for working with components
 - Animation
 - Working with data
 
