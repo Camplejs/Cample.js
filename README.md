@@ -35,6 +35,9 @@ const component = new Component("new-component",
             {component:".component"}
         ]
     }],
+    attributes:{
+        id:"id"
+    },
     data:{
         component_text:"Component"
     },
