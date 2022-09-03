@@ -21,6 +21,7 @@
 ## Usage
 ```javascript
 import { Cample, Component } from 'cample';
+
 const component = new Component("new-component", 
 `<div class="component">
     {{component_text}}
@@ -39,6 +40,7 @@ const component = new Component("new-component",
     },
     style:""
 });
+
 new Cample("#page").render(`
     <div class="content">
         {{component}}
