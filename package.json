@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\""
   },
   "repository": {
     "type": "git",
@@ -20,7 +20,6 @@
     "design",
     "component"
   ],
-
 
   "author": "Anton Maklakov",
   "license": "MIT",
