@@ -16,8 +16,6 @@
 
 </div>
 
-<div id='usage'></div>
-
 ## Usage
 ```javascript
 import { Cample, Component } from 'cample';
@@ -48,16 +46,12 @@ new Cample("#page").render(`
 });
 ```
 
-<div id='installation'></div>
-
 ## Installation
 
 Install via NPM:
 ```bash
 npm i -D cample 
 ```
-
-<div id='feauters'></div>
 
 ## Feauters
 
@@ -67,21 +61,15 @@ npm i -D cample
 - Animation
 - Working with data
 
-<div id='documentation'></div>
-
 ## Documentation
 
 [Documentation](https://camplejs.github.io/documentation.html)
-
-<div id='example'></div>
 
 ## Example
 
 [Example](https://camplejs.github.io/example.html)
 
 [Example source](https://github.com/Camplejs/example/blob/main/example.js)
-
-<div id='license'></div>
 
 ## License
 [Licensed under MIT](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
