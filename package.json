@@ -18,7 +18,9 @@
     "cample.js",
     "UI",
     "design",
-    "component"
+    "component",
+    "html",
+    "javascript"
   ],
 
   "author": "Anton Maklakov",
