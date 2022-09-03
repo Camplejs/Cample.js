@@ -11,8 +11,10 @@
 <div align="center">
 
 [![npm-version](https://img.shields.io/npm/v/cample?logo=npm)](https://www.npmjs.com/package/cample)
+[![types](https://img.shields.io/npm/types/cample?logo=typescript)](https://github.com/Camplejs/Cample.js)
 [![repo-size](https://img.shields.io/github/repo-size/Camplejs/Cample.js?logo=github)](https://github.com/Camplejs/Cample.js)
 [![license](https://img.shields.io/npm/l/cample)](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
+
 
 </div>
 
