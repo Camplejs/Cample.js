@@ -3,56 +3,28 @@
         <img src="https://github.com/Camplejs/media/blob/main/logo.png" alt="cample" >
     </a>
 </p>
-<h3 align="center">Cample.js - new web framework for creating sites.</h3>
+<h3 align="center">Cample.js - new web framework for creating the UI of the site.</h3>
 <h3 align="center">
     This framework is in beta stage!
 </h3>
 
+<div align="center">
 
-## Table of contents
-- [Installation](#installation)
-- [Start framework](#start)
-- [Component](#component)
-- [AnimationComponent](#animation-component)
-- [Cycle](#cycle)
-- [Operators](#operators)
-    - [Addition](#addition)
-    - [If](#if)
-    - [Ternary](#ternary)
-- [License](#license)
+[![npm-version](https://img.shields.io/npm/v/cample)](https://www.npmjs.com/package/cample)
+[![repo-size](https://img.shields.io/github/repo-size/Camplejs/Cample.js)](https://github.com/Camplejs/Cample.js)
+[![license](https://img.shields.io/npm/l/cample)](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
 
-<div id='installation'></div>
+</div>
 
-## Installation
+<div id='usage'></div>
 
-```bash
-npm i -D cample 
-```
-
-<div id='start'></div>
-
-## Start framework
-
+## Usage
 ```javascript
-import { Cample } from 'cample';
-
-new Cample("#page").render(`
-    {{component}}
-`,{
-    component
-});
-```
-<div id='component'></div>
-
-## Component
-
-```javascript
-import { Component } from 'cample';
+import { Cample, Component } from 'cample';
 const component = new Component("new-component", 
 `<div class="component">
     {{component_text}}
-</div>`,
-{
+</div>`,{
     script:[(elements)=>{
       console.log(elements.component);
     },
@@ -63,65 +35,51 @@ const component = new Component("new-component",
         ]
     }],
     data:{
-        component_text:"Text"
+        component_text:"Component"
     },
-    style:`
-        .component{
-            width:100px;
-            height:100px;
-        }
-    `
+    style:""
+});
+new Cample("#page").render(`
+    <div class="content">
+        {{component}}
+    </div>
+`,{
+    component
 });
 ```
-<div id='animation-component'></div>
 
-## AnimationComponent
+<div id='installation'></div>
 
-```javascript
-import { AnimationComponent } from 'cample';
-const animation = new AnimationComponent("new-animation",'new-component',
-{
-    event:"click",
-    styleAnimation:`width:200px;`,
-    class:"animation-class",
-    transition:"2s all"
-});
+## Installation
+
+Install via NPM:
+```bash
+npm i -D cample 
 ```
-<div id='cycle'></div>
 
-## Cycle
+<div id='feauters'></div>
 
-```javascript
-import { Cycle } from 'cample';
-const cycle = new Cycle("new-cycle",['new-component'],2);
-```
-<div id='operators'></div>
+## Feauters
 
-## Operators
-<div id='addition'></div>
+- Supporting component approach
+- Cycle
+- Operators like in vanilla js for working with components
+- Animation
+- Working with data
 
-### Addition
+<div id='documentation'></div>
 
-```javascript
-import { Addition } from 'cample';
-const addition = new Addition("new-addition",['new-component', 'new-component']);
-```
-<div id='if'></div>
+## Documentation
 
-### If
+[Documentation](https://camplejs.github.io/documentation.html)
 
-```javascript
-import { If } from 'cample';
-const newIf = new If("new-if",['new-component'],true);
-```
-<div id='ternary'></div>
+<div id='example'></div>
 
-### Ternary
+## Example
 
-```javascript
-import { Ternary } from 'cample';
-const ternary = new Ternary("new-ternary",['new-component', 'new-component'],true);
-```
+[Example](https://camplejs.github.io/example.html)
+
+[Example source](https://github.com/Camplejs/example/blob/main/example.js)
 
 <div id='license'></div>
 
