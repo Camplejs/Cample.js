@@ -1,7 +1,7 @@
 {
   "name": "cample",
-  "version": "1.0.0-beta.0",
-  "description": "cample.js - new web framework for creating sites.",
+  "version": "1.0.0-beta.1",
+  "description": "cample.js - new web framework for creating the UI of the site.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -25,5 +25,5 @@
   "bugs": {
     "url": "https://github.com/Camplejs/Cample.js/issues"
   },
-  "homepage": "https://github.com/Camplejs/Cample.js.git#readme"
+  "homepage": "https://camplejs.github.io"
 }

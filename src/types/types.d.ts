@@ -14,13 +14,20 @@ export type LengthType = number | undefined;
 
 export type ComponentType = string | undefined;
 
+
+export type AttributesType = {
+    [key:string]:string;
+}
+
 export type ElementType = {
     selector:string;
     id?:string;
     class?:string;
+    attributes?:AttributesType;
 }
 
 export type DefaultOptionsType = {
+    attributes?: AttributesType;
     style?:StyleType,
     element?:ElementType;
 }
@@ -40,6 +47,7 @@ export type ComponentOptionsType={
     script?:ScriptType;
     data?:DataType;
     style?:StyleType;
+    attributes?:AttributesType;
 }
 
 export type AnimationElementType = {
@@ -47,11 +55,13 @@ export type AnimationElementType = {
     id?:string;
     class?:string;
     transition?:string;
+    attributes?:AttributesType;
 }
 
 export type AnimationOptionsType = {
     event:string;
     reverseEvent?:string;
+    attributes?: AttributesType;
     style:string;
     class:string;
     transition?:string;

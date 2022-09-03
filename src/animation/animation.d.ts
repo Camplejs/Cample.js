@@ -1,4 +1,4 @@
-import { AnimationOptionsType, ComponentType, SelectorType } from "../types/types";
+import { AnimationOptionsType, ComponentType, SelectorType, AttributesType } from "../types/types";
 
 export class AnimationComponent {
     constructor(selector: SelectorType, component: ComponentType, options: AnimationOptionsType);
@@ -6,6 +6,7 @@ export class AnimationComponent {
     component: ComponentType;
     template: string;
     options: AnimationOptionsType;
+    attributes: AttributesType | undefined;
     styleAnimation: string;
     style: string;
     get getSelector(): SelectorType;

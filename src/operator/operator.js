@@ -4,6 +4,7 @@ export class Operator {
         this.selector = selector;
         this.components = components;
         this.options = options;
+        this.attributes = typeof this.options !== "undefined" ? this.options.attributes : undefined;
         this.style = typeof this.options !== "undefined" ? this.options.style : "";
         this.template = '';
     }

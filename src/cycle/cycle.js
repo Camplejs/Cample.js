@@ -1,5 +1,6 @@
 'use-strict';
 import { renderTemplateElement } from "../functions/render-template-element";
+import { renderAttributes } from "../functions/render-attributes";
 export class Cycle {
     constructor(selector, components, length = 0, options) {
         this.selector = selector;
@@ -7,6 +8,7 @@ export class Cycle {
         this.components = components;
         this.template = '';
         this.options = options;
+        this.attributes = typeof this.options !== "undefined" ? this.options.attributes : undefined;
         this.style = typeof this.options !== "undefined" ? this.options.style : "";
     }
     get getSelector() {
@@ -21,7 +23,7 @@ export class Cycle {
         let templateElement = null;
         if(typeof this.options !== "undefined"){
             if (this.options.element) {
-                templateElement = renderTemplateElement(this.options.element.selector, this.options.element.id, this.options.element.class);
+                templateElement = renderTemplateElement(this.options.element.selector, this.options.element.id, this.options.element.class, this.options.element.attributes);
             }
         }
         for (let i = 0; i < this.length; i++) {
@@ -32,6 +34,9 @@ export class Cycle {
         if (templateElement)
             templateElement.insertAdjacentHTML('afterbegin', this.template);
         document.querySelectorAll(this.selector).forEach((e) => {
+            if(typeof this.attributes !== "undefined"){
+                renderAttributes(e, this.attributes);
+            }
             e.insertAdjacentHTML('afterbegin', templateElement ? templateElement.outerHTML : this.template);
         });
     }

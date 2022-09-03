@@ -1,5 +1,6 @@
 'use-strict';
-export const renderTemplateElement = (selector, id, classElement) => {
+import {renderAttributes} from "./render-attributes";
+export const renderTemplateElement = (selector, id, classElement, attributes) => {
     let templateElement = null;
     if (selector) {
         templateElement = document.createElement(selector);
@@ -7,6 +8,8 @@ export const renderTemplateElement = (selector, id, classElement) => {
             templateElement.setAttribute("id", id);
         if (classElement)
             templateElement.classList.add(classElement);
+        if(attributes)
+            renderAttributes(templateElement, attributes);
     }
     return templateElement;
 };

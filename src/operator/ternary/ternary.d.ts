@@ -1,9 +1,14 @@
+type AttributesType = {
+    [key:string]:string;
+}
 type ElementType = {
     selector:string;
     id?:string;
     class?:string;
+    attributes?:AttributesType;
 }
 type DefaultOptionsType = {
+    attributes?: AttributesType;
     style?:string | undefined;
     element?:ElementType;
 }

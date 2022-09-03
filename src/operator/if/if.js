@@ -1,6 +1,7 @@
 'use-strict';
 import { Operator } from '../operator';
 import { renderTemplateElement } from "../../functions/render-template-element";
+import { renderAttributes } from "../../functions/render-attributes";
 export class If extends Operator {
     constructor(selector, components, bool, options) {
         super(selector, components, options);
@@ -22,12 +23,15 @@ export class If extends Operator {
 
         if(typeof this.options !== "undefined"){
             if (this.options.element) {
-                templateElement = renderTemplateElement(this.options.element.selector, this.options.element.id, this.options.element.class);
+                templateElement = renderTemplateElement(this.options.element.selector, this.options.element.id, this.options.element.class, this.options.element.attributes);
             }
         }
         if (templateElement)
             templateElement.insertAdjacentHTML('afterbegin', this.template);
         document.querySelectorAll(this.selector).forEach((e) => {
+            if(typeof this.attributes !== "undefined"){
+                renderAttributes(e, this.attributes);
+            }
             e.insertAdjacentHTML('afterbegin', templateElement ? templateElement.outerHTML : this.template);
         });
     }
