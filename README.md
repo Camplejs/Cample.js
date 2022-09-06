@@ -3,7 +3,7 @@
         <img src="https://github.com/Camplejs/media/blob/main/logo.png" alt="cample" >
     </a>
 </p>
-<h1 align="center">Cample.js - new web framework for creating the UI of the site.</h1>
+<h1 align="center">Cample.js - new web framework for creating <br> the UI of the site.</h1>
 <div align="center">
 
 [![npm-version](https://img.shields.io/npm/v/cample?logo=npm)](https://www.npmjs.com/package/cample)
