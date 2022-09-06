@@ -1,4 +1,4 @@
 export class Addition extends Operator {
-    render(): void;
+  render(): void;
 }
 import { Operator } from "../operator";
