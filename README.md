@@ -82,5 +82,9 @@ npm i -D cample
 
 - [Website](https://camplejs.github.io)
 
+## Changelog
+
+[Changelog](https://github.com/Camplejs/Cample.js/releases)
+
 ## License
 [Licensed under MIT](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
