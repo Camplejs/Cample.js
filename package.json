@@ -1,6 +1,6 @@
 {
   "name": "cample",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "cample.js - new web framework for creating the UI of the site.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,7 +20,8 @@
     "design",
     "component",
     "html",
-    "javascript"
+    "javascript",
+    "components"
   ],
 
   "author": "Anton Maklakov",
