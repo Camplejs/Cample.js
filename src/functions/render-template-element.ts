@@ -1,11 +1,13 @@
 "use-strict";
 import { renderAttributes } from "./render-attributes";
+import { SelectorType, AttributesType } from "../types/types";
+
 export const renderTemplateElement = (
-  selector,
-  id,
-  classElement,
-  attributes
-) => {
+  selector: SelectorType,
+  id: string | undefined,
+  classElement: string | undefined,
+  attributes: AttributesType | undefined
+) : any => {
   let templateElement = null;
   if (selector) {
     templateElement = document.createElement(selector);

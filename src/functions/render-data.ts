@@ -1,5 +1,7 @@
 "use-strict";
-export const renderData = (template, data, index) => {
+import { DataType } from "../types/types";
+
+export const renderData = (template: string, data: DataType | undefined, index:number) : string => {
   if (typeof data === "undefined") return template;
   const regex = /\{{(.*?)}}/g;
   template = template.replace(regex, (str, d) => {

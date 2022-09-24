@@ -1,5 +1,5 @@
 export type OptionsType = {
-  [key: string]: object;
+  [key: string]: any;
 };
 
 export type ComponentsType = Array<string>;
@@ -10,7 +10,7 @@ export type SelectorType = string | undefined;
 
 export type StyleType = string | undefined;
 
-export type LengthType = number | undefined;
+export type LengthType = number;
 
 export type ComponentType = string | undefined;
 
@@ -61,6 +61,7 @@ export type AnimationOptionsType = {
   event: string;
   reverseEvent?: string;
   attributes?: AttributesType;
+  styleAnimation?:string;
   style: string;
   class: string;
   transition?: string;

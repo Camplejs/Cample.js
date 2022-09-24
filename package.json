@@ -1,11 +1,13 @@
 {
   "name": "cample",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "description": "cample.js - new web framework for creating the UI of the site.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\""
+    "start": "tsc --watch",
+    "prebuild": "prettier --config .prettierrc src/**/*",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -23,11 +25,14 @@
     "javascript",
     "components"
   ],
-
   "author": "Anton Maklakov",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Camplejs/Cample.js/issues"
   },
-  "homepage": "https://camplejs.github.io"
+  "homepage": "https://camplejs.github.io",
+  "devDependencies": {
+    "prettier": "^2.7.1",
+    "typescript": "^4.8.3"
+  }
 }

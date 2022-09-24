@@ -2,14 +2,19 @@
 import { Operator } from "../operator";
 import { renderTemplateElement } from "../../functions/render-template-element";
 import { renderAttributes } from "../../functions/render-attributes";
+import {
+  ComponentsType,
+  DefaultOptionsType,
+  SelectorType,
+} from "../../types/types";
 export class Addition extends Operator {
-  constructor(selector, components, options) {
+  constructor(selector: SelectorType, components: ComponentsType, options: DefaultOptionsType | undefined) {
     super(selector, components, options);
   }
-  render() {
+  render() : void {
     if (typeof this.components === "undefined" || this.components.length === 0)
       return;
-    let templateElement = null;
+    let templateElement : any = null;
     if (this.components.length > 1) {
       this.components.forEach((component) => {
         this.template += document.createElement(component).outerHTML;
@@ -30,6 +35,7 @@ export class Addition extends Operator {
     }
     if (templateElement)
       templateElement.insertAdjacentHTML("afterbegin", this.template);
+    if(this.selector)
     document.querySelectorAll(this.selector).forEach((e) => {
       if (typeof this.attributes !== "undefined") {
         renderAttributes(e, this.attributes);
