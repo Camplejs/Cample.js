@@ -8,8 +8,9 @@
 
 [![npm-version](https://img.shields.io/npm/v/cample?logo=npm)](https://www.npmjs.com/package/cample)
 [![types](https://img.shields.io/npm/types/cample?logo=typescript)](https://github.com/Camplejs/Cample.js)
-[![repo-size](https://img.shields.io/github/repo-size/Camplejs/Cample.js?logo=github)](https://github.com/Camplejs/Cample.js)
+[![repo-size](https://img.shields.io/github/repo-size/Camplejs/Cample.js?logo=github)](https://github.com/Camplejs/Cample.js)<br>
 [![install size](https://packagephobia.com/badge?p=cample)](https://packagephobia.com/result?p=cample)
+[![downloads](https://img.shields.io/npm/dt/cample?logo=npm)](https://www.npmjs.com/package/cample)
 [![license](https://img.shields.io/npm/l/cample)](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
 
 
