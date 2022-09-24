@@ -21,6 +21,7 @@
 
 
 ## Usage
+### JavaScript
 ```javascript
 import { Cample, Component } from 'cample';
 
@@ -53,6 +54,10 @@ new Cample("#page").render(`
 `,{
     component
 });
+```
+### HTML
+```html
+<div id="page"></div>
 ```
 
 ## Installation
