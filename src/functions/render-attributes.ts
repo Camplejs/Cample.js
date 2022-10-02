@@ -1,6 +1,9 @@
 "use-strict";
 import { AttributesType } from "../types/types";
-export const renderAttributes = (element:any, renderingAttributes:AttributesType | undefined):void => {
+export const renderAttributes = (
+  element: any,
+  renderingAttributes: AttributesType | undefined
+): void => {
   if (typeof element === "undefined") return;
 
   if (renderingAttributes) {

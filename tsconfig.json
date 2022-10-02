@@ -1,11 +1,18 @@
 {
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs",
+      "noImplicitAny": false
+    }
+  },
   "compilerOptions": {
-    "module": "ES6",
+    "module": "ESNext",
     "checkJs": true,
     "removeComments": false,
     "declaration": true,
     "target":"ES6",
     "pretty": true,
+    "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "noImplicitThis": true,

@@ -7,8 +7,8 @@ export const renderTemplateElement = (
   id: string | undefined,
   classElement: string | undefined,
   attributes: AttributesType | undefined
-) : any => {
-  let templateElement = null;
+): any => {
+  let templateElement: HTMLElement | null = null;
   if (selector) {
     templateElement = document.createElement(selector);
     if (id) templateElement.setAttribute("id", id);

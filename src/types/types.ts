@@ -40,7 +40,7 @@ export type ScriptOptionsType = {
   start?: "afterLoad" | "beforeLoad";
   elements?: Array<ElementsElementType>;
 };
-export type ScriptType = [Function, ScriptOptionsType];
+export type ScriptType = [(...args: any[]) => void, ScriptOptionsType];
 
 export type ComponentOptionsType = {
   script?: ScriptType;
@@ -61,7 +61,7 @@ export type AnimationOptionsType = {
   event: string;
   reverseEvent?: string;
   attributes?: AttributesType;
-  styleAnimation?:string;
+  styleAnimation?: string;
   style: string;
   class: string;
   transition?: string;

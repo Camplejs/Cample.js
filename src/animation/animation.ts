@@ -6,19 +6,23 @@ import {
   AnimationOptionsType,
   ComponentType,
   SelectorType,
-  AttributesType,
+  AttributesType
 } from "../types/types";
 
 export class AnimationComponent {
-	public selector: SelectorType;
-	public component: ComponentType;
-	public template: string;
-	public options: AnimationOptionsType;
-	public attributes: AttributesType | undefined;
-	public styleAnimation: string;
-	public style: string;
+  public selector: SelectorType;
+  public component: ComponentType;
+  public template: string;
+  public options: AnimationOptionsType;
+  public attributes: AttributesType | undefined;
+  public styleAnimation: string;
+  public style: string;
 
-  constructor(selector: SelectorType , component:ComponentType, options:AnimationOptionsType) {
+  constructor(
+    selector: SelectorType,
+    component: ComponentType,
+    options: AnimationOptionsType
+  ) {
     this.selector = selector;
     this.component = component;
     this.template = "";
@@ -37,10 +41,10 @@ export class AnimationComponent {
   get _getSelector(): SelectorType {
     return this.selector;
   }
-  get _getStyle() : string {
+  get _getStyle(): string {
     return this.style;
   }
-  render() : void {
+  render(): void {
     if (
       typeof this.component === "undefined" ||
       typeof this.options === "undefined" ||
@@ -48,7 +52,7 @@ export class AnimationComponent {
     )
       return;
     const component = document.createElement(this.component);
-    let templateElement : null | any = null;
+    let templateElement: null | any = null;
     if (this.options.element) {
       templateElement = renderTemplateElement(
         this.options.element.selector,

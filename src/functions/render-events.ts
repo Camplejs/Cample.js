@@ -1,6 +1,11 @@
-"use-strict"
+"use-strict";
 
-export const renderEvents = (element:any, event:string, styleClass:string, reverseEvent: string | undefined) : void => {
+export const renderEvents = (
+  element: any,
+  event: string,
+  styleClass: string,
+  reverseEvent: string | undefined
+): void => {
   switch (event) {
     case "toggle":
       element.addEventListener("click", () => {

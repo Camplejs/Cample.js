@@ -1,11 +1,15 @@
 "use-strict";
 import { DataType } from "../types/types";
 
-export const renderData = (template: string, data: DataType | undefined, index:number) : string => {
+export const renderData = (
+  template: string,
+  data: DataType | undefined,
+  index: number
+): string => {
   if (typeof data === "undefined") return template;
   const regex = /\{{(.*?)}}/g;
   template = template.replace(regex, (str, d) => {
-    let key = d.trim();
+    const key = d.trim();
     if (Array.isArray(data[key])) return data[key][index];
     if (
       typeof data[key] === "object" &&

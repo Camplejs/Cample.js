@@ -4,18 +4,22 @@ import {
   SelectorType,
   DefaultOptionsType,
   StyleType,
-  AttributesType,
+  AttributesType
 } from "../types/types";
 
 export class Operator {
-	public selector: SelectorType;
-	public components: ComponentsType;
-	public options: DefaultOptionsType | undefined;
-	public attributes: AttributesType | undefined;
-	public style: StyleType;
-	public template: string;
+  public selector: SelectorType;
+  public components: ComponentsType;
+  public options: DefaultOptionsType | undefined;
+  public attributes: AttributesType | undefined;
+  public style: StyleType;
+  public template: string;
 
-  constructor(selector: SelectorType, components: ComponentsType, options: DefaultOptionsType | undefined) {
+  constructor(
+    selector: SelectorType,
+    components: ComponentsType,
+    options: DefaultOptionsType | undefined
+  ) {
     this.selector = selector;
     this.components = components;
     this.options = options;
@@ -24,10 +28,10 @@ export class Operator {
     this.style = typeof this.options !== "undefined" ? this.options.style : "";
     this.template = "";
   }
-  get _getSelector() : SelectorType {
+  get _getSelector(): SelectorType {
     return this.selector;
   }
-  get _getStyle() : StyleType {
+  get _getStyle(): StyleType {
     return this.style;
   }
 }
