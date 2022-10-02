@@ -21,7 +21,13 @@
 
 
 
-## Usage
+## Installation and Usage
+
+Install via NPM:
+```bash
+npm i -D cample 
+```
+
 ### JavaScript
 ```javascript
 import { Cample, Component } from 'cample';
@@ -59,13 +65,6 @@ new Cample("#page").render(`
 ### HTML
 ```html
 <div id="page"></div>
-```
-
-## Installation
-
-Install via NPM:
-```bash
-npm i -D cample 
 ```
 
 ## Feauters
