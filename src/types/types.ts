@@ -61,8 +61,8 @@ export type AnimationOptionsType = {
   event: string;
   reverseEvent?: string;
   attributes?: AttributesType;
-  styleAnimation?: string;
-  style: string;
+  styleAnimation: string;
+  style?: string;
   class: string;
   transition?: string;
   element?: AnimationElementType;

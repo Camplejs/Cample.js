@@ -1,6 +1,6 @@
 {
   "name": "cample",
-  "version": "1.0.0-beta.4",
+  "version": "1.0.0-beta.5",
   "description": "cample.js - new web framework for creating the UI of the site.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,6 +9,7 @@
     "lint": "npx eslint src/**/* --fix",
     "test": "mocha --recursive",
     "prebuild": "npm run lint",
+    "coverage": "c8 --reporter=lcov npm run test",
     "build": "tsc"
   },
   "repository": {
@@ -33,6 +34,9 @@
     "url": "https://github.com/Camplejs/Cample.js/issues"
   },
   "homepage": "https://camplejs.github.io",
+  "engines": {
+    "node": ">=10.12.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
     "@babel/core": "^7.19.3",
@@ -44,6 +48,7 @@
     "@types/node": "^18.7.23",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
+    "c8": "^7.12.0",
     "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
