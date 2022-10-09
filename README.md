@@ -13,6 +13,7 @@
 [![license](https://img.shields.io/npm/l/cample)](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
 [![install size](https://packagephobia.com/badge?p=cample)](https://packagephobia.com/result?p=cample)
 [![repo-size](https://img.shields.io/github/repo-size/Camplejs/Cample.js?logo=github)](https://github.com/Camplejs/Cample.js)
+[![coverage](https://img.shields.io/codecov/c/github/camplejs/cample.js?color=blue)](https://codecov.io/gh/Camplejs/Cample.js)
 
 </div>
 <h3 align="center">
