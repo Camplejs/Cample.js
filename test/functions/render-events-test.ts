@@ -5,8 +5,9 @@ import {JSDOM} from "jsdom";
 describe("renderEvents",()=>{
     let JSDOMdocument, el;
     beforeEach(() => {
-        JSDOMdocument = (new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>')).window.document;
-        global.document = JSDOMdocument;
+        JSDOMdocument = (new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>')).window;
+        const window = JSDOMdocument.defaultView;
+        global.document = JSDOMdocument.document;
         el=document.createElement("div");
     });
     it("renderEvents (1)",()=>{
