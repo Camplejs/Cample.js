@@ -9,7 +9,7 @@
     "lint": "npx eslint src/**/* --fix",
     "test": "mocha --recursive",
     "prebuild": "npm run lint",
-    "coverage": "c8 npm run test",
+    "coverage": "c8 --reporter=lcov npm run test",
     "build": "tsc"
   },
   "repository": {
