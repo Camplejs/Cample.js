@@ -6,7 +6,7 @@ describe("renderEvents",()=>{
     let JSDOMdocument, el;
     beforeEach(() => {
         JSDOMdocument = (new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>')).window;
-        const window = JSDOMdocument.defaultView;
+        global.window = JSDOMdocument.defaultView;
         global.document = JSDOMdocument.document;
         el=document.createElement("div");
     });
