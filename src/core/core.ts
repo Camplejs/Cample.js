@@ -15,12 +15,7 @@ export class Cample {
     this.options = {};
     this.style = "";
   }
-  render(template: string, options: OptionsType): void {
-    if (
-      typeof this.template === "undefined" ||
-      typeof this.options === "undefined"
-    )
-      return;
+  render(template = "", options: OptionsType = {}): void {
     this.template = renderTemplate(template, options);
     if (typeof this.selector === "string") {
       const el: Element | null = document.querySelector(this.selector);

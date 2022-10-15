@@ -10,6 +10,7 @@ import {
   ScriptType,
   AttributesType
 } from "../types/types";
+import { createError } from "../utils/utils";
 export class Component {
   public selector: SelectorType;
   public template: string;
@@ -59,7 +60,7 @@ export class Component {
         }
       });
     } else {
-      return;
+      createError("Error: Property 'selector' is required");
     }
   }
 }

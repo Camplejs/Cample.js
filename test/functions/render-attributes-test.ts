@@ -3,10 +3,10 @@ import assert from "assert";
 import { JSDOM } from "jsdom";
 
 describe("renderAttributes",()=>{
-    let JSDOMdocument, el;
+    let d, el;
     beforeEach(() => {
-        JSDOMdocument = (new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>')).window.document;
-        el = JSDOMdocument.createElement('div');
+        d = (new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>')).window.document;
+        el = d.createElement('div');
     });
     it("renderAttributes (1)",()=>{
         assert.equal(renderAttributes(undefined,undefined), undefined);

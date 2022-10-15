@@ -1,33 +1,20 @@
-import { Ternary } from './../../../src/operator/ternary/ternary';
 import assert from "assert";
 import {JSDOM} from "jsdom";
+import { ternary, ternary2 } from "./ternary-examples";
 
 describe("Ternary",()=>{
-    let JSDOMdocument, ternary;
+    let d;
     beforeEach(() => {
-        JSDOMdocument = (new JSDOM('<!DOCTYPE html><html><head></head><body><component1></component1><component2></component2></body></html>')).window.document;
-        global.document = JSDOMdocument;
-        ternary= new Ternary("new-ternary",
-        ['component1', 'component2'],
-        true,{
-        style:"",
-        attributes:{
-            id:""
-        },
-        element:{
-            selector:"",
-            class:"",
-            id:"",
-            attributes:{
-                id:""
-            }
-        }
-    });
+        d = (new JSDOM('<!DOCTYPE html><html><head></head><body><component1></component1><component2></component2></body></html>')).window.document;
+        global.document = d;
     });
     it("Ternary (1)",()=>{
         assert.equal(ternary._getStyle, '');
     }); 
     it("Ternary (2)",()=>{
         assert.equal(ternary._getSelector, 'new-ternary');
+    }); 
+    it("Ternary (3)",()=>{
+        assert.throws(()=>{ternary2.render()}, Error, "Error: Ternary operator renders two components");
     }); 
 });

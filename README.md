@@ -3,7 +3,7 @@
         <img src="https://github.com/Camplejs/media/blob/main/logo.png" alt="cample" >
     </a>
 </p>
-<h1 align="center">Cample.js - new web framework for creating <br> the UI of the site.</h1>
+<h1 align="center">Cample.js - functional web framework for creating site UI.</h1>
 <div align="center">
 
 [![npm-version](https://img.shields.io/npm/v/cample?logo=npm)](https://www.npmjs.com/package/cample)
@@ -16,11 +16,12 @@
 [![coverage](https://img.shields.io/codecov/c/github/camplejs/cample.js?color=blue)](https://codecov.io/gh/Camplejs/Cample.js)
 
 </div>
-<h3 align="center">
-    This framework is in beta stage!
-</h3>
 
+<div align="center"><b>Links:<br> <a href="https://camplejs.github.io/documentation.html">Documentation</a> • <a href="https://camplejs.github.io/example.html"> Example </a> • <a href="https://github.com/Camplejs/example/blob/main/example.js">Example source</a> • <a href="https://camplejs.github.io">Website</a> </div>
 
+## About
+
+> Cample.js - web framework for creating site UI. This framework is great for creating most of the various sites, due to its extensive functionality.
 
 ## Installation and Usage
 
@@ -75,19 +76,14 @@ new Cample("#page").render(`
 - **Some operators like in vanilla js for working with components**
 - **Animation**
 - **Working with data**
+- **100% coverage code**
 - **No dependencies**
 - **Typed**
-
-## Links
-
-- [Documentation](https://camplejs.github.io/documentation.html)
-
-- [Example](https://camplejs.github.io/example.html)
-
-- [Example source](https://github.com/Camplejs/example/blob/main/example.js)
-
-- [Website](https://camplejs.github.io)
-
+  
+## Repository
+  
+[Repository](https://github.com/Camplejs/Cample.js)
+  
 ## Changelog
 
 [Changelog](https://github.com/Camplejs/Cample.js/releases)

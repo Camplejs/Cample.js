@@ -7,6 +7,7 @@ import {
   DefaultOptionsType,
   SelectorType
 } from "../../types/types";
+import { createError } from "../../utils/utils";
 
 export class If extends Operator {
   public bool: boolean;
@@ -15,23 +16,21 @@ export class If extends Operator {
     selector: SelectorType,
     components: ComponentsType,
     bool: boolean,
-    options: DefaultOptionsType | undefined
+    options: DefaultOptionsType | undefined = undefined
   ) {
     super(selector, components, options);
     this.bool = bool;
   }
   render(): void {
-    if (typeof this.components === "undefined" || this.components.length === 0)
-      return;
+    if (typeof this.components === "undefined" || this.components.length <= 0)
+      createError("Error: If operator renders one and more components");
 
     let templateElement: any = null;
 
     if (this.bool) {
-      if (this.components.length > 0) {
-        this.components.forEach((component) => {
-          this.template += document.createElement(component).outerHTML;
-        });
-      }
+      this.components.forEach((component) => {
+        this.template += document.createElement(component).outerHTML;
+      });
     }
 
     if (typeof this.options !== "undefined") {

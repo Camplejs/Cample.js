@@ -18,7 +18,7 @@ export class Operator {
   constructor(
     selector: SelectorType,
     components: ComponentsType,
-    options: DefaultOptionsType | undefined
+    options: DefaultOptionsType | undefined = undefined
   ) {
     this.selector = selector;
     this.components = components;

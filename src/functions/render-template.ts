@@ -1,3 +1,5 @@
+"use-strict";
+
 export const renderTemplate = (template: string, options: any): string => {
   if (typeof options === "undefined") return template;
   const regex = /\{{(.*?)}}/g;

@@ -9,13 +9,14 @@ import {
   StyleType,
   AttributesType
 } from "../types/types";
+import { createError } from "../utils/utils";
 
 export class Cycle {
   public selector: SelectorType;
   public length: LengthType;
   public components: ComponentsType;
   public template: string;
-  public options: DefaultOptionsType | undefined;
+  public options: DefaultOptionsType;
   public attributes: AttributesType | undefined;
   public style: StyleType;
 
@@ -23,16 +24,15 @@ export class Cycle {
     selector: SelectorType,
     components: ComponentsType,
     length = 0,
-    options: DefaultOptionsType | undefined
+    options: DefaultOptionsType = {}
   ) {
     this.selector = selector;
     this.length = length;
     this.components = components;
     this.template = "";
     this.options = options;
-    this.attributes =
-      typeof this.options !== "undefined" ? this.options.attributes : undefined;
-    this.style = typeof this.options !== "undefined" ? this.options.style : "";
+    this.attributes = this.options.attributes;
+    this.style = this.options.style ? this.options.style : "";
   }
   get _getSelector(): SelectorType {
     return this.selector;
@@ -42,7 +42,7 @@ export class Cycle {
   }
   render(): void {
     if (typeof this.components === "undefined" || this.components.length === 0)
-      return;
+      createError("Error: Cycle component renders one and more components");
     let templateElement: any = null;
     if (typeof this.options !== "undefined") {
       if (this.options.element) {

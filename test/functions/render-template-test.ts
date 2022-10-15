@@ -1,13 +1,13 @@
-import { component } from './../component/component-example';
+import { component } from './../component/component-examples';
 import { renderTemplate } from './../../src/functions/render-template';
 import assert from "assert";
 import {JSDOM} from "jsdom";
 
 describe("renderTemplate",()=>{
-    let JSDOMdocument;
+    let d;
     beforeEach(() => {
-        JSDOMdocument = (new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>')).window.document;
-        global.document = JSDOMdocument;
+        d = (new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>')).window.document;
+        global.document = d;
     });
     it("renderTemplate (1)",()=>{
         assert.equal(renderTemplate("",undefined), "");

@@ -7,26 +7,22 @@ import {
   DefaultOptionsType,
   SelectorType
 } from "../../types/types";
+import { createError } from "../../utils/utils";
 export class Addition extends Operator {
   constructor(
     selector: SelectorType,
     components: ComponentsType,
-    options: DefaultOptionsType | undefined
+    options: DefaultOptionsType | undefined = undefined
   ) {
     super(selector, components, options);
   }
   render(): void {
-    if (typeof this.components === "undefined" || this.components.length === 0)
-      return;
+    if (typeof this.components === "undefined" || this.components.length < 1)
+      createError("Error: Addition operator renders two and more components");
     let templateElement: any = null;
-    if (this.components.length > 1) {
-      this.components.forEach((component) => {
-        this.template += document.createElement(component).outerHTML;
-      });
-    } else
-      throw new Error(
-        "Error: Addition operator renders two and more components"
-      );
+    this.components.forEach((component) => {
+      this.template += document.createElement(component).outerHTML;
+    });
     if (typeof this.options !== "undefined") {
       if (this.options.element) {
         templateElement = renderTemplateElement(

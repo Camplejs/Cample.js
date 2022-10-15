@@ -8,6 +8,7 @@ import {
   SelectorType,
   AttributesType
 } from "../types/types";
+import { createError } from "../utils/utils";
 
 export class AnimationComponent {
   public selector: SelectorType;
@@ -27,16 +28,11 @@ export class AnimationComponent {
     this.component = component;
     this.template = "";
     this.options = options;
-    this.attributes =
-      typeof this.options !== "undefined" ? this.options.attributes : undefined;
+    this.attributes = this.options.attributes;
     this.styleAnimation =
-      typeof this.options !== "undefined"
-        ? `.${this.options.class}{` + this.options.styleAnimation + `}`
-        : "";
+      `.${this.options.class}{` + this.options.styleAnimation + `}`;
     this.style =
-      typeof this.options !== "undefined"
-        ? (this.options.style ? this.options.style : "") + this.styleAnimation
-        : "";
+      (this.options.style ? this.options.style : "") + this.styleAnimation;
   }
   get _getSelector(): SelectorType {
     return this.selector;
@@ -48,43 +44,50 @@ export class AnimationComponent {
     if (
       typeof this.component === "undefined" ||
       typeof this.options === "undefined" ||
-      typeof this.selector === "undefined"
-    )
-      return;
-    const component = document.createElement(this.component);
-    let templateElement: null | any = null;
-    if (this.options.element) {
-      templateElement = renderTemplateElement(
-        this.options.element.selector,
-        this.options.element.id,
-        this.options.element.class,
-        this.options.element.attributes
+      typeof this.selector === "undefined" ||
+      typeof this.options.class === "undefined" ||
+      typeof this.options.styleAnimation === "undefined" ||
+      typeof this.options.event === "undefined"
+    ) {
+      createError(
+        "Error: Property 'component', 'options','options.class', 'options.styleAnimation', 'options.event' or 'selector' is required"
       );
-    }
-    if (templateElement) {
-      templateElement.appendChild(component);
-      if (this.options.element && this.options.element.transition)
-        templateElement.setAttribute(
-          "style",
-          `transition:${this.options.element.transition};`
+    } else {
+      const component = document.createElement(this.component);
+      let templateElement: null | any = null;
+      if (this.options.element) {
+        templateElement = renderTemplateElement(
+          this.options.element.selector,
+          this.options.element.id,
+          this.options.element.class,
+          this.options.element.attributes
         );
-    }
-    this.template = templateElement
-      ? templateElement.outerHTML
-      : component.outerHTML;
-    document.querySelectorAll(this.selector).forEach((e) => {
-      if (typeof this.attributes !== "undefined") {
-        renderAttributes(e, this.attributes);
       }
-      e.insertAdjacentHTML("afterbegin", this.template);
-      if (this.options.transition)
-        e.setAttribute("style", `transition:${this.options.transition};`);
-      renderEvents(
-        templateElement ? e.firstChild : e,
-        this.options.event,
-        this.options.class,
-        this.options.reverseEvent
-      );
-    });
+      if (templateElement) {
+        templateElement.appendChild(component);
+        if (this.options.element && this.options.element.transition)
+          templateElement.setAttribute(
+            "style",
+            `transition:${this.options.element.transition};`
+          );
+      }
+      this.template = templateElement
+        ? templateElement.outerHTML
+        : component.outerHTML;
+      document.querySelectorAll(this.selector).forEach((e) => {
+        if (typeof this.attributes !== "undefined") {
+          renderAttributes(e, this.attributes);
+        }
+        e.insertAdjacentHTML("afterbegin", this.template);
+        if (this.options.transition)
+          e.setAttribute("style", `transition:${this.options.transition};`);
+        renderEvents(
+          templateElement ? e.firstChild : e,
+          this.options.event,
+          this.options.class,
+          this.options.reverseEvent
+        );
+      });
+    }
   }
 }

@@ -1,32 +1,23 @@
-import { Cycle } from './../../src/cycle/cycle';
 import assert from "assert";
 import {JSDOM} from "jsdom";
+import { cycle, cycle1, cycle2 } from "./cycle-examples";
 
 describe("Cycle",()=>{
-    let JSDOMdocument, cycle;
+    let d;
     beforeEach(() => {
-        JSDOMdocument = (new JSDOM('<!DOCTYPE html><html><head></head><body><component></component></body></html>')).window.document;
-        global.document = JSDOMdocument;
-        cycle= new Cycle("new-cycle",['component'],2,
-        {
-            attributes:{
-                id:"id"
-            },
-            style:"",
-            element:{
-                selector:"div",
-                id:"",
-                class:"",
-                attributes:{
-                    id:""
-                }
-            }
-        });
+        d = (new JSDOM('<!DOCTYPE html><html><head></head><body><component></component></body></html>')).window.document;
+        global.document = d;
     });
     it("Cycle (1)",()=>{
         assert.equal(cycle._getStyle, '');
     }); 
     it("Cycle (2)",()=>{
         assert.equal(cycle._getSelector, 'new-cycle');
+    }); 
+    it("Cycle (3)",()=>{
+        assert.equal(cycle1._getStyle, "#id{}");
+    }); 
+    it("Cycle (4)",()=>{
+        assert.throws(()=>{cycle2.render()}, Error, "Error: Cycle1 component renders one and more components");
     }); 
 });

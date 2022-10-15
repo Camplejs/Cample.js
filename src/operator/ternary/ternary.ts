@@ -7,6 +7,7 @@ import {
   DefaultOptionsType,
   SelectorType
 } from "../../types/types";
+import { createError } from "../../utils/utils";
 
 export class Ternary extends Operator {
   public bool: boolean;
@@ -15,19 +16,17 @@ export class Ternary extends Operator {
     selector: SelectorType,
     components: ComponentsType,
     bool: boolean,
-    options: DefaultOptionsType | undefined
+    options: DefaultOptionsType | undefined = undefined
   ) {
     super(selector, components, options);
     this.bool = bool;
   }
   render(): void {
-    if (typeof this.components === "undefined" || this.components.length === 0)
-      return;
+    if (typeof this.components === "undefined" || this.components.length !== 2)
+      createError("Error: Ternary operator renders two components");
     let templateElement: any = null;
-    if (this.components.length === 2) {
-      const index = this.bool ? 0 : 1;
-      this.template = document.createElement(this.components[index]).outerHTML;
-    } else throw new Error("Error: Ternary operator renders two components");
+    const index = this.bool ? 0 : 1;
+    this.template = document.createElement(this.components[index]).outerHTML;
 
     if (typeof this.options !== "undefined") {
       if (this.options.element) {

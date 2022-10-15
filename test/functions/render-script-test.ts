@@ -3,10 +3,10 @@ import assert from "assert";
 import {JSDOM} from "jsdom";
 
 describe("renderScript",()=>{
-    let JSDOMdocument, el;
+    let d, el;
     beforeEach(() => {
-        JSDOMdocument = (new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>')).window.document;
-        global.document = JSDOMdocument;
+        d = (new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>')).window.document;
+        global.document = d;
         el=document.createElement("div");
         el.setAttribute("class","component");
         document.body.appendChild(el)

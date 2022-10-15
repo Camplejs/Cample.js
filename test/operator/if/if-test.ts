@@ -1,32 +1,20 @@
-import { If } from './../../../src/operator/if/if';
 import assert from "assert";
 import {JSDOM} from "jsdom";
+import { newIf, newIf2 } from "./if-examples";
 
 describe("If",()=>{
-    let JSDOMdocument, newIf;
+    let d;
     beforeEach(() => {
-        JSDOMdocument = (new JSDOM('<!DOCTYPE html><html><head></head><body><component></component></body></html>')).window.document;
-        global.document = JSDOMdocument;
-        newIf= new If("new-if",
-        ['component'],
-        true,{
-        style:"",
-        attributes:{
-            id:""
-        },
-        element:{
-            selector:"",
-            class:"",
-            id:"",
-            attributes:{
-                id:""
-            }
-        }});
+        d = (new JSDOM('<!DOCTYPE html><html><head></head><body><component></component></body></html>')).window.document;
+        global.document = d;
     });
     it("If (1)",()=>{
         assert.equal(newIf._getStyle, '');
     }); 
     it("If (2)",()=>{
         assert.equal(newIf._getSelector, 'new-if');
+    }); 
+    it("If (3)",()=>{
+        assert.throws(()=>{newIf2.render()}, Error, "Error: If operator renders one and more components");
     }); 
 });
