@@ -6,14 +6,14 @@
 <h1 align="center">Cample.js - functional web framework for creating site UI.</h1>
 <div align="center">
 
-[![npm-version](https://img.shields.io/npm/v/cample?logo=npm)](https://www.npmjs.com/package/cample)
-[![downloads](https://img.shields.io/npm/dt/cample)](https://www.npmjs.com/package/cample)
-[![stars](https://img.shields.io/github/stars/Camplejs/Cample.js?logo=github)](https://github.com/Camplejs/Cample.js)
-[![types](https://img.shields.io/npm/types/cample?logo=typescript)](https://github.com/Camplejs/Cample.js)<br>
-[![license](https://img.shields.io/npm/l/cample)](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
-[![install size](https://packagephobia.com/badge?p=cample)](https://packagephobia.com/result?p=cample)
-[![repo-size](https://img.shields.io/github/repo-size/Camplejs/Cample.js?logo=github)](https://github.com/Camplejs/Cample.js)
-[![coverage](https://img.shields.io/codecov/c/github/camplejs/cample.js?color=blue)](https://codecov.io/gh/Camplejs/Cample.js)
+[![npm-version](https://img.shields.io/npm/v/cample?logo=npm&color=blue&style=flat-square)](https://www.npmjs.com/package/cample)
+[![downloads](https://img.shields.io/npm/dt/cample?color=blue&style=flat-square)](https://www.npmjs.com/package/cample)
+[![stars](https://img.shields.io/github/stars/Camplejs/Cample.js?logo=github&style=flat-square)](https://github.com/Camplejs/Cample.js)
+[![types](https://img.shields.io/npm/types/cample?logo=typescript&style=flat-square)](https://github.com/Camplejs/Cample.js)<br>
+[![license](https://img.shields.io/npm/l/cample?color=blue&style=flat-square)](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
+[![repo-size](https://img.shields.io/github/repo-size/Camplejs/Cample.js?logo=github&style=flat-square)](https://github.com/Camplejs/Cample.js)
+[![minified size](https://img.shields.io/bundlephobia/min/cample?logo=npm&style=flat-square)](https://www.npmjs.com/package/cample)
+[![coverage](https://img.shields.io/codecov/c/github/camplejs/cample.js?color=blue&style=flat-square)](https://codecov.io/gh/Camplejs/Cample.js)
 
 </div>
 
@@ -75,6 +75,7 @@ new Cample("#page").render(`
 - **Cycle**
 - **Some operators like in vanilla js for working with components**
 - **Animation**
+- **Route**
 - **Working with data**
 - **100% coverage code**
 - **No dependencies**

@@ -5,4 +5,5 @@ import { Ternary } from "../src/operator/ternary/ternary";
 import { Addition } from "../src/operator/addition/addition";
 import { AnimationComponent } from "../src/animation/animation";
 import { If } from "../src/operator/if/if";
-export { Cample, Component, Cycle, Ternary, Addition, AnimationComponent, If };
+import { Route } from "../src/route/route";
+export { Cample, Component, Cycle, Ternary, Addition, AnimationComponent, If, Route };

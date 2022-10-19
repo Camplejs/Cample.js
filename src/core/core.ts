@@ -1,6 +1,10 @@
 "use-strict";
 import { renderStyle } from "../functions/render-style";
-import { OptionsType, SelectorType } from "../types/types";
+import {
+  OptionsRenderRouteType,
+  OptionsType,
+  SelectorType
+} from "../types/types";
 import { renderTemplate } from "./../functions/render-template";
 
 export class Cample {
@@ -9,12 +13,13 @@ export class Cample {
   public style: string;
   public options: OptionsType;
 
-  constructor(selector: SelectorType) {
-    this.selector = selector;
+  constructor(selector?: SelectorType) {
+    this.selector = selector ? selector : "";
     this.template = "";
     this.options = {};
     this.style = "";
   }
+
   render(template = "", options: OptionsType = {}): void {
     this.template = renderTemplate(template, options);
     if (typeof this.selector === "string") {
@@ -29,6 +34,18 @@ export class Cample {
       Object.keys(options).forEach((e) => {
         options[e].render();
       });
+    }
+  }
+
+  renderRoutes(options: OptionsRenderRouteType = {}): void {
+    const keys = Object.keys(options);
+    for (let i = 0; i < keys.length; i++) {
+      if (options[keys[i]].path === window.location.pathname) {
+        options[keys[i]].render();
+        this.selector = options[keys[i]].selector;
+        this.render(options[keys[i]].template, options[keys[i]].components);
+        break;
+      }
     }
   }
 }

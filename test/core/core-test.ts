@@ -1,3 +1,4 @@
+import { route } from './../route/route-examples';
 import { addition1 } from './../operator/addition/addition-examples';
 import { newIf, newIf1 } from './../operator/if/if-examples';
 import { ternary, ternary1 } from './../operator/ternary/ternary-examples';
@@ -10,10 +11,11 @@ import { addition } from '../operator/addition/addition-examples';
 import { animation, animation1 } from '../animation/animation-examples';
 
 describe("core",()=>{
-    let d;
+    let w;
     beforeEach(() => {
-        d = (new JSDOM('<!DOCTYPE html><html><head></head><body><div id="page"></div></body></html>')).window.document;
-        global.document = d;
+        w = (new JSDOM('<!DOCTYPE html><html><head></head><body><div id="page"></div></body></html>',{url: 'https://camplejs.github.io'})).window;
+        global.window = w;
+        global.document = w.document;
     });
     it("core (1)",()=>{
         new Cample("#page").render("{{component}}",{component})
@@ -52,4 +54,7 @@ describe("core",()=>{
         cycle1});
         assert.equal(null, null);
     }); 
+    it("core (4)",()=>{
+        new Cample().renderRoutes({route})
+    });
 });

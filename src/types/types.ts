@@ -1,7 +1,13 @@
+import { Route } from "../route/route";
+
 export type OptionsType = {
   [key: string]: any;
 };
 
+export type OptionsRenderRouteType = {
+  [key: string]: Route;
+};
+export type TemplateType = string | undefined;
 export type ComponentsType = Array<string>;
 
 export type ComponentsTernaryType = [string, string];

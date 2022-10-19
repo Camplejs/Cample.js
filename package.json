@@ -1,6 +1,6 @@
 {
   "name": "cample",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "cample.js - functional web framework for creating site UI.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
