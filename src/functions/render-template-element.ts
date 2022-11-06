@@ -17,6 +17,6 @@ export const renderTemplateElement = (
     if (attributes) renderAttributes(templateElement, attributes);
     return templateElement;
   } else {
-    createError("Error: Property 'selector' is required");
+    createError("Error: Properties 'selector' is required");
   }
 };

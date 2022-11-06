@@ -1,6 +1,10 @@
-import { Route } from "../route/route";
+import { Route } from "../routing/route/route";
 
 export type OptionsType = {
+  [key: string]: any;
+};
+
+export type ComponentsRouteType = {
   [key: string]: any;
 };
 
@@ -54,7 +58,12 @@ export type ComponentOptionsType = {
   style?: StyleType;
   attributes?: AttributesType;
 };
-
+export type CampleOptionsType = {
+  mode?: {
+    value: "watch";
+    styleId?: string;
+  };
+};
 export type AnimationElementType = {
   selector: string;
   id?: string;

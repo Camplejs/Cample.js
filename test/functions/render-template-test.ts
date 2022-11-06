@@ -1,4 +1,4 @@
-import { component } from './../component/component-examples';
+import { component } from './../components/component/component-examples';
 import { renderTemplate } from './../../src/functions/render-template';
 import assert from "assert";
 import {JSDOM} from "jsdom";
