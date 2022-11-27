@@ -79,7 +79,7 @@ newCample.render(`
 <div id="page"></div>
 ```
 Link article: <a href="https://camplejs.github.io/documentation/getting-started.html">Getting started</a>.<br>
-See <a href="https://camplejs.github.io/documentation.html">Cample.js docs</a> for more details.
+See <a href="https://camplejs.github.io/documentation/introduction.html">Cample.js docs</a> for more details.
 
 ## Example code
 
