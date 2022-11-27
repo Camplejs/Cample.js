@@ -72,7 +72,7 @@ export class Cample {
         if (options[keys[i]].path === window.location.pathname) {
           options[keys[i]].render();
           this.selector = options[keys[i]].selector;
-          this.render(options[keys[i]].template, options[keys[i]].components);
+          this.render(options[keys[i]].template, options[keys[i]].options);
           break;
         }
       }
@@ -82,7 +82,7 @@ export class Cample {
           if (options[keys[i]].path === window.location.pathname) {
             options[keys[i]].render();
             this.selector = options[keys[i]].selector;
-            this.render(options[keys[i]].template, options[keys[i]].components);
+            this.render(options[keys[i]].template, options[keys[i]].options);
             break;
           }
         }
@@ -93,7 +93,7 @@ export class Cample {
         if (options[keys[i]].path === window.location.pathname) {
           options[keys[i]].render();
           this.selector = options[keys[i]].selector;
-          this.render(options[keys[i]].template, options[keys[i]].components);
+          this.render(options[keys[i]].template, options[keys[i]].options);
           break;
         }
       }

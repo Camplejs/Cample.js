@@ -1,25 +1,21 @@
 "use-strict";
-import {
-  ComponentsRouteType,
-  SelectorType,
-  TemplateType
-} from "../../types/types";
+import { OptionsType, SelectorType, TemplateType } from "../../types/types";
 import { createError } from "../../utils/utils";
 
 export class Route {
   public selector: SelectorType;
-  public components: ComponentsRouteType;
+  public options: OptionsType;
   public path: string;
   public template: TemplateType;
 
   constructor(
     selector: SelectorType,
     template: TemplateType,
-    components: ComponentsRouteType = {},
+    options: OptionsType = {},
     path: string
   ) {
     this.selector = selector;
-    this.components = components;
+    this.options = options;
     this.template = template ? template : "";
     this.path = path;
   }
