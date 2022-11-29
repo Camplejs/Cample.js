@@ -1,22 +1,19 @@
-import { route } from './../routing/route/route-examples';
-import { addition1 } from './../components/operator/addition/addition-examples';
-import { newIf, newIf1 } from './../components/operator/if/if-examples';
-import { ternary, ternary1 } from './../components/operator/ternary/ternary-examples';
-import { cycle, cycle1 } from './../components/cycle/cycle-examples';
-import { component, component1, component2 } from './../components/component/component-examples';
+import { addition1 } from './../operator/addition/addition-examples';
+import { newIf, newIf1 } from './../operator/if/if-examples';
+import { ternary, ternary1 } from './../operator/ternary/ternary-examples';
+import { cycle, cycle1 } from './../cycle/cycle-examples';
+import { component, component1, component2 } from './../component/component-examples';
 import { Cample } from './../../src/core/core';
 import assert from "assert";
 import {JSDOM} from "jsdom";
-import { addition } from '../components/operator/addition/addition-examples';
-import { animation, animation1 } from '../components/animation/animation-examples';
-import { routelink, routelink1} from '../routing/routelink/routelink-examples';
+import { addition } from '../operator/addition/addition-examples';
+import { animation, animation1 } from '../animation/animation-examples';
 
 describe("core",()=>{
-    let w;
+    let d;
     beforeEach(() => {
-        w = (new JSDOM('<!DOCTYPE html><html><head></head><body><div id="page"></div></body></html>',{url: 'https://camplejs.github.io'})).window;
-        global.window = w;
-        global.document = w.document;
+        d = (new JSDOM('<!DOCTYPE html><html><head></head><body><div id="page"></div></body></html>')).window.document;
+        global.document = d;
     });
     it("core (1)",()=>{
         new Cample("#page").render("{{component}}",{component})
@@ -40,9 +37,7 @@ describe("core",()=>{
         {{ternary}},
         {{component2}},
         {{ternary1}},
-        {{cycle1}}
-        {{routelink}}
-        {{routelink1}}`,
+        {{cycle1}}`,
         {newIf,
         newIf1,
         cycle,
@@ -54,53 +49,7 @@ describe("core",()=>{
         ternary,
         component2,
         ternary1,
-        cycle1,
-        routelink,
-        routelink1
-        });
-        assert.equal(null, null);
-    }); 
-    it("core (4)",()=>{
-        global.Event = w.Event;
-        new Cample("",{mode:{value:"watch",styleId:"style-id"}}).renderRoutes({route});
-        w.dispatchEvent(new Event("pathnamechange"));
-        assert.equal(null, null);
-    });    
-    it("core (5)",()=>{
-        new Cample().renderRoutes({route});
-        assert.equal(null, null);
-    });   
-    it("core (6)",()=>{
-        new Cample("#page",{mode:{value:"watch",styleId:"style-id"}}).render(`
-        {{newIf}},
-        {{newIf1}},
-        {{cycle}},
-        {{addition}},
-        {{addition1}},
-        {{component1}},
-        {{animation}},
-        {{animation1}},
-        {{ternary}},
-        {{component2}},
-        {{ternary1}},
-        {{cycle1}}
-        {{routelink}}
-        {{routelink1}}`,
-        {newIf,
-        newIf1,
-        cycle,
-        addition,
-        addition1,
-        component1,
-        animation,
-        animation1,
-        ternary,
-        component2,
-        ternary1,
-        cycle1,
-        routelink,
-        routelink1
-        });
+        cycle1});
         assert.equal(null, null);
     }); 
 });

@@ -1,7 +1,7 @@
 {
   "name": "cample",
-  "version": "1.0.3",
-  "description": "Cample.js - typed javascript web framework for creating site UI.",
+  "version": "1.0.0",
+  "description": "cample.js - functional web framework for creating site UI.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -28,10 +28,7 @@
     "component",
     "html",
     "javascript",
-    "components",
-    "routing",
-    "route",
-    "spa"
+    "components"
   ],
   "author": "Anton Maklakov",
   "license": "MIT",
