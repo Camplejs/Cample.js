@@ -10,7 +10,7 @@ export class Cample {
   public options: OptionsType;
 
   constructor(selector: SelectorType) {
-    this.selector = selector;
+    this.selector = selector ? selector : "";
     this.template = "";
     this.options = {};
     this.style = "";
