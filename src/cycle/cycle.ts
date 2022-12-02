@@ -23,7 +23,7 @@ export class Cycle {
   constructor(
     selector: SelectorType,
     components: ComponentsType,
-    length = 0,
+    length: LengthType = 0,
     options: DefaultOptionsType = {}
   ) {
     this.selector = selector;

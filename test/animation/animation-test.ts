@@ -18,6 +18,6 @@ describe("Animation",()=>{
         assert.equal(animation1._getSelector, 'new-animation1');
     }); 
     it("Animation (4)",()=>{
-        assert.throws(()=>{animation2.render()}, Error, "Error: Property 'component', 'options','options.class', 'options.styleAnimation', 'options.event' or 'selector' is required");
+        assert.throws(()=>{animation2.render()}, Error, "Error: Properties 'component', 'options', 'options.class', 'options.styleAnimation', 'options.event' or 'selector' is required");
     }); 
 });
