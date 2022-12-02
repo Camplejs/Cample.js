@@ -55,12 +55,7 @@ export type ComponentOptionsType = {
   style?: StyleType;
   attributes?: AttributesType;
 };
-export type CampleOptionsType = {
-  mode?: {
-    value: "watch";
-    styleId?: string;
-  };
-};
+
 export type AnimationElementType = {
   selector: string;
   id?: string;
