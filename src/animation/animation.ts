@@ -50,7 +50,7 @@ export class AnimationComponent {
       typeof this.options.event === "undefined"
     ) {
       createError(
-        "Error: Property 'component', 'options','options.class', 'options.styleAnimation', 'options.event' or 'selector' is required"
+        "Error: Properties 'component', 'options', 'options.class', 'options.styleAnimation', 'options.event' or 'selector' is required"
       );
     } else {
       const component = document.createElement(this.component);
