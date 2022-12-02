@@ -2,6 +2,7 @@ export type OptionsType = {
   [key: string]: any;
 };
 
+export type TemplateType = string | undefined;
 export type ComponentsType = Array<string>;
 
 export type ComponentsTernaryType = [string, string];
@@ -30,8 +31,14 @@ export type DefaultOptionsType = {
   style?: StyleType;
   element?: ElementType;
 };
+
+export type DataPropertyType = {
+  value?: any;
+  defaultValue?: any;
+};
+
 export type DataType = {
-  [key: string]: any;
+  [key: string]: any | DataPropertyType;
 };
 export type ElementsElementType = {
   [key: string]: string;
@@ -48,7 +55,12 @@ export type ComponentOptionsType = {
   style?: StyleType;
   attributes?: AttributesType;
 };
-
+export type CampleOptionsType = {
+  mode?: {
+    value: "watch";
+    styleId?: string;
+  };
+};
 export type AnimationElementType = {
   selector: string;
   id?: string;
