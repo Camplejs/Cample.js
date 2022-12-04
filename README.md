@@ -22,7 +22,7 @@
 
 <p align="center">
     <a href="https://camplejs.github.io/documentation/component.html">
-        <img src="https://github.com/Camplejs/media/blob/main/Component.png" alt="Component" >
+        <img src="https://github.com/Camplejs/media/blob/main/NewComponent.png" alt="Component" >
     </a>
 </p>
 
@@ -56,15 +56,15 @@ An instance of the Cample class is created, which is the main handler of all tec
   
 ### JavaScript
 ```javascript
-const component = new Component("new-component","component"}
+const newComponent = component("new-component", "component")
             
-const newCample = new Cample("#page");
+const newCample = cample("#page");
 newCample.render(`
     <div> class="content">
-        {{component}}
+        {{newComponent}}
     </div>
 `,{
-    component
+    newComponent
 });
 ```
 ### HTML
@@ -76,8 +76,8 @@ See <a href="https://camplejs.github.io/documentation/introduction.html">Cample.
 ## Example code
 ### JavaScript
 ```javascript
-const newCample = new Cample("#page");
-const component = new Component("new-component", 
+const newCample = cample("#page");
+const newComponent = component("new-component", 
 `<div class="component">
     {{component_text}}
 </div>`,{
@@ -99,7 +99,7 @@ const component = new Component("new-component",
     style:".component{width:100px}"
 });
 
-newCample.render("{{component}}",{component})
+newCample.render("{{newComponent}}", {newComponent});
 ```
 ### HTML
 ```html
@@ -113,6 +113,10 @@ newCample.render("{{component}}",{component})
 ## Changelog
 
 [Changelog](https://github.com/Camplejs/Cample.js/releases)
+  
+## Contribution
+  
+If you would like to contribute to this framework, please see [Contributing Guide](https://github.com/Camplejs/Cample.js/blob/main/CONTRIBUTING.md). Thank you!
 
 ## License
 [Licensed under MIT](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
