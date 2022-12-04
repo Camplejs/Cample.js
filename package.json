@@ -1,12 +1,13 @@
 {
   "name": "cample",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Cample.js - typed javascript web framework for creating site UI.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "start": "tsc --watch",
     "lint": "npx eslint src/**/* --fix",
+    "lint:test": "npx eslint test/**/* --fix",
     "test": "mocha --recursive",
     "test:watch": "mocha --watch --recursive",
     "prebuild": "npm run lint",
