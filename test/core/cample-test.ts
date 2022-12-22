@@ -32,7 +32,7 @@ describe("core", () => {
     cample("#page").render("{{component0}}", { component0 });
     assert.equal(
       document.querySelector("#page")?.outerHTML,
-      '<div id="page"><new-component id="id">Component</new-component></div>'
+      '<div id="page"><new-component id="id">{{component_text}}</new-component></div>'
     );
   });
   it("core (2)", () => {

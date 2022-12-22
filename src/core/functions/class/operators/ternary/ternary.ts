@@ -1,6 +1,10 @@
 "use-strict";
 
-import { SelectorType, ComponentsType, DefaultOptionsType } from "../../../../../types/types";
+import {
+  SelectorType,
+  ComponentsType,
+  DefaultOptionsType
+} from "../../../../../types/types";
 import { Ternary } from "../../../../components/operators/ternary/ternary";
 
 const ternary = (
@@ -8,8 +12,8 @@ const ternary = (
   components: ComponentsType,
   bool: boolean,
   options: DefaultOptionsType | undefined
-) : Ternary =>{
-    return new Ternary(selector, components, bool, options);
-}
+): Ternary => {
+  return new Ternary(selector, components, bool, options);
+};
 
-export {ternary};
+export { ternary };

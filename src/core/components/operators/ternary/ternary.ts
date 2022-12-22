@@ -46,10 +46,9 @@ export class Ternary extends Operator {
         if (typeof this.attributes !== "undefined") {
           renderAttributes(e, this.attributes);
         }
-        e.insertAdjacentHTML(
-          "afterbegin",
-          templateElement ? templateElement.outerHTML : this.template
-        );
+        e.innerHTML = templateElement
+          ? templateElement.outerHTML
+          : this.template;
       });
   }
 }

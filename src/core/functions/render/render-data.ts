@@ -4,7 +4,8 @@ import { DataType } from "../../../types/types";
 export const renderData = (
   template: string,
   data: DataType | undefined,
-  index: number
+  index: number,
+  returnValueFunction: (key: string) => any | undefined
 ): string => {
   if (typeof data === "undefined") return template;
   const regex = /\{{(.*?)}}/g;
@@ -16,24 +17,27 @@ export const renderData = (
       data[key] &&
       !Array.isArray(data[key])
     ) {
-      if (data[key].value || data[key].defaultValue) {
+      if (
+        data[key].value !== undefined ||
+        data[key].defaultValue !== undefined
+      ) {
         let returnValue = data[key];
-        if (data[key].defaultValue) {
+        if (data[key].defaultValue !== undefined) {
           if (Array.isArray(data[key].defaultValue)) {
-            returnValue = data[key].defaultValue[index];
+            returnValue = returnValueFunction(key).defaultValue[index];
           } else {
-            returnValue = data[key].defaultValue;
+            returnValue = returnValueFunction(key).defaultValue;
           }
         }
-        if (data[key].value) {
+        if (data[key].value !== undefined) {
           if (Array.isArray(data[key].value)) {
             if (data[key].value[index]) {
-              returnValue = data[key].value[index];
+              returnValue = returnValueFunction(key).value[index];
             } else if (returnValue === data[key]) {
               returnValue = undefined;
             }
           } else {
-            returnValue = data[key].value;
+            returnValue = returnValueFunction(key).value;
           }
         }
         return returnValue;

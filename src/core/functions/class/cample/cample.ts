@@ -3,10 +3,8 @@
 import { SelectorType } from "../../../../types/types";
 import { Cample } from "../../../cample";
 
-const cample = (
-    selector: SelectorType
-) : Cample =>{
-    return new Cample(selector);
-}
+const cample = (selector: SelectorType): Cample => {
+  return new Cample(selector);
+};
 
-export {cample};
+export { cample };

@@ -78,7 +78,7 @@ export class AnimationComponent {
         if (typeof this.attributes !== "undefined") {
           renderAttributes(e, this.attributes);
         }
-        e.insertAdjacentHTML("afterbegin", this.template);
+        e.innerHTML = this.template;
         if (this.options.transition)
           e.setAttribute("style", `transition:${this.options.transition};`);
         renderEvents(

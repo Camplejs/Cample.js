@@ -15,6 +15,10 @@ export type LengthType = number;
 
 export type ComponentType = string | undefined;
 
+export type RenderType = "default" | "dynamic";
+
+export type UpdatingSetType = Map<any, any>;
+
 export type AttributesType = {
   [key: string]: string;
 };
@@ -73,4 +77,8 @@ export type AnimationOptionsType = {
   class: string;
   transition?: string;
   element?: AnimationElementType;
+};
+
+export type FunctionsType = {
+  [key: string]: any;
 };

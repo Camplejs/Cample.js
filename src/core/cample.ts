@@ -19,7 +19,7 @@ export class Cample {
     this.template = renderTemplate(template, options);
     if (typeof this.selector === "string") {
       const el: Element | null = document.querySelector(this.selector);
-      if (el) el.insertAdjacentHTML("afterbegin", this.template);
+      if (el) el.innerHTML = this.template;
       Object.keys(options).forEach((e) => {
         if (options[e]._getStyle) {
           this.style += options[e]._getStyle;

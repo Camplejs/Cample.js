@@ -1,6 +1,10 @@
 "use-strict";
 
-import { SelectorType, ComponentsType, DefaultOptionsType } from "../../../../../types/types";
+import {
+  SelectorType,
+  ComponentsType,
+  DefaultOptionsType
+} from "../../../../../types/types";
 import { If } from "../../../../components/operators/if/if";
 
 const ifComponent = (
@@ -8,8 +12,8 @@ const ifComponent = (
   components: ComponentsType,
   bool: boolean,
   options: DefaultOptionsType | undefined
-) : If =>{
-    return new If(selector, components, bool, options);
-}
+): If => {
+  return new If(selector, components, bool, options);
+};
 
-export {ifComponent};
+export { ifComponent };

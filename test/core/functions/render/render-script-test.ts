@@ -23,7 +23,8 @@ describe("renderScript", () => {
           elements: [{ component: ".component" }]
         }
       ],
-      document.body
+      document.body,
+      [()=>{return}]
     );
   });
 });
