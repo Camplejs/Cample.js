@@ -4,6 +4,7 @@
     </a>
 </p>
 <h1 align="center">Cample.js - typed javascript web framework for creating site UI.</h1>
+<h3 align="center">"Static HTML" reactivity without Virtual DOM!</h3>
 <div align="center">
 
 [![npm-version](https://img.shields.io/npm/v/cample?logo=npm&color=blue&style=flat-square)](https://www.npmjs.com/package/cample)
@@ -22,24 +23,29 @@
 
 <p align="center">
     <a href="https://camplejs.github.io/documentation/component.html">
-        <img src="https://github.com/Camplejs/media/blob/main/NewComponent.png" alt="Component" >
+        <img src="https://github.com/Camplejs/media/blob/main/reactivity.gif" alt="Reactivity" >
     </a>
 </p>
+
+<p align="center"><b><i>This version of the framework is in beta!</i></b></p>
 
 ## About
 
 Cample.js - typed javascript web framework for creating site UI. This framework is great for creating most of the various sites, due to its extensive functionality.
 
+The framework supports reactivity without Virtual DOM, which makes it possible to process data changes somewhat faster in the future, but with the convention of static HTML, which makes it not yet suitable for production. Full reactivity will be completed in future versions of the framework.
+
 ## Features
 
 Cample.js provides the following features:
 
+- **"Static HTML" reactivity without Virtual DOM**
 - **Supporting component approach**
 - **Cycle**
 - **Some operators like in vanilla js for working with components**
 - **Animation**
 - **Working with data**
-- **100% coverage code**
+- **60+% coverage code**
 - **No dependencies**
 - **Typed**
   
@@ -80,9 +86,23 @@ const newCample = cample("#page");
 const newComponent = component("new-component", 
 `<div class="component">
     {{component_text}}
-</div>`,{
-    script:[(elements)=>{
-      console.log(elements.component);
+    {{dynamicData}}
+</div>`,
+{
+    script:[(elements, functions)=>{
+        console.log(elements.component);
+        const updateFunction = (e) =>{
+            functions?.updateText
+            (data=>{
+              return {...data,value:"Text"}
+            });
+            document
+            .removeEventListener("onload",
+            updateFunction);
+        }
+        document
+        .addEventListener("onload",
+        updateFunction);
     },
     {
         start:'afterLoad',
@@ -94,9 +114,22 @@ const newComponent = component("new-component",
         id:"id"
     },
     data:{
-        component_text:"Component"
+        component_text:"Text",
+        component_array_texts:{
+            value:["Text1", "Text2"],
+            defaultValue:"Text"
+        },
+        dynamicData:{
+            value:"defaultText",
+            function:"updateText"
+        }
     },
-    style:".component{width:100px}"
+    style:`
+        .component{
+            width:100px;
+            height:100px;
+        }
+    `
 });
 
 newCample.render("{{newComponent}}", {newComponent});
