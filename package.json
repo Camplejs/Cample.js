@@ -1,7 +1,7 @@
 {
   "name": "cample",
   "version": "2.0.0-beta.0",
-  "description": 'Cample.js - typed javascript web framework for creating site UI. "Static HTML" reactivity without Virtual DOM!',
+  "description": "Cample.js - typed javascript web framework for creating site UI. 'Static HTML' reactivity without Virtual DOM!",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
