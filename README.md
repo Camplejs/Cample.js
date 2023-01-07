@@ -4,7 +4,7 @@
     </a>
 </p>
 <h1 align="center">Cample.js - typed javascript web framework for creating site UI.</h1>
-<h3 align="center">"Static HTML" reactivity without Virtual DOM!</h3>
+<h3 align="center">Reactivity without Virtual DOM!</h3>
 <div align="center">
 
 [![npm-version](https://img.shields.io/npm/v/cample?logo=npm&color=blue&style=flat-square)](https://www.npmjs.com/package/cample)
