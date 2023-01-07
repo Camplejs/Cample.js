@@ -1,6 +1,6 @@
 {
   "name": "cample",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "Cample.js - typed javascript web framework for creating site UI.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
