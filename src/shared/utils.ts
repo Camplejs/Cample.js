@@ -58,3 +58,41 @@ export const getTextArray = (arr: Array<ChildNode>) => {
       nodeType === Node.TEXT_NODE && textContent?.trim() !== ""
   );
 };
+
+export const cloneElement = (node: Node) => {
+  const elWrapper = document.createElement("template");
+  elWrapper.appendChild(node.cloneNode(true));
+  return elWrapper.children[0];
+};
+
+export const isDeepEqualNode = (node1: Node, node2: Node) => {
+  if (
+    node1 !== null &&
+    node1 !== undefined &&
+    node2 !== undefined &&
+    node2 !== null
+  ) {
+    if (node1.nodeType === node2.nodeType) {
+      if (node1.nodeType !== Node.TEXT_NODE) {
+        return (
+          node1.isEqualNode(node2) &&
+          cloneElement(node1).outerHTML === cloneElement(node2).outerHTML
+        );
+      } else {
+        return node1.isEqualNode(node2) && node1.nodeValue === node2.nodeValue;
+      }
+    } else {
+      return false;
+    }
+  } else {
+    if (node1 === node2 && node1 === null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
+
+export const isEqualNodeArray = (arr: Array<ChildNode>, child: ChildNode) => {
+  return arr.filter((el) => isDeepEqualNode(el, child));
+};
