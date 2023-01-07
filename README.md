@@ -27,7 +27,7 @@
 
 Cample.js - typed javascript web framework for creating site UI. This framework is great for creating most of the various sites, due to its extensive functionality.
 
-The framework supports test reactivity without Virtual DOM. Versions since 1.0.x are stable.
+The framework supports reactivity without Virtual DOM. Versions since 1.0.x are stable.
 
 ## Features
 
