@@ -21,31 +21,25 @@
 <div align="center"><b>Links:<br> <a href="https://camplejs.github.io/documentation/introduction.html">Documentation</a> • <a href="https://camplejs.github.io/example.html"> Example </a> • <a href="https://github.com/Camplejs/example/blob/main/example.js">Example source</a> • <a href="https://camplejs.github.io">Website</a> </div>
 <br>
 
-<p align="center">
-    <a href="https://camplejs.github.io/documentation/component.html">
-        <img src="https://github.com/Camplejs/media/blob/main/reactivity.gif" alt="Reactivity" >
-    </a>
-</p>
-
 <p align="center"><b><i>This version of the framework is in beta!</i></b></p>
 
 ## About
 
 Cample.js - typed javascript web framework for creating site UI. This framework is great for creating most of the various sites, due to its extensive functionality.
 
-The framework supports reactivity without Virtual DOM, which makes it possible to process data changes somewhat faster in the future, but with the condition of "static HTML", which makes it not yet suitable for production. Full reactivity will be completed in future versions of the framework. Versions since 1.0.x are stable.
+The framework supports test reactivity without Virtual DOM. Versions since 1.0.x are stable.
 
 ## Features
 
 Cample.js provides the following features:
 
-- **"Static HTML" reactivity without Virtual DOM**
+- **Reactivity without Virtual DOM**
 - **Supporting component approach**
 - **Cycle**
 - **Some operators like in vanilla js for working with components**
 - **Animation**
 - **Working with data**
-- **60+% coverage code**
+- **50+% coverage code**
 - **No dependencies**
 - **Typed**
   
