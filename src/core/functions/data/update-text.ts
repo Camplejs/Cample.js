@@ -20,15 +20,11 @@ export const updateText = (
     const { key } = updTxt;
     const newVal = updTxt;
     if (updTxt.texts.length) {
-      updTxt.texts.forEach((e) => {
+      updTxt.texts.forEach((e, i) => {
         if (e) {
-          try {
-            if (!isValuesEqual(value, newVal.oldValue)) {
-              e.textContent = renderData(value, index);
-            }
-          } catch (err) {
-            e.textContent = renderData(value, index);
-          }
+          e.textContent = renderData(value, index);
+        } else {
+          updTxt.texts.splice(i, 1);
         }
       });
     } else {

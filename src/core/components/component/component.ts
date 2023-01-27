@@ -88,6 +88,13 @@ export class Component {
                 this._dynamic.dynamicNodes[i].dynamicTexts[index].texts
               )
             );
+            this._dynamic.dynamicNodes[i].texts = this._dynamic.dynamicNodes[
+              i
+            ].texts.filter((text) => {
+              if (text) {
+                return text;
+              }
+            });
           });
           if (Object.keys(e.attrs).length) {
             this._dynamic.dynamicNodes[i].attrs = e.updateAttr(val, key);
@@ -165,6 +172,13 @@ export class Component {
               this._dynamic.dynamicNodes[i].dynamicTexts[j].texts
             )
           );
+          this._dynamic.dynamicNodes[i].texts = this._dynamic.dynamicNodes[
+            i
+          ].texts.filter((text) => {
+            if (text) {
+              return text;
+            }
+          });
         });
         if (Object.keys(e.attrs).length) {
           e.dynamicAttrs.forEach((keyAttr) => {
