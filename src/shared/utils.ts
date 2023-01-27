@@ -1,62 +1,71 @@
 "use strict";
 
+import { ArrayStringType, DynamicTextArrayType } from "../types/types";
+
+const regex = /\{{(.*?)}}/g;
+
 export const createError = (text: string): Error => {
   throw new Error(text);
 };
 
 export const testRegex = (text: string): boolean => {
-  const regex = /\{{(.*?)}}/g;
   return regex.test(text);
 };
 
 export const isValuesEqual = (val: any, newVal: any): boolean => {
-  const recursive = (val1: any, val2: any) => {
-    if (val1 === val2) return true;
-    if (val1 && val2) {
-      const isVal1Object = typeof val1 == "object";
-      const isVal2Object = typeof val2 == "object";
-      if (isVal1Object && isVal2Object) {
-        const val1Constructor = val1.constructor;
-        const val2Constructor = val2.constructor;
-        if (val1Constructor !== val2Constructor) return false;
-        if (Array.isArray(val1)) {
-          if (val1.length != val2.length) return false;
-          for (let i = val1.length; i !== 0; i--) {
-            if (!recursive(val1[i], val2[i])) return false;
-          }
-          return true;
-        }
-        if (val1Constructor === RegExp)
-          return val1.source === val2.source && val1.flags === val2.flags;
-        if (val1.valueOf !== Object.prototype.valueOf)
-          return val1.valueOf() === val2.valueOf();
-        if (val1.toString !== Object.prototype.toString)
-          return val1.toString() === val2.toString();
-        const keys1 = Object.keys(val1);
-        const keys2 = Object.keys(val2);
-        const keys1Length = keys1.length;
-        const keys2Length = keys2.length;
-        if (keys1Length !== keys2Length) return false;
-        for (let i = keys1Length; i !== 0; i--) {
-          if (!Object.prototype.hasOwnProperty.call(val2, keys1[i]))
-            return false;
-        }
-        for (let i = keys1Length; i !== 0; i--) {
-          if (!recursive(val1[keys1[i]], val2[keys1[i]])) return false;
-        }
-        return true;
+  if (val === newVal) return true;
+  if (typeof val !== typeof newVal) return false;
+  const equalArrayCondition = (arr1: any, arr2: any) => {
+    return Array.isArray(arr1) && Array.isArray(arr2);
+  };
+  const equalObjectCondition = (val1: any, val2: any) => {
+    return (
+      typeof val1 === "object" &&
+      !Array.isArray(val1) &&
+      val1 !== null &&
+      typeof val2 === "object" &&
+      !Array.isArray(val2) &&
+      val2 !== null
+    );
+  };
+  if (val === null || newVal === null) {
+    if (val === newVal) {
+      return true;
+    } else {
+      false;
+    }
+  }
+  if (
+    val !== newVal &&
+    !equalObjectCondition(val, newVal) &&
+    !equalArrayCondition(val, newVal)
+  ) {
+    return false;
+  }
+  const equalArray = (arr1: Array<any>, arr2: Array<any>) => {
+    return (
+      arr1.length === arr1.length &&
+      arr1.every((value, index) => value === arr2[index])
+    );
+  };
+  if (Array.isArray(val) && Array.isArray(newVal)) {
+    return equalArray(val, newVal);
+  }
+  for (const prop in val) {
+    if (val.hasOwnProperty(prop)) {
+      if (!isValuesEqual(val[prop], newVal[prop])) {
+        return false;
       }
     }
-    return val1 !== val1 && val2 !== val2;
-  };
-  return recursive(val, newVal);
-};
-
-export const getTextArray = (arr: Array<ChildNode>) => {
-  return arr.filter(
-    ({ nodeType, textContent }) =>
-      nodeType === Node.TEXT_NODE && textContent?.trim() !== ""
-  );
+  }
+  for (const prop in newVal) {
+    if (newVal.hasOwnProperty(prop)) {
+      if (!isValuesEqual(val[prop], newVal[prop])) {
+        return false;
+      }
+    }
+  }
+  return true;
 };
 
 export const cloneElement = (node: Node) => {
@@ -65,34 +74,101 @@ export const cloneElement = (node: Node) => {
   return elWrapper.children[0];
 };
 
-export const isDeepEqualNode = (node1: Node, node2: Node) => {
-  if (
-    node1 !== null &&
-    node1 !== undefined &&
-    node2 !== undefined &&
-    node2 !== null
-  ) {
-    if (node1.nodeType === node2.nodeType) {
-      if (node1.nodeType !== Node.TEXT_NODE) {
-        return (
-          node1.isEqualNode(node2) &&
-          cloneElement(node1).outerHTML === cloneElement(node2).outerHTML
-        );
-      } else {
-        return node1.isEqualNode(node2) && node1.nodeValue === node2.nodeValue;
-      }
-    } else {
-      return false;
+export const testKeyRegex = (text: string, equalKey: string): boolean => {
+  const values: ArrayStringType = [];
+  text.replace(regex, (str, d) => {
+    const key = d.trim();
+    if (equalKey === key) {
+      values.push(key);
     }
-  } else {
-    if (node1 === node2 && node1 === null) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+    return str;
+  });
+  return !!values.length;
+};
+export const getTextArray = (arr: Array<ChildNode>) => {
+  return arr.filter(
+    ({ nodeType, textContent }) =>
+      nodeType === Node.TEXT_NODE && textContent?.trim() !== ""
+  );
 };
 
-export const isEqualNodeArray = (arr: Array<ChildNode>, child: ChildNode) => {
-  return arr.filter((el) => isDeepEqualNode(el, child));
+export const concatArrays = (arr1: Array<any>, arr2: Array<any>) => {
+  return arr1.concat(arr2.filter((item) => arr1.indexOf(item) < 0));
+};
+export const filterKey = (
+  arr: DynamicTextArrayType,
+  key: string
+): DynamicTextArrayType => {
+  return arr.filter((val) => val.key === key);
+};
+const getRegexKeys = (text: string, arr: ArrayStringType) => {
+  text.replace(regex, (str, d) => {
+    const key = d.trim();
+    arr.push(key);
+    return str;
+  });
+};
+export const filterDuplicate = (arr: Array<any>) => {
+  return arr.filter((item, index) => {
+    return arr.indexOf(item) === index;
+  });
+};
+export const getAttrKeys = (el: Element) => {
+  if (el) {
+    const arrAttr = Array.from(el.attributes);
+    const textAttr = arrAttr
+      .map((attr) => attr.value)
+      .join()
+      .trim();
+    const attrArray: ArrayStringType = [];
+    getRegexKeys(textAttr, attrArray);
+    return filterDuplicate(attrArray);
+  }
+  return [];
+};
+export const getTextKeys = (el: Element) => {
+  if (el) {
+    const textArray: ArrayStringType = [];
+    const arrText = getTextArray(Array.from(el.childNodes));
+    const text = arrText
+      .map((n) => n.textContent)
+      .join()
+      .trim();
+    getRegexKeys(text, textArray);
+    return filterDuplicate(textArray);
+  }
+  return [];
+};
+export const getKeys = (el: Element) => {
+  const attrArray: ArrayStringType = getAttrKeys(el);
+  const textArray: ArrayStringType = getTextKeys(el);
+  const arr: ArrayStringType = concatArrays(textArray, attrArray);
+  return filterDuplicate(arr);
+};
+
+export const getDynamicElements = (e: Element): Element[] => {
+  const els: Array<Element> = [];
+  if (e) {
+    for (const child of e.getElementsByTagName("*")) {
+      const arrayText = getTextArray(Array.from(child.childNodes));
+      const regexAttr = Array.from(child.attributes)
+        .map((attr) => attr.value)
+        .filter((a) => testRegex(a));
+      if (
+        (arrayText.length &&
+          testRegex(
+            arrayText
+              .map((n) => n.textContent)
+              .join()
+              .trim()
+          )) ||
+        regexAttr.length
+      ) {
+        if (els.indexOf(child) < 0) {
+          els.push(child);
+        }
+      }
+    }
+  }
+  return els;
 };

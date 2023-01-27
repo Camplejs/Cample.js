@@ -22,7 +22,49 @@ export type UpdatingSetType = Map<any, any>;
 export type AttributesType = {
   [key: string]: string;
 };
+export type DynamicTextArrayType = Array<DynamicTextType>;
 
+export type AttrValueType = {
+  [key: string]: any;
+};
+
+export type AttrType = {
+  values: AttrValueType;
+  value: string;
+  renderedValue: string;
+};
+
+export type AttributesValType = {
+  [key: string]: AttrType;
+};
+
+export type DynamicTextType = {
+  key: string;
+  texts: Array<Text>;
+  oldValue: any;
+  value: any;
+};
+export type TextArrayType = Array<Text>;
+export type DynamicFunctionsType = {
+  [key: string]: (attribute?: any) => void;
+};
+export type DynamicType = {
+  functions: DynamicFunctionsType;
+  nodes: Array<NodeType>;
+};
+
+export type NodeType = {
+  updateText: any;
+  updateAttr: any;
+  index: number;
+  attrs: AttributesValType;
+  texts: TextArrayType;
+  dynamicAttrs: ArrayStringType;
+  dynamicTexts: DynamicTextArrayType;
+};
+export type ArrayNodeType = Array<NodeType>;
+
+export type ArrayStringType = Array<string>;
 export type ElementType = {
   selector: string;
   id?: string;

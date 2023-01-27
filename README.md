@@ -4,7 +4,7 @@
     </a>
 </p>
 <h1 align="center">Cample.js - typed javascript web framework for creating site UI.</h1>
-<h3 align="center">Reactivity!</h3>
+<h3 align="center">Reactivity without Virtual DOM!</h3>
 <div align="center">
 
 [![npm-version](https://img.shields.io/npm/v/cample?logo=npm&color=blue&style=flat-square)](https://www.npmjs.com/package/cample)
@@ -33,7 +33,7 @@ Versions since 1.0.x are stable.
 
 Cample.js provides the following features:
 
-- **Reactivity**
+- **Reactivity without Virtual DOM**
 - **Supporting component approach**
 - **Cycle**
 - **Some operators like in vanilla js for working with components**

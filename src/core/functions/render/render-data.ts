@@ -1,49 +1,30 @@
 "use-strict";
-import { DataType } from "../../../types/types";
-
-export const renderData = (
-  template: string,
-  data: DataType | undefined,
-  index: number,
-  returnValueFunction: (key: string) => any | undefined
-): string => {
-  if (typeof data === "undefined") return template;
-  const regex = /\{{(.*?)}}/g;
-  template = template.replace(regex, (str, d) => {
-    const key = d.trim();
-    if (Array.isArray(data[key])) return data[key][index];
-    if (
-      typeof data[key] === "object" &&
-      data[key] &&
-      !Array.isArray(data[key])
-    ) {
-      if (
-        data[key].value !== undefined ||
-        data[key].defaultValue !== undefined
-      ) {
-        let returnValue = data[key];
-        if (data[key].defaultValue !== undefined) {
-          if (Array.isArray(data[key].defaultValue)) {
-            returnValue = returnValueFunction(key).defaultValue[index];
-          } else {
-            returnValue = returnValueFunction(key).defaultValue;
-          }
+export const renderData = (data: any, index: number): any => {
+  if (typeof data === "undefined") return undefined;
+  if (Array.isArray(data)) return data[index];
+  if (typeof data === "object" && data && !Array.isArray(data)) {
+    if (data.value !== undefined || data.defaultValue !== undefined) {
+      let returnValue = data;
+      if (data.defaultValue !== undefined) {
+        if (Array.isArray(data.defaultValue)) {
+          returnValue = data.defaultValue[index];
+        } else {
+          returnValue = data.defaultValue;
         }
-        if (data[key].value !== undefined) {
-          if (Array.isArray(data[key].value)) {
-            if (data[key].value[index]) {
-              returnValue = returnValueFunction(key).value[index];
-            } else if (returnValue === data[key]) {
-              returnValue = undefined;
-            }
-          } else {
-            returnValue = returnValueFunction(key).value;
+      }
+      if (data.value !== undefined) {
+        if (Array.isArray(data.value)) {
+          if (data.value[index]) {
+            returnValue = data.value[index];
+          } else if (returnValue === data) {
+            returnValue = undefined;
           }
+        } else {
+          returnValue = data.value;
         }
-        return returnValue;
-      } else return data[key];
-    }
-    return data[key];
-  });
-  return template;
+      }
+      return returnValue;
+    } else return data;
+  }
+  return data;
 };
