@@ -90,9 +90,6 @@ const newComponent = component("new-component",
             (data=>{
               return {...data,value:"Text"}
             });
-            document
-            .removeEventListener("onload",
-            updateFunction);
         }
         document
         .addEventListener("onload",
