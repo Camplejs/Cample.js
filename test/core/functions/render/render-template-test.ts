@@ -11,18 +11,18 @@ describe("renderTemplate", () => {
     global.document = d;
   });
   it("renderTemplate (1)", () => {
-    assert.equal(renderTemplate("", undefined), "");
+    assert.equal(renderTemplate("", undefined, false), "");
   });
   it("renderTemplate (2)", () => {
-    assert.equal(renderTemplate("{{text}}", {}), "{{text}}");
+    assert.equal(renderTemplate("{{text}}", {}, false), "{{text}}");
   });
   it("renderTemplate (3)", () => {
     assert.equal(
-      renderTemplate("{{component0}}", { component0 }),
+      renderTemplate("{{component0}}", { component0 }, false),
       "<new-component></new-component>"
     );
   });
   it("renderTemplate (4)", () => {
-    assert.equal(renderTemplate("{{text}}", { text: "text" }), "{{text}}");
+    assert.equal(renderTemplate("{{text}}", { text: "text" }, false), "{{text}}");
   });
 });

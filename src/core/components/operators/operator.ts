@@ -14,6 +14,9 @@ export class Operator {
   public attributes: AttributesType | undefined;
   public style: StyleType;
   public template: string;
+  public replaceTag?: boolean;
+  public replaceTags?: boolean;
+  public trimHTML?:boolean;
 
   constructor(
     selector: SelectorType,
@@ -27,6 +30,9 @@ export class Operator {
       typeof this.options !== "undefined" ? this.options.attributes : undefined;
     this.style = typeof this.options !== "undefined" ? this.options.style : "";
     this.template = "";
+    this.replaceTag = options ? options.replaceTag : undefined;
+    this.replaceTags = options ? options.replaceTags : undefined;
+    this.trimHTML = options ? options.trimHTML : undefined;
   }
   get _getSelector(): SelectorType {
     return this.selector;

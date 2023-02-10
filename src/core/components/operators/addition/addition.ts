@@ -5,9 +5,11 @@ import { renderAttributes } from "../../../functions/render/render-attributes";
 import {
   ComponentsType,
   DefaultOptionsType,
+  FunctionsArray,
   SelectorType
 } from "../../../../types/types";
 import { createError } from "../../../../shared/utils";
+import { renderHTML } from "../../../functions/render/render-html";
 export class Addition extends Operator {
   constructor(
     selector: SelectorType,
@@ -16,12 +18,19 @@ export class Addition extends Operator {
   ) {
     super(selector, components, options);
   }
-  render(): void {
+  render(replaceTags?:boolean, trimHTML?:boolean): void {
     if (typeof this.components === "undefined" || this.components.length < 1)
       createError("Error: Addition operator renders two and more components");
     let templateElement: any = null;
+    const trim = trimHTML && this.trimHTML === undefined || this.trimHTML;
     this.components.forEach((component) => {
-      this.template += document.createElement(component).outerHTML;
+      if(replaceTags && this.replaceTags === undefined || this.replaceTags){
+        const el = document.createElement("template");
+        el.setAttribute("data-cample", component);
+        this.template += el.outerHTML;
+      }else{
+        this.template += document.createElement(component).outerHTML;
+      }
     });
     if (typeof this.options !== "undefined") {
       if (this.options.element) {
@@ -33,16 +42,23 @@ export class Addition extends Operator {
         );
       }
     }
+    const condition = replaceTags && this.replaceTag === undefined || this.replaceTag;
     if (templateElement)
       templateElement.insertAdjacentHTML("afterbegin", this.template);
     if (this.selector)
-      document.querySelectorAll(this.selector).forEach((e) => {
-        if (typeof this.attributes !== "undefined") {
-          renderAttributes(e, this.attributes);
+      document.querySelectorAll(condition?`template[data-cample=${this.selector}]`: this.selector).forEach((e) => {
+        const functionsArray:FunctionsArray = [];
+        if(typeof this.attributes !== "undefined"){
+          if (!condition) {
+            renderAttributes(e, this.attributes);
+          }else{
+            functionsArray.push((el:Element)=>renderAttributes(el, this.attributes))
+          }
         }
-        e.innerHTML = templateElement
-          ? templateElement.outerHTML
-          : this.template;
+        const template = templateElement
+        ? templateElement.outerHTML
+        : this.template;
+        renderHTML(e, template,this.replaceTag, replaceTags, functionsArray, "addition",trim);
       });
   }
 }

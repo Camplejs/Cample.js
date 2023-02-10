@@ -25,9 +25,15 @@
 
 ## About
 
-Cample.js - typed javascript web framework for creating site UI. This framework is great for creating most of the various sites, due to its extensive functionality.
+Cample.js - typed javascript web framework for creating site UI. Cample.js is great for creating most of the various sites, due to its extensive functionality. 
+  
+This framework supports component approach and reactivity without Virtual DOM. Also, for the convenience of working with components, Cample.js supports vanilla js operators, such as addition for example.
 
 Versions since 1.0.x are stable.
+  
+## Important
+  
+> As of version 2.0.0-beta.4, a new default component render method is introduced. This method is a work with the template tag, which is used to work with tables, style tags, etc. <a href="https://camplejs.github.io/documentation/cample.html">About</a>
 
 ## Features
 

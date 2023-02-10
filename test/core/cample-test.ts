@@ -27,16 +27,22 @@ describe("core", () => {
       '<!DOCTYPE html><html><head></head><body><div id="page"></div></body></html>'
     ).window.document;
     global.document = d;
+    global.HTMLTemplateElement = new JSDOM().window.HTMLTemplateElement;
+    global.Node = new JSDOM().window.Node;
   });
   it("core (1)", () => {
-    cample("#page").render("{{component0}}", { component0 });
+    cample("#page",{
+      replaceTags:false
+    }).render("{{component0}}", { component0 });
     assert.equal(
       document.querySelector("#page")?.outerHTML,
-      '<div id="page"><new-component id="id">{{component_text}}</new-component></div>'
+      '<div id="page"><new-component id="id">Component</new-component></div>'
     );
   });
   it("core (2)", () => {
-    new Cample(undefined);
+    new Cample(undefined,{
+      replaceTags:false
+    });
     assert.equal(
       document.querySelector("#page")?.outerHTML,
       '<div id="page"></div>'
@@ -44,7 +50,9 @@ describe("core", () => {
   });
 
   it("core (3)", () => {
-    new Cample("#page").render(
+    new Cample("#page",{
+      replaceTags:false
+    }).render(
       `
         {{newIf}},
         {{newIf1}},

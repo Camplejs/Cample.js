@@ -2,6 +2,11 @@ export type OptionsType = {
   [key: string]: any;
 };
 
+export type CampleOptionsType = {
+  replaceTags?:boolean;
+  trimHTML?:boolean;
+}
+
 export type TemplateType = string | undefined;
 export type ComponentsType = Array<string>;
 
@@ -19,49 +24,55 @@ export type RenderType = "default" | "dynamic";
 
 export type UpdatingSetType = Map<any, any>;
 
+export type FunctionsArray = Array<any>;
+
+export type RenderComponentType = "cycle" | "component" | "animation" |"ternary"|"addition"|"if";
+
 export type AttributesType = {
   [key: string]: string;
 };
+
+
 export type DynamicTextArrayType = Array<DynamicTextType>;
 
 export type AttrValueType = {
-  [key: string]: any;
-};
+  [key:string]:any;
+}
 
 export type AttrType = {
-  values: AttrValueType;
-  value: string;
-  renderedValue: string;
-};
+  values:AttrValueType,
+  value:string;
+  renderedValue:string;
+}
 
-export type AttributesValType = {
-  [key: string]: AttrType;
-};
+export type AttributesValType ={
+  [key:string]:AttrType;
+}
 
 export type DynamicTextType = {
-  key: string;
+  key:string;
   texts: Array<Text>;
-  oldValue: any;
-  value: any;
-};
+  oldValue:any;
+  value:any;
+}
 export type TextArrayType = Array<Text>;
 export type DynamicFunctionsType = {
-  [key: string]: (attribute?: any) => void;
-};
-export type DynamicType = {
-  functions: DynamicFunctionsType;
-  nodes: Array<NodeType>;
-};
+  [key:string]:(attribute?: any)=>void
+}
+export type DynamicType ={
+  functions:DynamicFunctionsType;
+  nodes:Array<NodeType>;
+}
 
 export type NodeType = {
-  updateText: any;
-  updateAttr: any;
-  index: number;
-  attrs: AttributesValType;
-  texts: TextArrayType;
-  dynamicAttrs: ArrayStringType;
+  updateText:any;
+  updateAttr:any;
+  index:number;
+  attrs:AttributesValType;
+  texts:TextArrayType;
+  dynamicAttrs:ArrayStringType;
   dynamicTexts: DynamicTextArrayType;
-};
+}
 export type ArrayNodeType = Array<NodeType>;
 
 export type ArrayStringType = Array<string>;
@@ -76,6 +87,9 @@ export type DefaultOptionsType = {
   attributes?: AttributesType;
   style?: StyleType;
   element?: ElementType;
+  replaceTag?:boolean;
+  replaceTags?:boolean;
+  trimHTML?:boolean;
 };
 
 export type DataPropertyType = {
@@ -89,8 +103,10 @@ export type DataType = {
 export type ElementsElementType = {
   [key: string]: string;
 };
+
+export type StartType = "afterLoad" | "beforeLoad";
 export type ScriptOptionsType = {
-  start?: "afterLoad" | "beforeLoad";
+  start?: StartType;
   elements?: Array<ElementsElementType>;
 };
 export type ScriptType = [(...args: any[]) => void, ScriptOptionsType];
@@ -100,6 +116,8 @@ export type ComponentOptionsType = {
   data?: DataType;
   style?: StyleType;
   attributes?: AttributesType;
+  replaceTag?:boolean;
+  trimHTML?:boolean;
 };
 
 export type AnimationElementType = {
@@ -119,6 +137,9 @@ export type AnimationOptionsType = {
   class: string;
   transition?: string;
   element?: AnimationElementType;
+  replaceTag?:boolean;
+  replaceTags?:boolean;
+  trimHTML?:boolean;
 };
 
 export type FunctionsType = {
