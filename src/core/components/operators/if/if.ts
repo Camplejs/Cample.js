@@ -5,11 +5,14 @@ import { renderAttributes } from "../../../functions/render/render-attributes";
 import {
   ComponentsType,
   DefaultOptionsType,
+  ExportDataType,
+  ExportIdType,
   FunctionsArray,
   SelectorType
 } from "../../../../types/types";
 import { createError } from "../../../../shared/utils";
 import { renderHTML } from "../../../functions/render/render-html";
+import { renderComponents } from "../../../functions/render/render-components";
 
 export class If extends Operator {
   public bool: boolean;
@@ -23,22 +26,25 @@ export class If extends Operator {
     super(selector, components, options);
     this.bool = bool;
   }
-  render(replaceTags?:boolean, trimHTML?:boolean): void {
+  render(
+    replaceTags?: boolean,
+    trimHTML?: boolean,
+    exportData?: ExportDataType,
+    exportId?: ExportIdType
+  ): void {
     if (typeof this.components === "undefined" || this.components.length <= 0)
       createError("Error: If operator renders one and more components");
 
     let templateElement: any = null;
-    const trim = trimHTML && this.trimHTML === undefined || this.trimHTML;
+    const trim = (trimHTML && this.trimHTML === undefined) || this.trimHTML;
     if (this.bool) {
-      this.components.forEach((component) => {
-        if(replaceTags && this.replaceTags === undefined || this.replaceTags){
-          const el = document.createElement("template");
-          el.setAttribute("data-cample", component);
-          this.template += el.outerHTML;
-        }else{
-          this.template += document.createElement(component).outerHTML;
-        }
-      });
+      const components = renderComponents(
+        this.components,
+        (replaceTags && this.replaceTags === undefined) || this.replaceTags,
+        "if",
+        this.template
+      );
+      this.template = typeof components === "string" ? components : "";
     }
 
     if (typeof this.options !== "undefined") {
@@ -51,23 +57,38 @@ export class If extends Operator {
         );
       }
     }
-    const condition = replaceTags && this.replaceTag === undefined || this.replaceTag;
+    const condition =
+      (replaceTags && this.replaceTag === undefined) || this.replaceTag;
     if (templateElement)
       templateElement.insertAdjacentHTML("afterbegin", this.template);
     if (this.selector)
-    document.querySelectorAll(condition?`template[data-cample=${this.selector}]`: this.selector).forEach((e) => {
-      const functionsArray:FunctionsArray = [];
-      if(typeof this.attributes !== "undefined"){
-        if (!condition) {
-          renderAttributes(e, this.attributes);
-        }else{
-          functionsArray.push((el:Element)=>renderAttributes(el, this.attributes))
-        }
-      }
-      const template = templateElement
-      ? templateElement.outerHTML
-      : this.template;
-      renderHTML(e, template,this.replaceTag, replaceTags, functionsArray, "if",trim);
-    });
+      document
+        .querySelectorAll(
+          condition ? `template[data-cample=${this.selector}]` : this.selector
+        )
+        .forEach((e) => {
+          const functionsArray: FunctionsArray = [];
+          if (typeof this.attributes !== "undefined") {
+            if (!condition) {
+              renderAttributes(e, this.attributes);
+            } else {
+              functionsArray.push((el: Element) =>
+                renderAttributes(el, this.attributes)
+              );
+            }
+          }
+          const template = templateElement
+            ? templateElement.outerHTML
+            : this.template;
+          renderHTML(
+            e,
+            template,
+            this.replaceTag,
+            replaceTags,
+            functionsArray,
+            "if",
+            trim
+          );
+        });
   }
 }

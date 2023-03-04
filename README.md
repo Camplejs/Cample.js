@@ -34,6 +34,10 @@ Versions since 1.0.x are stable.
 ## Important
   
 > As of version 2.0.0-beta.4, a new default component render method is introduced. This method is a work with the template tag, which is used to work with tables, style tags, etc. <a href="https://camplejs.github.io/documentation/cample.html">About</a>
+  
+## Why Cample.js?
+ 
+Cample.js is a new, frequently updated framework that works through class instances. The component approach, as well as reactivity without a virtual DOM and data export and import, will make creating a site much faster than if a site was developed using just js. Also, the framework is in beta testing, and you can try it as something new in building a website.
 
 ## Features
 
@@ -126,7 +130,13 @@ const newComponent = component("new-component",
             width:100px;
             height:100px;
         }
-    `
+    `,
+    export:{
+      "new-component1":{
+          text:"Text"
+       }
+    },
+    exportId:"textId"
 });
 
 newCample.render("{{newComponent}}", {newComponent});

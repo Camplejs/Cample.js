@@ -6,7 +6,7 @@ export const renderEvents = (
   styleClass: string,
   reverseEvent: string | undefined
 ): void => {
-  if(element){
+  if (element) {
     switch (event) {
       case "toggle":
         element.addEventListener("click", () => {

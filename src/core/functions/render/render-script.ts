@@ -1,17 +1,38 @@
 "use-strict";
-import { ScriptType, FunctionsType } from "../../../types/types";
+import { createError } from "./../../../shared/utils";
+import {
+  ScriptType,
+  FunctionsType,
+  ScriptFunctionType,
+  ScriptOptionsType,
+  DataType
+} from "../../../types/types";
 export const renderScript = (
   script: ScriptType,
   element: any,
-  functions: FunctionsType
+  functions: FunctionsType,
+  exportData: DataType
 ): void => {
-  const scripts = script[0];
-  const options = script[1];
-  const elements: any = {};
-  if (typeof options.elements !== "undefined") {
-    options.elements.forEach((e) => {
-      elements[Object.keys(e)[0]] = element.querySelector(e[Object.keys(e)[0]]);
-    });
+  let scripts: ScriptFunctionType;
+  let options: ScriptOptionsType = {};
+  if (Array.isArray(script)) {
+    scripts = script[0];
+    options = script[1];
+    const elements: any = {};
+    if (typeof options.elements !== "undefined") {
+      options.elements.forEach((e) => {
+        elements[Object.keys(e)[0]] = element.querySelector(
+          e[Object.keys(e)[0]]
+        );
+      });
+    }
+    scripts({ elements, functions, data: exportData });
+  } else {
+    if (Object.prototype.toString.call(script) === "[object Function]") {
+      scripts = script;
+      scripts({ elements: {}, functions, data: exportData });
+    } else {
+      createError("Error: Script is an array or a function");
+    }
   }
-  scripts(elements, functions);
 };

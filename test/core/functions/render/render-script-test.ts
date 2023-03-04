@@ -15,7 +15,7 @@ describe("renderScript", () => {
   it("renderScript (1)", () => {
     renderScript(
       [
-        (elements) => {
+        ({elements}) => {
           assert.deepEqual(elements.component, el);
         },
         {
@@ -24,7 +24,8 @@ describe("renderScript", () => {
         }
       ],
       document.body,
-      [()=>{return}]
+      [()=>{return}],
+      {}
     );
   });
 });
