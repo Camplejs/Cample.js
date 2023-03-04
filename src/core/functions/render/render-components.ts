@@ -1,3 +1,4 @@
+"use-strict";
 import { ImportObjectType } from "./../../../types/types";
 import {
   createEl,

@@ -317,8 +317,8 @@ export class Component extends ParentComponent {
         }
         const defaultData =
           id !== undefined
-            ? data && data[0]
-              ? data[0][key]
+            ? data && data[0] && data[0].value
+              ? data[0].value[key]
               : undefined
             : this.data && this.data[key]
             ? this.data[key]
