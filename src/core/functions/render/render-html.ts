@@ -2,6 +2,7 @@
 import { createError } from "../../../shared/utils";
 import {
   ConditionType,
+  ElementsType,
   FunctionsArray,
   RenderComponentType
 } from "../../../types/types";
@@ -34,26 +35,24 @@ export const renderHTML = (
               parent.insertBefore(content.firstElementChild, e);
               const el = e.previousElementSibling;
               parent.removeChild(e);
-              if (renderType !== "component" && renderType !== "animation") {
+              if (
+                renderType !== "component" &&
+                renderType !== "animation" &&
+                renderType !== "each"
+              ) {
                 if (functions.length) {
                   functions[0](el);
                 }
               } else {
-                switch (renderType) {
-                  case "component":
-                    functions[0](el);
-                    functions[1](el);
-                    break;
-                  case "animation":
-                    functions.forEach((func) => {
-                      func(el);
-                    });
-                    break;
-                }
+                functions.forEach((func, i) => {
+                  if (i === 0 && renderType === "each") {
+                    return func([el], el?.parentNode);
+                  } else return func(el);
+                });
               }
             } else {
               createError(
-                "Error: Component include only one node with type 'Element'"
+                "Component include only one node with type 'Element'"
               );
             }
           } else {
@@ -62,8 +61,14 @@ export const renderHTML = (
               renderType !== "animation" &&
               renderType !== "ternary"
             ) {
+              const elArray: ElementsType = [];
               if (parent) {
                 try {
+                  if (renderType === "each") {
+                    for (const child of content.children) {
+                      elArray.push(child);
+                    }
+                  }
                   while (content.firstChild) {
                     parent.insertBefore(content.firstChild, e);
                   }
@@ -71,34 +76,59 @@ export const renderHTML = (
                 } catch (err) {
                   createError(`${err}`);
                 }
+              } else {
+                if (renderType === "each") createError("Each Element error");
               }
               if (functions.length) {
-                functions[0](null);
+                if (renderType !== "each") {
+                  functions[0](null);
+                } else {
+                  functions.forEach((func, i) => {
+                    if (i === 0) {
+                      return func(elArray, parent);
+                    } else return func(null);
+                  });
+                }
               }
             } else {
               createError(
-                "Error: Component include only one node with type 'Element'"
+                "Component include only one node with type 'Element'"
               );
             }
           }
         }
       } else {
-        if (parent) {
+        if (parent && renderType !== "each") {
           parent.removeChild(e);
         }
         switch (renderType) {
           case "component":
             functions[1](null);
             break;
+          case "each":
+            const previousNode = e.previousSibling;
+            const nextNode = e.nextSibling;
+            if (parent) {
+              parent.removeChild(e);
+            }
+            functions.forEach((func, i) => {
+              if (i === 0) {
+                func([], parent, previousNode, nextNode);
+              } else func(null);
+            });
+            break;
         }
       }
-    } else createError("Error: Element instanceof HTMLTemplateElement");
+    } else createError("Element instanceof HTMLTemplateElement");
   } else {
-    switch (renderType) {
-      case "component":
-        functions[0](e);
-        functions[1](e);
-        break;
+    if (renderType === "component" || renderType === "each") {
+      functions.forEach((func, i) => {
+        if (renderType === "each" && i === 0) {
+          const previousNode = e.previousSibling;
+          const nextNode = e.nextSibling;
+          func([], e?.parentNode, previousNode, nextNode);
+        } else func(e);
+      });
     }
   }
 };

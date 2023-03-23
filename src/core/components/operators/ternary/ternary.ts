@@ -33,7 +33,7 @@ export class Ternary extends Operator {
     exportId?: ExportIdType
   ): void {
     if (typeof this.components === "undefined" || this.components.length !== 2)
-      createError("Error: Ternary operator renders two components");
+      createError("Ternary operator renders two components");
     let templateElement: any = null;
     const index = this.bool ? 0 : 1;
     const condition =

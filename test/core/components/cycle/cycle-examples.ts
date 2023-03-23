@@ -1,5 +1,5 @@
-import { Cycle } from "../../../../src/core/components/cycle/cycle";
-import { cycle } from "../../../../src/core/functions/class/cycle/cycle";
+import { Cycle } from "../../../../src/core/components/cycles/cycle/cycle";
+import { cycle } from "../../../../src/core/functions/class/cycles/cycle/cycle";
 export const cycle0 = cycle("new-cycle", ["component"], 2, {
   attributes: {
     id: "id"

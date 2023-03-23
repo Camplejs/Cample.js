@@ -56,15 +56,37 @@ export type RenderComponentType =
   | "animation"
   | "ternary"
   | "addition"
-  | "if";
+  | "if"
+  | "each";
 
 export type AttributesType = {
   [key: string]: string;
 };
+
 export type DataAttributeType = {
   selector: string;
   value: string | undefined;
 };
+
+export type EachDataObjectType = {
+  [key: string]: any;
+};
+export type EachTemplateArgument = {
+  [key: string]: any;
+};
+export type EachTemplateFunction = (
+  argument?: EachTemplateArgument,
+  index?: number
+) => string;
+
+export type EachDataValueType = EachDataObjectType | Array<any>;
+
+export type EachDataFunctionType = (
+  argument?: DataFunctionArgumentsType
+) => EachDataValueType;
+
+export type EachDataType = EachDataFunctionType | EachDataValueType;
+
 export type DataAttributesArrayType = Array<DataAttributeType>;
 
 export type DynamicTextArrayType = Array<DynamicTextType>;
@@ -98,16 +120,34 @@ export type DynamicFunctionsType = {
 
 export type DataComponentType = DataType | DataFunctionType | undefined;
 
+export type DynamicDataValueType = DataComponentType | EachDataValueType;
+
 export type DynamicDataType = {
-  value: DataComponentType;
+  value: DynamicDataValueType;
+  oldValue?: DynamicDataValueType;
   id: number;
 };
+
+export type ElementsType = Element[];
+export type DynamicNodeComponentNodeType = ChildNode | null | undefined;
+export type DynamicNodeComponentParentNodeType = ParentNode | null | undefined;
+export type DynamicNodeComponentType = {
+  elements: ElementsType;
+  parentNode: ParentNode;
+  nodeNext: DynamicNodeComponentNodeType;
+  nodePrevious: DynamicNodeComponentNodeType;
+  nodeParentNode: DynamicNodeComponentParentNodeType;
+  id: number;
+};
+
+export type LastNodeType = Element | ChildNode | ParentNode;
 
 export type DynamicType = {
   functions: DynamicFunctionsType;
   nodes: Array<NodeType>;
   data: {
-    values: Array<DataType>;
+    values: Array<DynamicDataType>;
+    components: Array<DynamicNodeComponentType>;
     currentId: number;
   };
 };
@@ -121,7 +161,9 @@ export type NodeType = {
   dynamicAttrs: ArrayStringType;
   dynamicTexts: DynamicTextArrayType;
   dataId: number;
+  eachIndex?: number;
 };
+
 export type ArrayNodeType = Array<NodeType>;
 
 export type ArrayStringType = Array<string>;
@@ -133,15 +175,28 @@ export type ElementType = {
   attributes?: AttributesType;
 };
 
-export type DefaultOptionsType = {
+export type RootOptionsType = {
   attributes?: AttributesType;
   style?: StyleType;
-  element?: ElementType;
   replaceTag?: boolean;
   replaceTags?: boolean;
   trimHTML?: boolean;
   export?: ExportDataType;
   exportId?: ExportIdType;
+};
+export type DefaultOptionsType = RootOptionsType & {
+  element?: ElementType;
+};
+
+export type DefaultDataOptionsType = RootOptionsType & {
+  import?: ImportObjectType;
+  script?: ScriptType;
+};
+
+export type EachOptionsType = DefaultDataOptionsType & {
+  functionName?: string;
+  valueName?: string;
+  element?: ElementType;
 };
 
 export type DataPropertyType = {
@@ -185,16 +240,8 @@ export type DataFunctionType = (
   argument?: DataFunctionArgumentsType
 ) => DataType;
 
-export type ComponentOptionsType = {
-  script?: ScriptType;
+export type ComponentOptionsType = DefaultDataOptionsType & {
   data?: DataType | DataFunctionType;
-  style?: StyleType;
-  attributes?: AttributesType;
-  replaceTag?: boolean;
-  trimHTML?: boolean;
-  export?: ExportDataType;
-  import?: ImportObjectType;
-  exportId?: ExportIdType;
 };
 
 export type AnimationElementType = {

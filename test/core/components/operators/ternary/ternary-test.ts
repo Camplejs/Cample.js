@@ -22,7 +22,7 @@ describe("Ternary", () => {
         ternary2.render();
       },
       Error,
-      "Error: Ternary operator renders two components"
+      "Ternary operator renders two components"
     );
   });
 });

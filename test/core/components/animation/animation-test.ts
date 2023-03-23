@@ -25,7 +25,7 @@ describe("Animation", () => {
         animation2.render();
       },
       Error,
-      "Error: Properties 'component', 'options', 'options.class', 'options.styleAnimation', 'options.event' or 'selector' is required"
+      "Properties 'component', 'options', 'options.class', 'options.styleAnimation', 'options.event' or 'selector' is required"
     );
   });
 });

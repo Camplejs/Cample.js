@@ -22,7 +22,9 @@ export const updateText = (
     if (updTxt.texts.length) {
       updTxt.texts.forEach((e, i) => {
         if (e) {
-          e.textContent = renderData(value, index);
+          e.textContent = document.createTextNode(
+            renderData(value, index)
+          ).textContent;
         } else {
           updTxt.texts.splice(i, 1);
         }
@@ -114,7 +116,7 @@ export const updateText = (
                       el.removeChild(t);
                       break;
                     default:
-                      createError("Error: Data update");
+                      createError("Data update");
                       break;
                   }
                   break;
@@ -131,7 +133,7 @@ export const updateText = (
                   });
                   break;
                 default:
-                  createError("Error: Data update");
+                  createError("Data update");
                   break;
               }
             }

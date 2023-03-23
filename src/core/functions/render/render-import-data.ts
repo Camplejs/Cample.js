@@ -16,7 +16,7 @@ export const renderImportData = (
           const obj = JSON.parse(dataSet);
           if (obj.import) {
             if (!(obj.exportId !== "undefined")) {
-              createError("Error: ExportId included");
+              createError("ExportId included");
             }
             let dataSetArr = obj.import.split(";");
             dataSetArr = dataSetArr.map((e: string) => {
@@ -33,36 +33,34 @@ export const renderImportData = (
                         result[e[0]] =
                           exportData[obj.exportId][e[0]][bindIndex];
                       } else {
-                        createError(
-                          `Error: Property value "${e[0]}" not found`
-                        );
+                        createError(`Property value "${e[0]}" not found`);
                       }
                     } else {
-                      createError(`Error: ExportId not found`);
+                      createError(`ExportId not found`);
                     }
                   } else {
-                    createError(`Error: Bind index type is number`);
+                    createError(`Bind index type is number`);
                   }
                 } else {
-                  createError(`Error: Syntax value error`);
+                  createError(`Syntax value error`);
                 }
               } else {
                 if (exportData.hasOwnProperty(obj.exportId)) {
                   if (exportData[obj.exportId].hasOwnProperty(e)) {
                     result[e] = exportData[obj.exportId][e];
                   } else {
-                    createError(`Error: Property value "${e}" not found`);
+                    createError(`Property value "${e}" not found`);
                   }
                 } else {
-                  createError(`Error: ExportId not found`);
+                  createError(`ExportId not found`);
                 }
               }
             });
           } else {
-            createError("Error: Nothing to import");
+            createError("Nothing to import");
           }
         } else {
-          createError("Error: Nothing to import");
+          createError("Nothing to import");
         }
       }
       if (!condition) {

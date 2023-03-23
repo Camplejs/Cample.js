@@ -1,11 +1,12 @@
+"use strict";
 import {
   DataAttributesArrayType,
   DataType,
+  ElementsType,
   ExportIdType,
   ImportObjectStringType,
   ImportObjectType
 } from "./../types/types";
-("use strict");
 
 import {
   ArrayStringType,
@@ -19,6 +20,14 @@ export const createError = (text: string): Error => {
   throw new Error(text);
 };
 
+export const createWarning = (text: string): void => {
+  console.warn(text);
+};
+
+export const objectEmpty = (obj: object): boolean => {
+  return Object.keys(obj).length === 0;
+};
+
 export const testRegex = (text: string): boolean => {
   const filterText = text.replace(regex, (str, d) => {
     const key = d.trim();
@@ -29,10 +38,10 @@ export const testRegex = (text: string): boolean => {
   });
   return regex.test(filterText);
 };
-export const equalObject = (val: any) => {
+export const checkObject = (val: any) => {
   return typeof val === "object" && !Array.isArray(val) && val !== null;
 };
-const equalObjectCondition = (val1: any, val2: any) => {
+const checkObjectCondition = (val1: any, val2: any) => {
   return (
     typeof val1 === "object" &&
     !Array.isArray(val1) &&
@@ -58,7 +67,7 @@ export const isValuesEqual = (val: any, newVal: any): boolean => {
   }
   if (
     val !== newVal &&
-    !equalObjectCondition(val, newVal) &&
+    !checkObjectCondition(val, newVal) &&
     !equalArrayCondition(val, newVal)
   ) {
     return false;
@@ -173,7 +182,7 @@ export const getExportData = (
   index: ExportIdType
 ) => {
   const result = obj1;
-  if (equalObject(obj2)) {
+  if (checkObject(obj2)) {
     Object.keys(obj2).forEach((key, i) => {
       if (!result.hasOwnProperty(key)) {
         result[key] = {};
@@ -182,14 +191,14 @@ export const getExportData = (
       result[key][index] = cloneVal;
     });
   } else {
-    createError("Error: Export data is object");
+    createError("Export data is object");
   }
   return result;
 };
 
 export const concatObjects = (obj1: DataType, obj2: DataType) => {
   const result = obj1;
-  if (equalObjectCondition(result, obj2)) {
+  if (checkObjectCondition(result, obj2)) {
     Object.entries(obj2).forEach(([key, value]) => {
       if (result.hasOwnProperty(key)) {
         result[key] = value;
@@ -198,7 +207,7 @@ export const concatObjects = (obj1: DataType, obj2: DataType) => {
       }
     });
   } else {
-    createError("Error: Export data is object");
+    createError("Export data is object");
   }
   return result;
 };
@@ -207,8 +216,8 @@ export const checkFunction = (val: any) => {
   return Object.prototype.toString.call(val) === "[object Function]";
 };
 
-export const getDynamicElements = (e: Element): Element[] => {
-  const els: Array<Element> = [];
+export const getDynamicElements = (e: Element): ElementsType => {
+  const els: ElementsType = [];
   if (e) {
     const getDynamicEls = (child: Element) => {
       const arrayText = getTextArray(Array.from(child.childNodes));
@@ -259,6 +268,45 @@ export const getArrImportString = (arr: ImportObjectType | undefined) => {
     };
     return JSON.stringify(importObj);
   } else {
-    createError("Error: Import value is array");
+    createError("Import value is array");
   }
+};
+
+export const checkNodes = (template: string): boolean => {
+  const el = document.createElement("template");
+  el.innerHTML = template;
+  return el.content.childNodes.length === 1;
+};
+
+export const getElements = (el: Element | null) => {
+  const els: Array<Element> = [];
+  if (el) {
+    const getEl = (el: HTMLCollection) => {
+      for (const child of el) {
+        els.push(child);
+      }
+    };
+    getEl(
+      el instanceof HTMLTemplateElement ? el.content.children : el.children
+    );
+  }
+  return els;
+};
+export const cloneValue = (value: any): any => {
+  if (checkObject(value)) {
+    return { ...value };
+  } else if (Array.isArray(value)) {
+    return [...value];
+  } else {
+    return value;
+  }
+};
+
+export const createElement = (template: string) => {
+  const elWrapper = document.createElement("template");
+  elWrapper.innerHTML = template;
+  if (elWrapper.content.children.length > 1) {
+    createError("Component include only one node with type 'Element'");
+  }
+  return elWrapper.content.firstElementChild;
 };

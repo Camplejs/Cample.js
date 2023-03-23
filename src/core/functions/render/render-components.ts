@@ -3,7 +3,7 @@ import { ImportObjectType } from "./../../../types/types";
 import {
   createEl,
   createError,
-  equalObject,
+  checkObject,
   getArrImportString
 } from "./../../../shared/utils";
 import {
@@ -33,7 +33,7 @@ export const renderComponents = (
       component !== null
     ) {
       return component.selector;
-    } else createError("Error: Component type is ComponentType");
+    } else createError("Component type is ComponentType");
   };
   const getValue = (component: ComponentType): string | undefined => {
     if (
@@ -44,7 +44,7 @@ export const renderComponents = (
       if (component.import !== undefined) {
         if (
           Array.isArray(component.import) ||
-          (equalObject(component.import) &&
+          (checkObject(component.import) &&
             Array.isArray(component.import.value))
         ) {
           const isImportArray = Array.isArray(component.import);
@@ -60,9 +60,7 @@ export const renderComponents = (
               component.bind.forEach((e) => {
                 const arrayImportIndex = importArray.indexOf(e);
                 if (!(arrayImportIndex !== -1)) {
-                  createError(
-                    "Error: Bind values are included in import values"
-                  );
+                  createError("Bind values are included in import values");
                 } else {
                   importArray[arrayImportIndex] =
                     importArray[arrayImportIndex] +
@@ -70,11 +68,11 @@ export const renderComponents = (
                 }
               });
             } else {
-              createError("Error: Bind type is array");
+              createError("Bind type is array");
             }
           }
           let exportNewId: ExportIdType | undefined;
-          if (equalObject(component.import)) {
+          if (checkObject(component.import)) {
             const importData = component.import as ImportObjectType;
             exportNewId = importData.exportId;
           } else exportNewId = exportId;
@@ -84,14 +82,14 @@ export const renderComponents = (
           };
           return getArrImportString(importObj);
         } else {
-          createError("Error: Import type error");
+          createError("Import type error");
         }
       } else {
         if (component.bind !== undefined) {
-          createError("Error: Bind array works with import");
+          createError("Bind array works with import");
         }
         if (exportId !== undefined) {
-          createError("Error: ExportId array works with import");
+          createError("ExportId array works with import");
         }
       }
     } else {
@@ -137,7 +135,7 @@ export const renderComponents = (
           }
         }
       }
-    } else createError("Error: Component type is ComponentType");
+    } else createError("Component type is ComponentType");
   });
   return result;
 };

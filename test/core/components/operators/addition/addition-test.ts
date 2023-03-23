@@ -24,7 +24,7 @@ describe("Addition", () => {
         addition2.render();
       },
       Error,
-      "Error: Addition operator renders two and more components"
+      "Addition operator renders two and more components"
     );
   });
 });

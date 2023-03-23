@@ -51,7 +51,7 @@ export class AnimationComponent extends ParentComponent {
       typeof this.options.event === "undefined"
     ) {
       createError(
-        "Error: Properties 'component', 'options', 'options.class', 'options.styleAnimation', 'options.event' or 'selector' is required"
+        "Properties 'component', 'options', 'options.class', 'options.styleAnimation', 'options.event' or 'selector' is required"
       );
     } else {
       let component: Element;
@@ -147,7 +147,7 @@ export class AnimationComponent extends ParentComponent {
                 );
             }
           });
-      } else createError("Error: Component render");
+      } else createError("Component render");
     }
   }
 }

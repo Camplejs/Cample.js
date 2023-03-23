@@ -4,53 +4,39 @@ import { renderAttributes } from "../../functions/render/render-attributes";
 import {
   ComponentOptionsType,
   SelectorType,
-  ScriptType,
-  DynamicTextArrayType,
   NodeType,
   DynamicTextType,
-  TextArrayType,
   StartType,
   FunctionsArray,
   ExportDataType,
   DataComponentType,
-  ExportDataArrayType,
   IdType,
   DataType,
   DataFunctionType,
-  ExportIdType,
-  ImportObjectType
+  ExportIdType
 } from "../../../types/types";
 import {
   checkFunction,
   concatArrays,
   concatObjects,
   createError,
+  createWarning,
   filterDuplicate,
   filterKey,
-  getAttrKeys,
-  getDynamicElements,
-  getTextKeys,
-  testRegex
+  getDynamicElements
 } from "../../../shared/utils";
 import { renderFunctionsData } from "../../functions/render/render-functions-data";
-import { Dynamic } from "../../data/dynamic/dynamic";
 import { returnDataValue } from "../../functions/data/return-data-value";
-import { updateText } from "../../functions/data/update-text";
-import { updateAttributes } from "../../functions/data/update-attributes";
 import { renderHTML } from "../../functions/render/render-html";
-import { ParentComponent } from "../parent-component/parent-component";
 import { renderImportData } from "../../functions/render/render-import-data";
 import { renderExportId } from "../../functions/render/render-export-id";
-import { equalObject } from "../../../shared/utils";
+import { checkObject } from "../../../shared/utils";
 import { renderImport } from "../../functions/render/render-import";
+import { DataComponent } from "../data-component/data-component";
+import { createNode } from "../../functions/data/create-node";
 
-export class Component extends ParentComponent {
-  public script: ScriptType | undefined;
+export class Component extends DataComponent {
   public data: DataComponentType;
-  private _dynamic: Dynamic;
-  public import?: ImportObjectType;
-  public dataSet: ExportDataArrayType;
-  public importId?: ExportIdType;
 
   constructor(
     selector: SelectorType,
@@ -59,16 +45,7 @@ export class Component extends ParentComponent {
   ) {
     super(selector, options);
     this.template = template;
-    this.script = options.script;
-    this.dataSet = [];
     this.data = options.data;
-    this._dynamic = new Dynamic();
-    this.import = options.import;
-    this.importId = undefined;
-  }
-
-  get _getImport(): ImportObjectType | undefined {
-    return this.import;
   }
 
   render(
@@ -95,7 +72,7 @@ export class Component extends ParentComponent {
           (e) => e?.id === dataId
         );
         if (data.length > 1) {
-          createError("Error: id is unique");
+          createError("id is unique");
         }
         return data && data[0] ? data[0].value : undefined;
       };
@@ -111,6 +88,7 @@ export class Component extends ParentComponent {
           if (data) {
             data = concatObjects(data, importData);
           } else {
+            createWarning("ImportData replacing data");
             data = importData;
           }
         }
@@ -162,7 +140,7 @@ export class Component extends ParentComponent {
             }
           });
         } else {
-          createError("Error: Maximum render");
+          createError("Maximum render");
         }
         this._dynamic.dynamicNodes = [];
       };
@@ -172,56 +150,7 @@ export class Component extends ParentComponent {
         data: DataComponentType,
         id: number
       ) => {
-        const keys = getTextKeys(el);
-        const dynamicTexts: DynamicTextArrayType = [];
-        const attrs = {};
-        const dynamicAttrs = getAttrKeys(el);
-        const arrayAttr = Array.from(el.attributes);
-        const regexAttr = arrayAttr
-          .map((attr) => attr.value)
-          .filter((a) => testRegex(a));
-        if (regexAttr.length) {
-          arrayAttr.forEach((e) => {
-            const valArr = {};
-            const regex = /\{{(.*?)}}/g;
-            e.value.replace(regex, (str, d) => {
-              const key = d.trim();
-              valArr[key] = undefined;
-              return str;
-            });
-            const attr = {
-              values: valArr,
-              value: e.value,
-              renderedValue: e.value
-            };
-            attrs[e.name] = attr;
-          });
-        }
-        keys.forEach((e) => {
-          const value: DynamicTextType = {
-            key: e,
-            texts: [],
-            oldValue: returnDataValue(data, e),
-            value: returnDataValue(data, e)
-          };
-          dynamicTexts.push(value);
-        });
-
-        const node: NodeType = {
-          updateText: (
-            val: any = undefined,
-            updVal: DynamicTextType,
-            texts: TextArrayType
-          ) => updateText(el, val, updVal, index, texts),
-          updateAttr: (val: any, key: string) =>
-            updateAttributes(el, val, index, attrs, key),
-          index,
-          attrs,
-          texts: [],
-          dynamicAttrs,
-          dynamicTexts,
-          dataId: id
-        };
+        const node = createNode(el, index, data, id, false);
         this._dynamic.data.nodes.push(node);
       };
       const render = () => {
@@ -290,11 +219,13 @@ export class Component extends ParentComponent {
             if (index > -1) {
               const dataIndex = this._dynamic.data.data.values[index];
               if (
-                equalObject(dataIndex) &&
-                this._dynamic.data.data.values[index]?.value[key]
+                checkObject(dataIndex) &&
+                this._dynamic.data.data.values[index]!.value![key]
               ) {
-                this._dynamic.data.data.values[index].value[key] = attribute;
-                renderNewFunction(this._dynamic.data.data.values[index].value);
+                this._dynamic.data.data.values[index]!.value![key] = attribute;
+                renderNewFunction(
+                  this._dynamic.data.data.values[index]!.value!
+                );
               }
             }
           }
@@ -313,7 +244,7 @@ export class Component extends ParentComponent {
       ) => {
         const data = this._dynamic.data.data.values.filter((e) => e?.id === id);
         if (data.length > 1) {
-          createError("Error: id is unique");
+          createError("id is unique");
         }
         const defaultData =
           id !== undefined
@@ -327,7 +258,7 @@ export class Component extends ParentComponent {
           return attr;
         };
         if (this._dynamic.data.functions.hasOwnProperty(name) && isRender) {
-          createError("Error: Function name is unique");
+          createError("Function name is unique");
         } else {
           this._dynamic.data.functions[name] = (
             attribute: any = updateData
@@ -354,6 +285,15 @@ export class Component extends ParentComponent {
                 this._dynamic.data.functions,
                 importData
               );
+            } else {
+              if (this.script[1].start === undefined && start === "afterLoad") {
+                renderScript(
+                  this.script,
+                  e,
+                  this._dynamic.data.functions,
+                  importData
+                );
+              }
             }
           } else {
             if (start === "afterLoad")
@@ -392,7 +332,7 @@ export class Component extends ParentComponent {
             try {
               render();
             } catch (err) {
-              createError(`Error: ${err}`);
+              createError(`${err}`);
             }
           } else {
             const data = renderDynamicData(importData, isDataFunction);
@@ -436,7 +376,7 @@ export class Component extends ParentComponent {
           );
         });
     } else {
-      createError("Error: Property 'selector' is required");
+      createError("Property 'selector' is required");
     }
   }
 }

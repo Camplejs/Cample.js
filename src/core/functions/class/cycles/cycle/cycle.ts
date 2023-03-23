@@ -5,8 +5,8 @@ import {
   ComponentsType,
   LengthType,
   DefaultOptionsType
-} from "../../../../types/types";
-import { Cycle } from "../../../components/cycle/cycle";
+} from "../../../../../types/types";
+import { Cycle } from "../../../../components/cycles/cycle/cycle";
 
 const cycle = (
   selector: SelectorType,

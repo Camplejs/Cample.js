@@ -22,7 +22,7 @@ describe("Component", () => {
         component3.render();
       },
       Error,
-      "Error: Property 'selector' is required"
+      "Property 'selector' is required"
     );
   });
 });

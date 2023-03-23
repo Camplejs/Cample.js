@@ -25,7 +25,7 @@ describe("Cycle", () => {
         cycle2.render();
       },
       Error,
-      "Error: Cycle1 component renders one and more components"
+      "Cycle1 component renders one and more components"
     );
   });
 });

@@ -21,7 +21,7 @@ describe("renderTemplateElement", () => {
         renderTemplateElement(undefined, undefined, undefined, undefined);
       },
       Error,
-      "Error: Property 'selector' is required"
+      "Property 'selector' is required"
     );
   });
 });

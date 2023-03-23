@@ -28,7 +28,7 @@ export class Addition extends Operator {
     exportId?: ExportIdType
   ): void {
     if (typeof this.components === "undefined" || this.components.length < 1)
-      createError("Error: Addition operator renders two and more components");
+      createError("Addition operator renders two and more components");
     let templateElement: any = null;
     const trim = (trimHTML && this.trimHTML === undefined) || this.trimHTML;
     const components = renderComponents(

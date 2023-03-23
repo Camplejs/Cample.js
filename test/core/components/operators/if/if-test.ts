@@ -22,7 +22,7 @@ describe("If", () => {
         newIf2.render();
       },
       Error,
-      "Error: If operator renders one and more components"
+      "If operator renders one and more components"
     );
   });
 });

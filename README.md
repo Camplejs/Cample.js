@@ -21,15 +21,11 @@
 <div align="center"><b>Links:<br> <a href="https://camplejs.github.io/documentation/introduction.html">Documentation</a> • <a href="https://camplejs.github.io/example.html"> Example </a> • <a href="https://github.com/Camplejs/example/blob/main/example.js">Example source</a> • <a href="https://camplejs.github.io">Website</a> </div>
 <br>
 
-<p align="center"><b><i>This version of the framework is in beta!</i></b></p>
-
 ## About
 
 Cample.js - typed javascript web framework for creating site UI. Cample.js is great for creating most of the various sites, due to its extensive functionality. 
   
 This framework supports component approach and reactivity without Virtual DOM. Also, for the convenience of working with components, Cample.js supports vanilla js operators, such as addition for example.
-
-Versions since 1.0.x are stable.
   
 ## Important
   
@@ -37,7 +33,7 @@ Versions since 1.0.x are stable.
   
 ## Why Cample.js?
  
-Cample.js is a new, frequently updated framework that works through class instances. The component approach, as well as reactivity without a virtual DOM and data export and import, will make creating a site much faster than if a site was developed using just js. Also, the framework is in beta testing, and you can try it as something new in building a website.
+Cample.js is a new, frequently updated framework that works through class instances. The component approach, as well as reactivity without a virtual DOM and data export and import, will make creating a site much faster than if a site was developed using just js. Also, the framework is new, and you can try it as something new in building a website.
 
 ## Features
 
@@ -45,6 +41,7 @@ Cample.js provides the following features:
 
 - **Reactivity without Virtual DOM**
 - **Supporting component approach**
+- **Each component for dynamic HTML**
 - **Cycle**
 - **Some operators like in vanilla js for working with components**
 - **Animation**

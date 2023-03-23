@@ -33,7 +33,7 @@ export class If extends Operator {
     exportId?: ExportIdType
   ): void {
     if (typeof this.components === "undefined" || this.components.length <= 0)
-      createError("Error: If operator renders one and more components");
+      createError("If operator renders one and more components");
 
     let templateElement: any = null;
     const trim = (trimHTML && this.trimHTML === undefined) || this.trimHTML;

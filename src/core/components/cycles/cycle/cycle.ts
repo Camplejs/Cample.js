@@ -1,6 +1,6 @@
 "use-strict";
-import { renderTemplateElement } from "../../functions/render/render-template-element";
-import { renderAttributes } from "../../functions/render/render-attributes";
+import { renderTemplateElement } from "../../../functions/render/render-template-element";
+import { renderAttributes } from "../../../functions/render/render-attributes";
 import {
   ComponentsType,
   DefaultOptionsType,
@@ -9,11 +9,11 @@ import {
   FunctionsArray,
   ExportDataType,
   ExportIdType
-} from "../../../types/types";
-import { createError } from "../../../shared/utils";
-import { renderHTML } from "../../functions/render/render-html";
-import { ParentComponent } from "../parent-component/parent-component";
-import { renderComponents } from "../../functions/render/render-components";
+} from "../../../../types/types";
+import { createError } from "../../../../shared/utils";
+import { renderHTML } from "../../../functions/render/render-html";
+import { ParentComponent } from "../../parent-component/parent-component";
+import { renderComponents } from "../../../functions/render/render-components";
 
 export class Cycle extends ParentComponent {
   public length: LengthType;
@@ -39,7 +39,7 @@ export class Cycle extends ParentComponent {
     exportId?: ExportIdType
   ): void {
     if (typeof this.components === "undefined" || this.components.length === 0)
-      createError("Error: Cycle component renders one and more components");
+      createError("Cycle component renders one and more components");
     let templateElement: any = null;
     const trim = (trimHTML && this.trimHTML === undefined) || this.trimHTML;
     if (typeof this.options !== "undefined") {

@@ -12,6 +12,7 @@ export class Dynamic {
       nodes: [],
       data: {
         values: [],
+        components: [],
         currentId: 0
       }
     };
