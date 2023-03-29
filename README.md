@@ -87,7 +87,7 @@ const newCample = cample("#page");
 const newComponent = component("new-component", 
 `<div class="component">
     {{component_text}}
-    {{dynamicData}}
+    {{dynamicData.text}}
 </div>`,
 {
     script:[(elements, functions)=>{
@@ -95,7 +95,7 @@ const newComponent = component("new-component",
         const updateFunction = (e) =>{
             functions?.updateText
             (data=>{
-              return {...data,value:"Text"}
+              return {...data,value:{text:"Text"}}
             });
         }
         document
@@ -118,7 +118,9 @@ const newComponent = component("new-component",
             defaultValue:"Text"
         },
         dynamicData:{
-            value:"defaultText",
+            value:{
+              text:"defaultText"
+            },
             function:"updateText"
         }
     },
