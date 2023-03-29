@@ -13,7 +13,9 @@ import {
   IdType,
   DataType,
   DataFunctionType,
-  ExportIdType
+  ExportIdType,
+  DynamicKeyObjectArrayType,
+  DynamicKeyObjectType
 } from "../../../types/types";
 import {
   checkFunction,
@@ -23,10 +25,10 @@ import {
   createWarning,
   filterDuplicate,
   filterKey,
-  getDynamicElements
+  getDynamicElements,
+  getKeys
 } from "../../../shared/utils";
 import { renderFunctionsData } from "../../functions/render/render-functions-data";
-import { returnDataValue } from "../../functions/data/return-data-value";
 import { renderHTML } from "../../functions/render/render-html";
 import { renderImportData } from "../../functions/render/render-import-data";
 import { renderExportId } from "../../functions/render/render-export-id";
@@ -34,6 +36,8 @@ import { checkObject } from "../../../shared/utils";
 import { renderImport } from "../../functions/render/render-import";
 import { DataComponent } from "../data-component/data-component";
 import { createNode } from "../../functions/data/create-node";
+import { renderComponentDynamicKeyData } from "../../functions/data/render-component-dynamic-key-data";
+import { renderKey } from "../../functions/render/render-key";
 
 export class Component extends DataComponent {
   public data: DataComponentType;
@@ -109,17 +113,24 @@ export class Component extends DataComponent {
           this._dynamic.data.data.values.indexOf(dynamicData);
         return this._dynamic.data.data.values[dynamicIndex];
       };
-      const renderDynamicNodes = (key: string) => {
+      const renderDynamicNodes = (key: string, index: number) => {
         if (this._dynamic.dynamicNodes.length < 2048) {
           this._dynamic.dynamicNodes.forEach((e, i) => {
-            const val = returnDataValue(getData(e.dataId), key);
+            const dataArray = renderComponentDynamicKeyData(
+              getData(e.dataId),
+              index,
+              key
+            );
+            const val = dataArray[0];
+            const isProperty = dataArray[1];
             const filtredValues = filterKey(e.dynamicTexts, key);
             filtredValues.forEach((filtredVal: DynamicTextType) => {
               const index = e.dynamicTexts.indexOf(filtredVal);
               this._dynamic.dynamicNodes[i].dynamicTexts[index] = e.updateText(
                 val,
                 filtredVal,
-                e.texts
+                e.texts,
+                isProperty
               );
               this._dynamic.dynamicNodes[i].texts = filterDuplicate(
                 concatArrays(
@@ -136,7 +147,11 @@ export class Component extends DataComponent {
               });
             });
             if (Object.keys(e.attrs).length) {
-              this._dynamic.dynamicNodes[i].attrs = e.updateAttr(val, key);
+              this._dynamic.dynamicNodes[i].attrs = e.updateAttr(
+                val,
+                key,
+                isProperty
+              );
             }
           });
         } else {
@@ -153,18 +168,24 @@ export class Component extends DataComponent {
         const node = createNode(el, index, data, id, false);
         this._dynamic.data.nodes.push(node);
       };
-      const render = () => {
+
+      const render = (index: number) => {
         setDynamicNodes("", true);
         for (let i = 0; i < this._dynamic.dynamicNodes.length; i++) {
           this._dynamic.dynamicNodes[i].dynamicTexts.forEach((val, j) => {
+            const dataArray = renderComponentDynamicKeyData(
+              getData(this._dynamic.dynamicNodes[i].dataId),
+              index,
+              val.key
+            );
+            const newData = dataArray[0];
+            const isProperty = dataArray[1];
             this._dynamic.dynamicNodes[i].dynamicTexts[j] =
               this._dynamic.dynamicNodes[i].updateText(
-                returnDataValue(
-                  getData(this._dynamic.dynamicNodes[i].dataId),
-                  val.key
-                ),
+                newData,
                 val,
-                this._dynamic.dynamicNodes[i].texts
+                this._dynamic.dynamicNodes[i].texts,
+                isProperty
               );
             this._dynamic.dynamicNodes[i].texts = filterDuplicate(
               concatArrays(
@@ -182,30 +203,37 @@ export class Component extends DataComponent {
           });
           if (Object.keys(this._dynamic.dynamicNodes[i].attrs).length) {
             this._dynamic.dynamicNodes[i].dynamicAttrs.forEach((keyAttr) => {
-              this._dynamic.dynamicNodes[i].attrs = this._dynamic.dynamicNodes[
-                i
-              ].updateAttr(
-                returnDataValue(
-                  getData(this._dynamic.dynamicNodes[i].dataId),
-                  keyAttr
-                ),
+              const dataArray = renderComponentDynamicKeyData(
+                getData(this._dynamic.dynamicNodes[i].dataId),
+                index,
                 keyAttr
               );
+              const newData = dataArray[0];
+              const isProperty = dataArray[1];
+              this._dynamic.dynamicNodes[i].attrs = this._dynamic.dynamicNodes[
+                i
+              ].updateAttr(newData, keyAttr, isProperty);
             });
           }
         }
         this._dynamic.dynamicNodes = [];
       };
-      const newFunction = (attribute: any, key: string, id: IdType) => {
-        const renderNewFunction = (data: DataType) => {
-          setDynamicNodes(key);
+      const newFunction = (
+        attribute: any,
+        key: string,
+        id: IdType,
+        index: number,
+        keys: DynamicKeyObjectArrayType
+      ) => {
+        const renderNewFunction = (data: DataType, currentKey: string) => {
+          setDynamicNodes(currentKey);
           try {
-            renderDynamicNodes(key);
+            renderDynamicNodes(currentKey, index);
           } catch (err) {
             this._dynamic.dynamicNodes = [];
             createError("Error: Maximum render");
           }
-          renderFunctionsData(data, updateFunction, false, id);
+          renderFunctionsData(data, updateFunction, false, id, index, keys);
         };
         if (id !== undefined) {
           const data = this._dynamic.data.data.values.filter(
@@ -224,15 +252,25 @@ export class Component extends DataComponent {
               ) {
                 this._dynamic.data.data.values[index]!.value![key] = attribute;
                 renderNewFunction(
-                  this._dynamic.data.data.values[index]!.value!
+                  this._dynamic.data.data.values[index]!.value!,
+                  key
                 );
+                keys.forEach((currentKey) => {
+                  const joinedKey = `${
+                    currentKey.key
+                  }.${currentKey.properties.join(".")}`;
+                  renderNewFunction(
+                    this._dynamic.data.data.values[index]!.value!,
+                    joinedKey
+                  );
+                });
               }
             }
           }
         } else {
           if (this.data && key && this.data[key]) {
             this.data[key] = attribute;
-            renderNewFunction(this.data);
+            renderNewFunction(this.data, key);
           }
         }
       };
@@ -240,7 +278,9 @@ export class Component extends DataComponent {
         name: string,
         key: string,
         isRender = false,
-        id: IdType
+        id: IdType,
+        index: number,
+        keys: DynamicKeyObjectArrayType
       ) => {
         const data = this._dynamic.data.data.values.filter((e) => e?.id === id);
         if (data.length > 1) {
@@ -264,9 +304,9 @@ export class Component extends DataComponent {
             attribute: any = updateData
           ) => {
             if (typeof attribute === "function") {
-              newFunction(attribute(defaultData), key, id);
+              newFunction(attribute(defaultData), key, id, index, keys);
             } else {
-              newFunction(attribute, key, id);
+              newFunction(attribute, key, id, index, keys);
             }
           };
         }
@@ -317,31 +357,52 @@ export class Component extends DataComponent {
       ) => {
         if (e) {
           const dynamicArray = getDynamicElements(e);
+          const keys: DynamicKeyObjectArrayType = [];
           if (dynamicArray.length) {
             const currentId = this._dynamic.data.data.currentId;
             const data = setData(currentId, importData, isDataFunction)?.value;
+            dynamicArray.forEach((el) => {
+              getKeys(el).forEach((key) => {
+                if (key.includes(".")) {
+                  const renderedKey = renderKey(key);
+                  if (renderedKey) {
+                    keys.push(renderedKey as DynamicKeyObjectType);
+                  }
+                }
+              });
+            });
+            const filtredKeys = filterDuplicate(keys);
             renderFunctionsData(
               data,
               updateFunction,
               true,
-              this._dynamic.data.data.currentId
+              this._dynamic.data.data.currentId,
+              index,
+              filtredKeys
             );
             dynamicArray.forEach((el) => {
               setNode(el, index, data, currentId);
             });
             try {
-              render();
+              render(index);
             } catch (err) {
               createError(`${err}`);
             }
           } else {
             const data = renderDynamicData(importData, isDataFunction);
-            renderFunctionsData(data, updateFunction, true, undefined);
+            renderFunctionsData(
+              data,
+              updateFunction,
+              true,
+              undefined,
+              index,
+              []
+            );
           }
           this._dynamic.data.data.currentId += 1;
         } else {
           const data = renderDynamicData(importData, isDataFunction);
-          renderFunctionsData(data, updateFunction, true, undefined);
+          renderFunctionsData(data, updateFunction, true, undefined, index, []);
         }
       };
       const condition =

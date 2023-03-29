@@ -1,5 +1,9 @@
 "use-strict";
-import { DataType, IdType } from "../../../types/types";
+import {
+  DynamicKeyObjectArrayType,
+  DataType,
+  IdType
+} from "../../../types/types";
 
 export const renderFunctionsData = (
   data: DataType | undefined,
@@ -7,10 +11,14 @@ export const renderFunctionsData = (
     name: string,
     key: string,
     isRender: boolean,
-    index: IdType
+    id: IdType,
+    index: number,
+    keys: DynamicKeyObjectArrayType
   ) => void,
   isRender: boolean,
-  index: IdType
+  id: IdType,
+  index: number,
+  keys: DynamicKeyObjectArrayType
 ): void => {
   if (data !== undefined) {
     for (const key in data) {
@@ -21,7 +29,17 @@ export const renderFunctionsData = (
         data[key].function &&
         typeof data[key].function === "string"
       ) {
-        updateFunction(data[key].function, key, isRender, index);
+        const filtredKeys = keys.filter(
+          (currentDynamicKey) => currentDynamicKey.key === key
+        );
+        updateFunction(
+          data[key].function,
+          key,
+          isRender,
+          id,
+          index,
+          filtredKeys
+        );
       }
     }
   }

@@ -16,6 +16,7 @@ import {
 } from "../../../../shared/utils";
 import {
   DataType,
+  DynamicDataType,
   DynamicDataValueType,
   DynamicFunctionsType,
   DynamicNodeComponentNodeType,
@@ -36,15 +37,18 @@ import {
   SelectorType,
   StartType
 } from "../../../../types/types";
+import { createDynamicNodeComponent } from "../../../functions/data/create-dynamic-node-component";
 import { createNode } from "../../../functions/data/create-node";
 import { renderAttributes } from "../../../functions/render/render-attributes";
 import { renderExportId } from "../../../functions/render/render-export-id";
 import { renderHTML } from "../../../functions/render/render-html";
 import { renderImport } from "../../../functions/render/render-import";
 import { renderImportData } from "../../../functions/render/render-import-data";
+import { renderIndexData } from "../../../functions/render/render-index-data";
 import { renderScript } from "../../../functions/render/render-script";
 import { renderTemplateElement } from "../../../functions/render/render-template-element";
 import { DataComponent } from "../../data-component/data-component";
+import { renderComponentDynamicKeyData } from "../../../functions/data/render-component-dynamic-key-data";
 
 export class Each extends DataComponent {
   public data: EachDataType;
@@ -52,6 +56,7 @@ export class Each extends DataComponent {
   public function: DynamicFunctionsType;
   public functionName: string;
   public valueName: string;
+  public componentData: boolean;
 
   constructor(
     selector: SelectorType,
@@ -65,6 +70,8 @@ export class Each extends DataComponent {
     this.function = {};
     this.valueName = options.valueName ? options.valueName : "data";
     this.functionName = options.functionName ? options.functionName : "setData";
+    this.componentData =
+      options.componentData !== undefined ? options.componentData : false;
   }
   render(
     replaceTags?: boolean,
@@ -92,53 +99,71 @@ export class Each extends DataComponent {
             }
           }
           const renderEachFunction = (
-            updateFunction: (name: string, dataId: number | undefined) => void,
+            updateFunction: (
+              name: string,
+              dataId: number | undefined,
+              index: number
+            ) => void,
             dataId: number | undefined,
-            data: EachDataValueType
+            data: EachDataValueType,
+            index: number
           ) => {
             if (data !== undefined) {
-              updateFunction(this.functionName, dataId);
+              updateFunction(this.functionName, dataId, index);
             }
           };
           const condition =
             (replaceTags && this.replaceTag === undefined) || this.replaceTag;
-          const renderDynamicNodes = () => {
+          const renderDynamicNodes = (index: number) => {
             if (this._dynamic.dynamicNodes.length < 2048) {
               this._dynamic.dynamicNodes.forEach((e, i) => {
                 const val = renderIndexData(getData(e.dataId), e.eachIndex);
-                e.dynamicTexts.forEach(
-                  (filtredVal: DynamicTextType, j: number) => {
-                    const index = e.dynamicTexts.indexOf(filtredVal);
-                    this._dynamic.dynamicNodes[i].dynamicTexts[index] =
-                      e.updateText(
-                        validateIndexData(val, filtredVal.key),
-                        filtredVal,
-                        e.texts
-                      );
-                    this._dynamic.dynamicNodes[i].texts = filterDuplicate(
-                      concatArrays(
-                        this._dynamic.dynamicNodes[i].texts,
-                        this._dynamic.dynamicNodes[i].dynamicTexts[index].texts
-                      )
-                    );
-                    this._dynamic.dynamicNodes[i].texts =
-                      this._dynamic.dynamicNodes[i].texts.filter((text) => {
-                        if (text) {
-                          return text;
-                        }
-                      });
-                  }
-                );
+                e.dynamicTexts.forEach((filtredVal: DynamicTextType) => {
+                  const index = e.dynamicTexts.indexOf(filtredVal);
+                  const dataArray = renderComponentDynamicKeyData(
+                    val,
+                    index,
+                    filtredVal.key,
+                    true,
+                    this.componentData
+                  );
+                  const newData = dataArray[0];
+                  const isProperty = dataArray[1];
+                  this._dynamic.dynamicNodes[i].dynamicTexts[index] =
+                    e.updateText(newData, filtredVal, e.texts, isProperty);
+                  this._dynamic.dynamicNodes[i].texts = filterDuplicate(
+                    concatArrays(
+                      this._dynamic.dynamicNodes[i].texts,
+                      this._dynamic.dynamicNodes[i].dynamicTexts[index].texts
+                    )
+                  );
+                  this._dynamic.dynamicNodes[i].texts =
+                    this._dynamic.dynamicNodes[i].texts.filter((text) => {
+                      if (text) {
+                        return text;
+                      }
+                    });
+                });
                 if (Object.keys(e.attrs).length) {
                   e.dynamicAttrs.forEach((keyAttr) => {
                     const indexData = renderIndexData(
                       getData(e.dataId),
                       e.eachIndex
                     );
+                    const dataArray = renderComponentDynamicKeyData(
+                      indexData,
+                      index,
+                      keyAttr,
+                      true,
+                      this.componentData
+                    );
+                    const newData = dataArray[0];
+                    const isProperty = dataArray[1];
                     this._dynamic.dynamicNodes[i].attrs =
                       this._dynamic.dynamicNodes[i].updateAttr(
-                        validateIndexData(indexData, keyAttr),
-                        keyAttr
+                        newData,
+                        keyAttr,
+                        isProperty
                       );
                   });
                 }
@@ -147,43 +172,6 @@ export class Each extends DataComponent {
               createError("Maximum render");
             }
             this._dynamic.dynamicNodes = [];
-          };
-
-          const validateIndexData = (data: any, key: string) => {
-            return key === this.valueName ? data : undefined;
-          };
-
-          const renderEachTemplate = (
-            data: DynamicDataValueType,
-            dataId: number
-          ) => {
-            data = data as EachDataValueType;
-            let template = "";
-            const renderTemplate = (value: EachDataObjectType, i: number) => {
-              const templateString = this.templateFunction(value, i);
-              const newTemplate = trim ? templateString.trim() : templateString;
-              if (checkNodes(newTemplate)) {
-                template += newTemplate;
-              } else {
-                createError(
-                  "Component include only one node with type 'Element'"
-                );
-              }
-            };
-            if (checkObject(data)) {
-              Object.entries(data).forEach(([property, dataValue], i) => {
-                const value = {
-                  [this.valueName]: [property, dataValue]
-                };
-                renderTemplate(value, i);
-              });
-            } else {
-              data.forEach((dataValue: any, i: number) => {
-                const value = { [this.valueName]: dataValue };
-                renderTemplate(value, i);
-              });
-            }
-            return template;
           };
           const setElement = (
             currentDynamicNodeComponentType: DynamicNodeComponentType,
@@ -377,18 +365,40 @@ export class Each extends DataComponent {
               createError("Data type error");
             }
           };
-          const newFunction = (attribute: any, dataId: number | undefined) => {
+          const newFunction = (
+            attribute: any,
+            dataId: number | undefined,
+            index: number
+          ) => {
             const renderNewFunction = (data: DynamicDataValueType) => {
               data = data as EachDataValueType;
               setDynamicNodes("", true);
               try {
-                renderDynamicNodes();
+                renderDynamicNodes(index);
               } catch (err) {
                 this._dynamic.dynamicNodes = [];
                 createError("Maximum render");
               }
-              renderEachFunction(updateFunction, dataId, data);
+              renderEachFunction(updateFunction, dataId, data, index);
             };
+            if (
+              this.componentData &&
+              attribute &&
+              (checkObject(attribute) || Array.isArray(attribute))
+            ) {
+              if (checkObject(attribute)) {
+                Object.entries(attribute).forEach(([property]) => {
+                  if (attribute[property]?.function)
+                    createWarning("function is not working in Each component");
+                });
+              } else {
+                const valueLength = attribute.length;
+                for (let i = 0; i < valueLength; i++) {
+                  if (attribute[i]?.function)
+                    createWarning("function is not working in Each component");
+                }
+              }
+            }
             if (dataId !== undefined) {
               const data = this._dynamic.data.data.values.filter(
                 (e) => e?.id === dataId
@@ -425,24 +435,11 @@ export class Each extends DataComponent {
               renderNewFunction(this.data);
             }
           };
-          const createDynamicNodeComponentType = (
-            dataId: number,
-            elements: ElementsType,
-            parentNode: ParentNode,
-            nodePrevious?: DynamicNodeComponentNodeType,
-            nodeNext?: DynamicNodeComponentNodeType
-          ): DynamicNodeComponentType => {
-            const DynamicNodeComponentType = {
-              id: dataId,
-              elements,
-              nodePrevious,
-              nodeNext,
-              nodeParentNode: parentNode,
-              parentNode
-            };
-            return DynamicNodeComponentType;
-          };
-          const updateFunction = (name: string, dataId: number | undefined) => {
+          const updateFunction = (
+            name: string,
+            dataId: number | undefined,
+            index: number
+          ) => {
             const data = this._dynamic.data.data.values.filter(
               (e) => e?.id === dataId
             );
@@ -463,9 +460,9 @@ export class Each extends DataComponent {
             };
             this.function[name] = (attribute: any = updateData) => {
               if (typeof attribute === "function") {
-                newFunction(attribute(defaultData), dataId);
+                newFunction(attribute(defaultData), dataId, index);
               } else {
-                newFunction(attribute, dataId);
+                newFunction(attribute, dataId, index);
               }
             };
           };
@@ -494,6 +491,7 @@ export class Each extends DataComponent {
             }
             return data;
           };
+
           const setNode = (
             el: Element,
             index: number,
@@ -508,7 +506,7 @@ export class Each extends DataComponent {
               id,
               true,
               eachIndex,
-              this.valueName
+              this.componentData
             );
             this._dynamic.data.nodes.push(node);
           };
@@ -520,14 +518,14 @@ export class Each extends DataComponent {
             nodePrevious?: DynamicNodeComponentNodeType,
             nodeNext?: DynamicNodeComponentNodeType
           ) => {
-            const DynamicNodeComponentType = createDynamicNodeComponentType(
+            const DynamicNodeComponent = createDynamicNodeComponent(
               dataId,
               elements,
               parentNode,
               nodePrevious,
               nodeNext
             );
-            this._dynamic.data.data.components.push(DynamicNodeComponentType);
+            this._dynamic.data.data.components.push(DynamicNodeComponent);
           };
 
           const setDynamicNodes = (key: string, isAllUpdate = false) => {
@@ -550,30 +548,6 @@ export class Each extends DataComponent {
               createError("id is unique");
             }
             return data && data[0] ? data[0].value : undefined;
-          };
-          const renderIndexData = (
-            indexData: any,
-            index: number | undefined
-          ): any => {
-            if (indexData) {
-              if (Array.isArray(indexData)) {
-                if (index !== undefined) {
-                  return indexData[index];
-                } else {
-                  createError("Value error");
-                }
-              } else if (checkObject(indexData)) {
-                if (Object.values(indexData).length) {
-                  if (index !== undefined) {
-                    return Object.values(indexData)[index];
-                  } else {
-                    createError("Value error");
-                  }
-                } else return undefined;
-              } else {
-                createError("Each data is object or array");
-              }
-            } else return indexData;
           };
           const deleteDynamicArrayNodes = (
             currentId: number,
@@ -625,19 +599,31 @@ export class Each extends DataComponent {
               }
             });
           };
-          const render = () => {
+
+          const render = (index: number) => {
             setDynamicNodes("", true);
             for (let i = 0; i < this._dynamic.dynamicNodes.length; i++) {
+              const indexData = renderIndexData(
+                getData(this._dynamic.dynamicNodes[i].dataId),
+                this._dynamic.dynamicNodes[i].eachIndex
+              );
+
               this._dynamic.dynamicNodes[i].dynamicTexts.forEach((val, j) => {
-                const indexData = renderIndexData(
-                  getData(this._dynamic.dynamicNodes[i].dataId),
-                  this._dynamic.dynamicNodes[i].eachIndex
+                const dataArray = renderComponentDynamicKeyData(
+                  indexData,
+                  index,
+                  val.key,
+                  true,
+                  this.componentData
                 );
+                const newData = dataArray[0];
+                const isProperty = dataArray[1];
                 this._dynamic.dynamicNodes[i].dynamicTexts[j] =
                   this._dynamic.dynamicNodes[i].updateText(
-                    validateIndexData(indexData, val.key),
+                    newData,
                     val,
-                    this._dynamic.dynamicNodes[i].texts
+                    this._dynamic.dynamicNodes[i].texts,
+                    isProperty
                   );
                 this._dynamic.dynamicNodes[i].texts = filterDuplicate(
                   concatArrays(
@@ -655,14 +641,20 @@ export class Each extends DataComponent {
               if (Object.keys(this._dynamic.dynamicNodes[i].attrs).length) {
                 this._dynamic.dynamicNodes[i].dynamicAttrs.forEach(
                   (keyAttr) => {
-                    const indexData = renderIndexData(
-                      getData(this._dynamic.dynamicNodes[i].dataId),
-                      this._dynamic.dynamicNodes[i].eachIndex
+                    const dataArray = renderComponentDynamicKeyData(
+                      indexData,
+                      index,
+                      keyAttr,
+                      true,
+                      this.componentData
                     );
+                    const newData = dataArray[0];
+                    const isProperty = dataArray[1];
                     this._dynamic.dynamicNodes[i].attrs =
                       this._dynamic.dynamicNodes[i].updateAttr(
-                        validateIndexData(indexData, keyAttr),
-                        keyAttr
+                        newData,
+                        keyAttr,
+                        isProperty
                       );
                   }
                 );
@@ -681,12 +673,12 @@ export class Each extends DataComponent {
             nodeNext?: DynamicNodeComponentNodeType
           ) => {
             data = data as EachDataValueType;
-            renderEachFunction(updateFunction, dataId, data);
+            renderEachFunction(updateFunction, dataId, data, index);
             if (elements && elements.length) {
               const renderElements = () => {
                 setDynamicArrayNodes(elements, index, data, dataId);
                 try {
-                  render();
+                  render(index);
                 } catch (err) {
                   createError(`${err}`);
                 }
@@ -714,13 +706,12 @@ export class Each extends DataComponent {
             );
             this._dynamic.data.data.currentId += 1;
           };
-          const setData = (
+          const renderTemplateData = (
             id: number,
             importData: DataType,
-            isDataFunction?: boolean,
-            oldValue?: DynamicDataValueType,
-            isOldData?: boolean
-          ) => {
+            index: number,
+            isDataFunction?: boolean
+          ): [DynamicDataType, string] => {
             const data = renderDynamicData(importData, isDataFunction);
             const dynamicData = {
               value: data,
@@ -730,13 +721,69 @@ export class Each extends DataComponent {
             this._dynamic.data.data.values.push(dynamicData);
             const dynamicIndex =
               this._dynamic.data.data.values.indexOf(dynamicData);
-            return this._dynamic.data.data.values[dynamicIndex];
+
+            let template = "";
+
+            const renderTemplate = (value: EachDataObjectType, i: number) => {
+              const templateString = this.templateFunction(value, i);
+              const newTemplate = trim ? templateString.trim() : templateString;
+              if (checkNodes(newTemplate)) {
+                template += newTemplate;
+              } else {
+                createError(
+                  "Component include only one node with type 'Element'"
+                );
+              }
+            };
+            if (this._dynamic.data.data.values[dynamicIndex]?.value) {
+              if (
+                checkObject(this._dynamic.data.data.values[dynamicIndex].value)
+              ) {
+                Object.entries(
+                  this._dynamic.data.data.values[dynamicIndex].value!
+                ).forEach(([property], i) => {
+                  if (
+                    this.componentData &&
+                    this._dynamic.data.data.values[dynamicIndex].value![
+                      property
+                    ]?.function
+                  )
+                    createWarning("function is not working in Each component");
+                  const value = {
+                    [this.valueName]: [
+                      property,
+                      this._dynamic.data.data.values[dynamicIndex].value![
+                        property
+                      ]
+                    ]
+                  };
+                  renderTemplate(value, i);
+                });
+              } else {
+                const valueLength =
+                  this._dynamic.data.data.values[dynamicIndex].value?.length;
+                for (let i = 0; i < valueLength; i++) {
+                  if (
+                    this.componentData &&
+                    this._dynamic.data.data.values[dynamicIndex].value![i]
+                      ?.function
+                  )
+                    createWarning("function is not working in Each component");
+                  const value = {
+                    [this.valueName]:
+                      this._dynamic.data.data.values[dynamicIndex].value![i]
+                  };
+                  renderTemplate(value, i);
+                }
+              }
+            }
+
+            return [this._dynamic.data.data.values[dynamicIndex], template];
           };
           const renderScriptsAndStyles = (
             e: Element | null,
             start: StartType,
-            importData: DataType,
-            dataId: number
+            importData: DataType
           ) => {
             if (typeof this.script !== "undefined") {
               if (Array.isArray(this.script)) {
@@ -779,19 +826,21 @@ export class Each extends DataComponent {
                 this.dataSet.push(importData);
                 const isDataFunction = this.data && checkFunction(this.data);
                 const currentId = this._dynamic.data.data.currentId;
-                const data = setData(
+                const templateData = renderTemplateData(
                   currentId,
                   importData,
+                  index,
                   isDataFunction
-                )?.value;
+                );
+                const data = templateData[0]?.value;
                 const isDataObject = checkObject(data);
-                const templateString = renderEachTemplate(data, currentId);
+                const templateString = templateData[1];
                 if (templateElement)
                   templateElement.insertAdjacentHTML(
                     "afterbegin",
                     templateString
                   );
-                renderScriptsAndStyles(e, "beforeLoad", importData, currentId);
+                renderScriptsAndStyles(e, "beforeLoad", importData);
                 const functionsArray: FunctionsArray = [];
                 functionsArray.push(
                   (
@@ -812,7 +861,7 @@ export class Each extends DataComponent {
                     )
                 );
                 functionsArray.push((el: Element | null) =>
-                  renderScriptsAndStyles(el, "afterLoad", importData, currentId)
+                  renderScriptsAndStyles(el, "afterLoad", importData)
                 );
                 const template = templateElement
                   ? templateElement.outerHTML

@@ -166,6 +166,15 @@ export type NodeType = {
 
 export type ArrayNodeType = Array<NodeType>;
 
+export type DynamicKeyObjectType = {
+  key: string;
+  properties: Array<string>;
+};
+export type DynamicKeyObjectArrayType = Array<DynamicKeyObjectType>;
+export type DynamicKeyType = string | DynamicKeyObjectType;
+
+export type DynamicKeyArrayType = Array<DynamicKeyType>;
+
 export type ArrayStringType = Array<string>;
 
 export type ElementType = {
@@ -197,6 +206,7 @@ export type EachOptionsType = DefaultDataOptionsType & {
   functionName?: string;
   valueName?: string;
   element?: ElementType;
+  componentData?: boolean;
 };
 
 export type DataPropertyType = {

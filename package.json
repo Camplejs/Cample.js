@@ -1,6 +1,6 @@
 {
   "name": "cample",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Cample.js - typed javascript web framework for creating site UI. Reactivity without Virtual DOM!",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

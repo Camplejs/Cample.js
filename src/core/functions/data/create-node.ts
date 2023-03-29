@@ -8,7 +8,7 @@ import {
   NodeType,
   TextArrayType
 } from "../../../types/types";
-import { returnDataValue } from "./return-data-value";
+import { renderComponentDynamicKeyData } from "./render-component-dynamic-key-data";
 import { updateAttributes } from "./update-attributes";
 import { updateText } from "./update-text";
 
@@ -19,7 +19,7 @@ export const createNode = (
   id: number,
   isEach: boolean,
   eachIndex?: number,
-  valueName?: string
+  isComponentData = true
 ): NodeType => {
   const keys = getTextKeys(el);
   const dynamicTexts: DynamicTextArrayType = [];
@@ -29,6 +29,7 @@ export const createNode = (
   const regexAttr = arrayAttr
     .map((attr) => attr.value)
     .filter((a) => testRegex(a));
+
   if (regexAttr.length) {
     arrayAttr.forEach((e) => {
       const valArr = {};
@@ -48,23 +49,36 @@ export const createNode = (
   }
 
   keys.forEach((e) => {
-    const value: DynamicTextType = {
+    const dynamicText: DynamicTextType = {
       key: e,
       texts: [],
-      oldValue: returnDataValue(data, e, isEach, valueName),
-      value: returnDataValue(data, e, isEach, valueName)
+      oldValue: renderComponentDynamicKeyData(
+        data,
+        index,
+        e,
+        isEach,
+        isComponentData
+      )[0],
+      value: renderComponentDynamicKeyData(
+        data,
+        index,
+        e,
+        isEach,
+        isComponentData
+      )[0]
     };
-    dynamicTexts.push(value);
+    dynamicTexts.push(dynamicText);
   });
 
   const node: NodeType = {
     updateText: (
       val: any = undefined,
       updVal: DynamicTextType,
-      texts: TextArrayType
-    ) => updateText(el, val, updVal, index, texts),
-    updateAttr: (val: any, key: string) =>
-      updateAttributes(el, val, index, attrs, key),
+      texts: TextArrayType,
+      isProperty: boolean
+    ) => updateText(el, val, updVal, texts, index, isProperty, isComponentData),
+    updateAttr: (val: any, key: string, isProperty: boolean) =>
+      updateAttributes(el, val, index, attrs, key, isProperty, isComponentData),
     index,
     attrs,
     texts: [],
@@ -75,5 +89,6 @@ export const createNode = (
   if (isEach) {
     node.eachIndex = eachIndex;
   }
+
   return node;
 };

@@ -8,12 +8,20 @@ export const updateAttributes = (
   value: any,
   index: number,
   attrs: AttributesValType,
-  currentKey: string
+  currentKey: string,
+  isProperty = false,
+  isComponentData = true
 ) => {
   if (el) {
     Object.entries(attrs).forEach(([key, val]) => {
       if (el.hasAttribute(key)) {
-        val.values[currentKey] = renderData(value, index);
+        let newData: any;
+        if (isComponentData) {
+          newData = isProperty ? value : renderData(value, index);
+        } else {
+          newData = value;
+        }
+        val.values[currentKey] = newData;
         val.renderedValue = renderTextData(val.value, val.values);
         el.setAttribute(key, val.renderedValue);
       } else {

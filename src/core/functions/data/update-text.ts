@@ -8,13 +8,16 @@ import {
 } from "../../../shared/utils";
 import { TextArrayType, DynamicTextType } from "../../../types/types";
 import { renderData } from "../render/render-data";
+
 const regex = /\{{(.*?)}}/g;
 export const updateText = (
   el: Element,
   value: any,
   updTxt: DynamicTextType,
+  texts: TextArrayType,
   index: number,
-  texts: TextArrayType
+  isProperty = false,
+  isComponentData = true
 ) => {
   if (el) {
     const { key } = updTxt;
@@ -22,9 +25,13 @@ export const updateText = (
     if (updTxt.texts.length) {
       updTxt.texts.forEach((e, i) => {
         if (e) {
-          e.textContent = document.createTextNode(
-            renderData(value, index)
-          ).textContent;
+          let newData: any;
+          if (isComponentData) {
+            newData = isProperty ? value : renderData(value, index);
+          } else {
+            newData = value;
+          }
+          e.textContent = document.createTextNode(newData).textContent;
         } else {
           updTxt.texts.splice(i, 1);
         }
@@ -91,7 +98,13 @@ export const updateText = (
               const reg = new RegExp(`{{${key}}}(.*)`, "s");
               const arrSplit = t.textContent.split(reg);
               const filteredArr = arrSplit.filter((txt) => txt);
-              const newNode = document.createTextNode(renderData(value, index));
+              let newData: any;
+              if (isComponentData) {
+                newData = isProperty ? value : renderData(value, index);
+              } else {
+                newData = value;
+              }
+              const newNode = document.createTextNode(newData);
               const updateEl = (isFirstVal = false) => {
                 el.insertBefore(newNode, t);
                 if (!isFirstVal) {
