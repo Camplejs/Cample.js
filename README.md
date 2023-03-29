@@ -85,8 +85,8 @@ See <a href="https://camplejs.github.io/documentation/introduction.html">Cample.
 ```javascript
 const newCample = cample("#example");
 const newComponent = component("new-component", 
-`<div class="component">
-    {{component_text}}
+`<div>
+    <div class="component">{{component_text}}</div>
     {{dynamicData.text}}
 </div>`,
 {
