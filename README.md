@@ -83,24 +83,19 @@ See <a href="https://camplejs.github.io/documentation/introduction.html">Cample.
 ## Example code
 ### JavaScript
 ```javascript
-const newCample = cample("#page");
+const newCample = cample("#example");
 const newComponent = component("new-component", 
 `<div class="component">
     {{component_text}}
     {{dynamicData.text}}
 </div>`,
 {
-    script:[(elements, functions)=>{
+    script:[({elements, functions})=>{
         console.log(elements.component);
-        const updateFunction = (e) =>{
-            functions?.updateText
-            (data=>{
-              return {...data,value:{text:"Text"}}
-            });
-        }
-        document
-        .addEventListener("onload",
-        updateFunction);
+        functions?.updateText
+        (data=>{
+          return {...data,value:{text:"Text"}}
+        });
     },
     {
         start:'afterLoad',
