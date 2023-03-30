@@ -1,37 +1,59 @@
 "use-strict";
-import { createError } from "./../../../shared/utils";
+import { createError, checkFunction } from "./../../../shared/utils";
 import {
   ScriptType,
   FunctionsType,
   ScriptFunctionType,
   ScriptOptionsType,
-  DataType
+  DataType,
+  ScriptArgumentsType,
+  ScriptElementsType
 } from "../../../types/types";
+import { renderScriptElements } from "./render-script-elements";
 export const renderScript = (
   script: ScriptType,
   element: any,
   functions: FunctionsType,
   exportData: DataType,
-  isEach = false
+  isEach = false,
+  isReplaceTags = false,
+  currentElements?: ScriptElementsType
 ): void => {
   let scripts: ScriptFunctionType;
   let options: ScriptOptionsType = {};
+  const createScriptArguments = (
+    currentElements: ScriptElementsType,
+    currentFunctions: FunctionsType,
+    currentData: DataType
+  ): ScriptArgumentsType => {
+    return {
+      elements: currentElements,
+      functions: currentFunctions,
+      data: currentData
+    };
+  };
   if (Array.isArray(script)) {
     scripts = script[0];
     options = script[1];
-    const elements: any = {};
+    let elements: ScriptElementsType = {};
     if (typeof options.elements !== "undefined") {
-      options.elements.forEach((e) => {
-        elements[Object.keys(e)[0]] = isEach
-          ? document.querySelector(e[Object.keys(e)[0]])
-          : element.querySelector(e[Object.keys(e)[0]]);
-      });
+      if (isReplaceTags) {
+        elements = currentElements ? currentElements : {};
+      } else {
+        elements = renderScriptElements(options.elements, element, isEach);
+      }
     }
-    scripts({ elements, functions, data: exportData });
+    const scriptArguments = createScriptArguments(
+      elements,
+      functions,
+      exportData
+    );
+    scripts(scriptArguments);
   } else {
-    if (Object.prototype.toString.call(script) === "[object Function]") {
+    if (checkFunction(script)) {
       scripts = script;
-      scripts({ elements: {}, functions, data: exportData });
+      const scriptArguments = createScriptArguments({}, functions, exportData);
+      scripts(scriptArguments);
     } else {
       createError("Script is an array or a function");
     }

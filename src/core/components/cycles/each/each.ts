@@ -183,7 +183,12 @@ export class Each extends DataComponent {
             eachIndex: number,
             isNext?: boolean
           ) => {
-            const template = this.templateFunction(data);
+            const value = {
+              [this.valueName]: checkObject(data)
+                ? Object.entries(data)[eachIndex]
+                : data[eachIndex]
+            };
+            const template = this.templateFunction(value, eachIndex);
             const el = createElement(template);
             if (el) {
               if (

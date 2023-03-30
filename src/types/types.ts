@@ -142,6 +142,15 @@ export type DynamicNodeComponentType = {
 
 export type LastNodeType = Element | ChildNode | ParentNode;
 
+export type ScriptElementsType = {
+  [key: string]: Element | null;
+};
+export type ScriptArgumentsType = {
+  elements: ScriptElementsType;
+  functions: FunctionsType;
+  data: DataType;
+};
+
 export type DynamicType = {
   functions: DynamicFunctionsType;
   nodes: Array<NodeType>;

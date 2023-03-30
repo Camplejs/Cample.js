@@ -15,7 +15,8 @@ import {
   DataFunctionType,
   ExportIdType,
   DynamicKeyObjectArrayType,
-  DynamicKeyObjectType
+  DynamicKeyObjectType,
+  ScriptElementsType
 } from "../../../types/types";
 import {
   checkFunction,
@@ -38,6 +39,7 @@ import { DataComponent } from "../data-component/data-component";
 import { createNode } from "../../functions/data/create-node";
 import { renderComponentDynamicKeyData } from "../../functions/data/render-component-dynamic-key-data";
 import { renderKey } from "../../functions/render/render-key";
+import { renderElements } from "../../functions/render/render-elements";
 
 export class Component extends DataComponent {
   public data: DataComponentType;
@@ -314,7 +316,8 @@ export class Component extends DataComponent {
       const renderScriptsAndStyles = (
         e: Element | null,
         start: StartType,
-        importData: DataType
+        importData: DataType,
+        elements?: ScriptElementsType
       ) => {
         if (typeof this.script !== "undefined") {
           if (Array.isArray(this.script)) {
@@ -323,7 +326,10 @@ export class Component extends DataComponent {
                 this.script,
                 e,
                 this._dynamic.data.functions,
-                importData
+                importData,
+                false,
+                condition,
+                elements
               );
             } else {
               if (this.script[1].start === undefined && start === "afterLoad") {
@@ -331,7 +337,10 @@ export class Component extends DataComponent {
                   this.script,
                   e,
                   this._dynamic.data.functions,
-                  importData
+                  importData,
+                  false,
+                  condition,
+                  elements
                 );
               }
             }
@@ -341,7 +350,10 @@ export class Component extends DataComponent {
                 this.script,
                 e,
                 this._dynamic.data.functions,
-                importData
+                importData,
+                false,
+                condition,
+                elements
               );
           }
         }
@@ -420,11 +432,13 @@ export class Component extends DataComponent {
           const isDataFunction = this.data && checkFunction(this.data);
           renderScriptsAndStyles(e, "beforeLoad", importData);
           const functionsArray: FunctionsArray = [];
+          const scriptOptionElements = renderElements(this.script);
           functionsArray.push((el: Element | null) =>
             renderDynamicArray(el, index, importData, isDataFunction)
           );
-          functionsArray.push((el: Element | null) =>
-            renderScriptsAndStyles(el, "afterLoad", importData)
+          functionsArray.push(
+            (el: Element | null, elements?: ScriptElementsType) =>
+              renderScriptsAndStyles(el, "afterLoad", importData, elements)
           );
           renderHTML(
             e,
@@ -433,7 +447,8 @@ export class Component extends DataComponent {
             replaceTags,
             functionsArray,
             "component",
-            trim
+            trim,
+            scriptOptionElements
           );
         });
     } else {

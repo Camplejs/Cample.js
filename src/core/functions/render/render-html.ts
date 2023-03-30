@@ -2,10 +2,13 @@
 import { createError } from "../../../shared/utils";
 import {
   ConditionType,
+  ElementsElementType,
   ElementsType,
   FunctionsArray,
-  RenderComponentType
+  RenderComponentType,
+  ScriptElementsType
 } from "../../../types/types";
+import { renderScriptElements } from "./render-script-elements";
 
 export const renderHTML = (
   e: Element,
@@ -14,7 +17,8 @@ export const renderHTML = (
   replaceTags: ConditionType,
   functions: FunctionsArray,
   renderType: RenderComponentType,
-  trimHTML: ConditionType
+  trimHTML: ConditionType,
+  elements?: ElementsElementType[]
 ) => {
   if (trimHTML) {
     e.innerHTML = template.trim();
@@ -32,6 +36,10 @@ export const renderHTML = (
               content.childNodes[0].nodeType === Node.ELEMENT_NODE &&
               content.firstElementChild
             ) {
+              let elementsObject: ScriptElementsType = {};
+              if (renderType === "component" && elements) {
+                elementsObject = renderScriptElements(elements, content, false);
+              }
               parent.insertBefore(content.firstElementChild, e);
               const el = e.previousElementSibling;
               parent.removeChild(e);
@@ -47,6 +55,8 @@ export const renderHTML = (
                 functions.forEach((func, i) => {
                   if (i === 0 && renderType === "each") {
                     return func([el], el?.parentNode);
+                  } else if (i === 1 && renderType === "component") {
+                    return func(el, elementsObject);
                   } else return func(el);
                 });
               }
