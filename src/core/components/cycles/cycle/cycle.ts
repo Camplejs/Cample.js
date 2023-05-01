@@ -12,10 +12,10 @@ import {
 } from "../../../../types/types";
 import { createError } from "../../../../shared/utils";
 import { renderHTML } from "../../../functions/render/render-html";
-import { ParentComponent } from "../../parent-component/parent-component";
 import { renderComponents } from "../../../functions/render/render-components";
+import { StaticDataComponent } from "../../static-data-cmponent/static-data-component";
 
-export class Cycle extends ParentComponent {
+export class Cycle extends StaticDataComponent {
   public length: LengthType;
   public components: ComponentsType;
   public replaceTags?: boolean;

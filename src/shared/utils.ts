@@ -1,8 +1,9 @@
 "use strict";
 import {
   DataAttributesArrayType,
-  DataType,
   ElementsType,
+  ExportCampleDataType,
+  ExportDataValueType,
   ExportIdType,
   ImportObjectStringType,
   ImportObjectType
@@ -51,13 +52,16 @@ const checkObjectCondition = (val1: any, val2: any) => {
     val2 !== null
   );
 };
-
+export const equalArrayCondition = (arr1: any, arr2: any) => {
+  return Array.isArray(arr1) && Array.isArray(arr2);
+};
+export const cloneObject = (obj1: object) => {
+  return JSON.parse(JSON.stringify(obj1));
+};
 export const isValuesEqual = (val: any, newVal: any): boolean => {
   if (val === newVal) return true;
   if (typeof val !== typeof newVal) return false;
-  const equalArrayCondition = (arr1: any, arr2: any) => {
-    return Array.isArray(arr1) && Array.isArray(arr2);
-  };
+
   if (val === null || newVal === null) {
     if (val === newVal) {
       return true;
@@ -131,10 +135,27 @@ export const filterKey = (
 ): DynamicTextArrayType => {
   return arr.filter((val) => val.key === key);
 };
-const getRegexKeys = (text: string, arr: ArrayStringType) => {
+const getRegexKeys = (
+  text: string,
+  arr: ArrayStringType,
+  arr1: ArrayStringType,
+  isFunction = true
+) => {
   text.replace(regex, (str, d) => {
     const key = d.trim();
-    arr.push(key);
+    if (key.includes("(") || key.includes(")")) {
+      if (!isFunction) createError("Function key includes only in event attr");
+      if (
+        (key.includes("(") && !key.includes(")")) ||
+        (!key.includes("(") && key.includes(")"))
+      ) {
+        createError(`Function key includes "(" and ")"`);
+      } else {
+        arr1.push(key);
+      }
+    } else {
+      arr.push(key);
+    }
     return str;
   });
 };
@@ -143,7 +164,9 @@ export const filterDuplicate = (arr: Array<any>) => {
     return arr.indexOf(item) === index;
   });
 };
-export const getAttrKeys = (el: Element) => {
+export const getAttrKeys = (
+  el: Element
+): [ArrayStringType, ArrayStringType] => {
   if (el) {
     const arrAttr = Array.from(el.attributes);
     const textAttr = arrAttr
@@ -151,12 +174,13 @@ export const getAttrKeys = (el: Element) => {
       .join()
       .trim();
     const attrArray: ArrayStringType = [];
-    getRegexKeys(textAttr, attrArray);
-    return filterDuplicate(attrArray);
+    const attrEventArray: ArrayStringType = [];
+    getRegexKeys(textAttr, attrArray, attrEventArray);
+    return [filterDuplicate(attrArray), attrEventArray];
   }
-  return [];
+  return [[], []];
 };
-export const getTextKeys = (el: Element) => {
+export const getTextKeys = (el: Element): ArrayStringType => {
   if (el) {
     const textArray: ArrayStringType = [];
     const arrText = getTextArray(Array.from(el.childNodes));
@@ -164,31 +188,35 @@ export const getTextKeys = (el: Element) => {
       .map((n) => n.textContent)
       .join()
       .trim();
-    getRegexKeys(text, textArray);
+    getRegexKeys(text, textArray, [], false);
     return filterDuplicate(textArray);
   }
   return [];
 };
 export const getKeys = (el: Element) => {
-  const attrArray: ArrayStringType = getAttrKeys(el);
+  const attrArray: [ArrayStringType, ArrayStringType] = getAttrKeys(el);
   const textArray: ArrayStringType = getTextKeys(el);
-  const arr: ArrayStringType = concatArrays(textArray, attrArray);
-  return filterDuplicate(arr);
+  const arr: ArrayStringType = concatArrays(textArray, attrArray[0]);
+  return [filterDuplicate(arr), filterDuplicate(attrArray[1])];
 };
 
 export const getExportData = (
-  obj1: ExportDataType,
+  obj1: ExportCampleDataType,
   obj2: ExportDataType,
   index: ExportIdType
-) => {
+): ExportCampleDataType => {
   const result = obj1;
   if (checkObject(obj2)) {
     Object.keys(obj2).forEach((key, i) => {
       if (!result.hasOwnProperty(key)) {
-        result[key] = {};
+        const valueData: ExportDataValueType = {
+          value: {},
+          components: []
+        };
+        result[key] = valueData;
       }
       const cloneVal = obj2[key];
-      result[key][index] = cloneVal;
+      result[key].value[index] = cloneVal;
     });
   } else {
     createError("Export data is object");
@@ -196,7 +224,7 @@ export const getExportData = (
   return result;
 };
 
-export const concatObjects = (obj1: DataType, obj2: DataType) => {
+export const concatObjects = (obj1: object, obj2: object) => {
   const result = obj1;
   if (checkObjectCondition(result, obj2)) {
     Object.entries(obj2).forEach(([key, value]) => {
@@ -216,14 +244,54 @@ export const checkFunction = (val: any) => {
   return Object.prototype.toString.call(val) === "[object Function]";
 };
 
-export const getDynamicElements = (e: Element): ElementsType => {
+export const testExportRegex = (text: string) => {
+  let isExport = false;
+  const newText = text.replace(/\s+/g, "");
+  newText.replace(/\{{{(.*?)}}}/g, (str, d) => {
+    const key = d.trim();
+    if (key) isExport = true;
+    return str;
+  });
+  return isExport;
+};
+export const testEventKey = (key: string) => {
+  return key.includes(":") && key[0] === ":";
+};
+export const getEventAttrs = (el: Element) => {
+  const eventAttrs: ArrayStringType = [];
+  if (el) {
+    const attrs = Array.from(el.attributes);
+    attrs.forEach((e) => {
+      if (testEventKey(e.name)) {
+        eventAttrs.push(e.name);
+      }
+    });
+  }
+  return eventAttrs;
+};
+
+export const getDynamicElements = (
+  e: Element,
+  isExport = false
+): ElementsType => {
   const els: ElementsType = [];
   if (e) {
     const getDynamicEls = (child: Element) => {
-      const arrayText = getTextArray(Array.from(child.childNodes));
-      const regexAttr = Array.from(child.attributes)
-        .map((attr) => attr.value)
-        .filter((a) => testRegex(a));
+      const arrayText = isExport
+        ? []
+        : getTextArray(Array.from(child.childNodes));
+      const regexAttr = isExport
+        ? Array.from(child.attributes)
+            .filter((attr) => {
+              return (
+                attr.name === "data-cample-import" &&
+                testExportRegex(attr.value)
+              );
+            })
+            .map((attr) => attr.value)
+        : Array.from(child.attributes)
+            .map((attr) => attr.value)
+            .filter((a) => testRegex(a));
       if (
         (arrayText.length &&
           testRegex(
@@ -258,13 +326,18 @@ export const createEl = (
   return el;
 };
 
-export const getArrImportString = (arr: ImportObjectType | undefined) => {
-  if (arr && arr.value && Array.isArray(arr.value)) {
-    arr.value = arr.value.map((val) => val.replace(/\s+/g, ""));
-    const importString = arr.value.join(";");
+export const getArrImportString = (
+  obj: ImportObjectType | undefined,
+  index: number
+) => {
+  if (obj && obj.value && Array.isArray(obj.value)) {
+    obj.value = obj.value.map((val) => val.replace(/\s+/g, ""));
+    const importString = obj.value.join(";");
     const importObj: ImportObjectStringType = {
       import: importString,
-      exportId: arr.exportId
+      exportId: obj.exportId,
+      index,
+      importIndex: obj.importIndex
     };
     return JSON.stringify(importObj);
   } else {

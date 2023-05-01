@@ -12,10 +12,10 @@ import {
 } from "../../../types/types";
 import { createError } from "../../../shared/utils";
 import { renderHTML } from "../../functions/render/render-html";
-import { ParentComponent } from "../parent-component/parent-component";
 import { renderComponents } from "../../functions/render/render-components";
+import { StaticDataComponent } from "../static-data-cmponent/static-data-component";
 
-export class AnimationComponent extends ParentComponent {
+export class AnimationComponent extends StaticDataComponent {
   public component: ComponentType;
   public options: AnimationOptionsType;
   public styleAnimation: string;

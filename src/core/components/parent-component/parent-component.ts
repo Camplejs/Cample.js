@@ -2,7 +2,6 @@
 import {
   AttributesType,
   DefaultOptionsType,
-  ExportDataType,
   ExportIdType,
   SelectorType,
   StyleType
@@ -12,7 +11,6 @@ export class ParentComponent {
   public template: string;
   public selector: SelectorType;
   public style: StyleType | undefined;
-  public export?: ExportDataType;
   public attributes: AttributesType | undefined;
   public exportId?: ExportIdType;
   public replaceTag?: boolean;
@@ -30,7 +28,6 @@ export class ParentComponent {
     this.trimHTML = options.trimHTML;
     this.attributes = options.attributes;
     this.style = options.style;
-    this.export = options.export;
     this.exportId = options.exportId;
   }
 
@@ -39,9 +36,6 @@ export class ParentComponent {
   }
   get _getStyle(): StyleType {
     return this.style;
-  }
-  get _getExport(): ExportDataType | undefined {
-    return this.export;
   }
   get _getExportId(): ExportIdType | undefined {
     return this.exportId;

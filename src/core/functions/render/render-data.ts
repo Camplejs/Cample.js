@@ -3,9 +3,9 @@ export const renderData = (data: any, index: number): any => {
   if (typeof data === "undefined") return undefined;
   if (Array.isArray(data)) return data;
   if (typeof data === "object" && data && !Array.isArray(data)) {
-    if (data.value !== undefined || data.defaultValue !== undefined) {
+    if (data.hasOwnProperty("value") || data.hasOwnProperty("defaultValue")) {
       let returnValue = data;
-      if (data.defaultValue !== undefined) {
+      if (data.hasOwnProperty("defaultValue")) {
         if (
           (Array.isArray(data.defaultValue) &&
             data.valuesBind &&
@@ -17,7 +17,7 @@ export const renderData = (data: any, index: number): any => {
           returnValue = data.defaultValue;
         }
       }
-      if (data.value !== undefined) {
+      if (data.hasOwnProperty("value")) {
         if (
           (Array.isArray(data.value) &&
             data.valuesBind &&

@@ -2,12 +2,12 @@
 import { renderStyle } from "./functions/render/render-style";
 import {
   CampleOptionsType,
-  ExportDataType,
+  ExportCampleDataType,
   OptionsType,
   SelectorType
 } from "../types/types";
 import { renderTemplate } from "./functions/render/render-template";
-import { getExportData } from "../shared/utils";
+import { checkFunction, getExportData } from "../shared/utils";
 
 export class Cample {
   public selector: SelectorType;
@@ -15,7 +15,7 @@ export class Cample {
   public style: string;
   public replaceTags: boolean;
   public trimHTML?: boolean;
-  public exportData: ExportDataType;
+  public exportData: ExportCampleDataType;
 
   constructor(
     selector: SelectorType,
@@ -37,18 +37,39 @@ export class Cample {
     if (typeof this.selector === "string") {
       const el: Element | null = document.querySelector(this.selector);
       if (el) el.innerHTML = this.template;
-      Object.keys(options).forEach((e, i) => {
+      Object.keys(options).forEach((e) => {
         if (options[e]._getStyle) {
           this.style += options[e]._getStyle;
         }
-        if (options[e]._getExport) {
-          this.exportData = getExportData(
-            this.exportData,
-            options[e]._getExport,
-            options[e]._getExportId !== undefined ? options[e]._getExportId : i
-          );
-        }
       });
+      const setComponents = (selector: string, component: any) => {
+        if (selector && this.exportData.hasOwnProperty(selector)) {
+          this.exportData[selector].components.push(component);
+        }
+      };
+      const setExport = (
+        selector: any,
+        data: any,
+        exportId: number,
+        index = 0
+      ) => {
+        if (selector && this.exportData.hasOwnProperty(selector)) {
+          this.exportData[selector].value[exportId][index] = data;
+          this.exportData[selector].components.forEach((e) => {
+            e.render(
+              this.replaceTags,
+              this.trimHTML,
+              selector && this.exportData.hasOwnProperty(selector)
+                ? this.exportData[selector].value
+                : undefined,
+              e._getExportId !== undefined
+                ? options[e]._getExportId
+                : undefined,
+              "dynamic"
+            );
+          });
+        }
+      };
       renderStyle(this.style);
       Object.keys(options).forEach((e, i) => {
         const selector = options[e]._getSelector;
@@ -56,7 +77,7 @@ export class Cample {
           this.replaceTags,
           this.trimHTML,
           selector && this.exportData.hasOwnProperty(selector)
-            ? this.exportData[selector]
+            ? this.exportData[selector].value
             : undefined,
           options[e]._getExportId !== undefined
             ? options[e]._getExportId
@@ -64,6 +85,23 @@ export class Cample {
             ? i
             : undefined
         );
+        if (selector && this.exportData.hasOwnProperty(selector)) {
+          setComponents(selector, options[e]);
+        }
+        if (options[e]._getExport) {
+          const exportData = checkFunction(options[e]._getExport)
+            ? options[e]._getExport(setExport)
+            : options[e]._getExport;
+          if (exportData) {
+            this.exportData = getExportData(
+              this.exportData,
+              exportData,
+              options[e]._getExportId !== undefined
+                ? options[e]._getExportId
+                : i
+            );
+          }
+        }
       });
     }
   }

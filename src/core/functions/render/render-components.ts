@@ -80,7 +80,7 @@ export const renderComponents = (
             value: importArray,
             exportId: exportNewId
           };
-          return getArrImportString(importObj);
+          return getArrImportString(importObj, 0);
         } else {
           createError("Import type error");
         }

@@ -29,7 +29,8 @@ export const renderScript = (
     return {
       elements: currentElements,
       functions: currentFunctions,
-      data: currentData
+      data: currentData,
+      import: exportData
     };
   };
   if (Array.isArray(script)) {

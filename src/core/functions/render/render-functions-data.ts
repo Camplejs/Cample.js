@@ -24,8 +24,8 @@ export const renderFunctionsData = (
     for (const key in data) {
       if (
         data[key] &&
-        (data[key].value !== undefined ||
-          data[key].defaultValue !== undefined) &&
+        (data[key].hasOwnProperty("value") ||
+          data[key].hasOwnProperty("defaultValue")) &&
         data[key].function &&
         typeof data[key].function === "string"
       ) {

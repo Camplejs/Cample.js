@@ -1,19 +1,22 @@
 "use strict";
 import {
+  EachDynamicNodeComponentType,
   DynamicNodeComponentNodeType,
-  DynamicNodeComponentType,
-  ElementsType
+  ElementsType,
+  ImportObjectType
 } from "../../../types/types";
 
-export const createDynamicNodeComponent = (
+export const createEachDynamicNodeComponentType = (
   dataId: number,
   elements: ElementsType,
   parentNode: ParentNode,
   nodePrevious?: DynamicNodeComponentNodeType,
-  nodeNext?: DynamicNodeComponentNodeType
-): DynamicNodeComponentType => {
+  nodeNext?: DynamicNodeComponentNodeType,
+  currentImport?: ImportObjectType
+): EachDynamicNodeComponentType => {
   const DynamicNodeComponentType = {
     id: dataId,
+    import: currentImport,
     elements,
     nodePrevious,
     nodeNext,

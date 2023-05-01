@@ -8,7 +8,6 @@ export class Dynamic {
   constructor() {
     this.dynamicNodes = [];
     this.data = {
-      functions: {},
       nodes: [],
       data: {
         values: [],

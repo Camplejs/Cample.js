@@ -4,9 +4,9 @@ import {
   SelectorType,
   DefaultOptionsType
 } from "../../../types/types";
-import { ParentComponent } from "../parent-component/parent-component";
+import { StaticDataComponent } from "../static-data-cmponent/static-data-component";
 
-export class Operator extends ParentComponent {
+export class Operator extends StaticDataComponent {
   public components: ComponentsType;
   public replaceTags?: boolean;
 

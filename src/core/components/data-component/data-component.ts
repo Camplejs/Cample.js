@@ -1,8 +1,12 @@
 "use-strict";
+
 import {
+  DataExportObjectType,
   DefaultDataOptionsType,
-  ExportDataArrayType,
+  ExportDataType,
+  ExportDynamicType,
   ExportIdType,
+  ExportObjectDataArrayType,
   ImportObjectType,
   ScriptType,
   SelectorType
@@ -15,7 +19,11 @@ export class DataComponent extends ParentComponent {
   public import?: ImportObjectType;
   public script: ScriptType | undefined;
   public _dynamic: Dynamic;
-  public dataSet: ExportDataArrayType;
+  public exportDataObjects: ExportObjectDataArrayType;
+  public export?: ExportDataType | ExportDynamicType;
+  public exportObj?: DataExportObjectType;
+  public isExportStatic?: boolean;
+  public setExportData?: (...args: any[]) => any;
 
   constructor(
     selector: SelectorType,
@@ -23,10 +31,15 @@ export class DataComponent extends ParentComponent {
   ) {
     super(selector, options);
     this.script = options.script;
-    this.dataSet = [];
     this._dynamic = new Dynamic();
     this.import = options.import;
     this.importId = undefined;
+    this.export = options.export;
+    this.setExportData = undefined;
+    this.exportDataObjects = [];
+    this.exportObj = undefined;
+    this.isExportStatic =
+      options.isExportStatic !== undefined ? options.isExportStatic : false;
   }
 
   get _getImport(): ImportObjectType | undefined {
