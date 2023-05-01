@@ -13,7 +13,7 @@ export type BindType = Array<string>;
 
 export type TemplateType = string | undefined;
 
-export type IndexType = number; // number | "all" | "last"
+export type IndexType = number;
 
 export type ImportObjectType = {
   value: ImportType;
