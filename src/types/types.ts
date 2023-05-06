@@ -13,7 +13,7 @@ export type BindType = Array<string>;
 
 export type TemplateType = string | undefined;
 
-export type IndexType = number;
+export type IndexType = number; // number | "all" | "last"
 
 export type ImportObjectType = {
   value: ImportType;
@@ -212,7 +212,15 @@ export type DynamicType = {
     currentId: number;
   };
 };
-
+export type ValuesArguments = {
+  [key: string]: any;
+};
+export type ValuesValueType = {
+  [key: string]: {
+    [key: string]: boolean;
+  };
+};
+export type ValuesType = (args: ValuesArguments) => ValuesValueType;
 export type ArgumentsArrayType = Array<any>;
 
 export type EventGetDataType = (
@@ -300,6 +308,7 @@ export type ComponentRenderType = "dynamic" | "static";
 export type DefaultDataOptionsType = RootOptionsType & {
   import?: ImportObjectType;
   script?: ScriptType;
+  values?: ValuesType;
   isExportStatic?: boolean;
 };
 export type IndexValueDataType = {

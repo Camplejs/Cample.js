@@ -63,11 +63,7 @@ export const isValuesEqual = (val: any, newVal: any): boolean => {
   if (typeof val !== typeof newVal) return false;
 
   if (val === null || newVal === null) {
-    if (val === newVal) {
-      return true;
-    } else {
-      false;
-    }
+    return val === newVal;
   }
   if (
     val !== newVal &&
@@ -242,6 +238,13 @@ export const concatObjects = (obj1: object, obj2: object) => {
 
 export const checkFunction = (val: any) => {
   return Object.prototype.toString.call(val) === "[object Function]";
+};
+
+export const testValuesRegex = (key: string) => {
+  const newRegex = /\[+(.*?)\]+/g;
+  const newKey = key.replace(/\s+/g, "");
+  const isValues = newRegex.test(newKey);
+  return isValues;
 };
 
 export const testExportRegex = (text: string) => {

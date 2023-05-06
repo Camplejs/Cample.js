@@ -13,7 +13,8 @@ import {
   filterKey,
   cloneValue,
   createElement,
-  getEventAttrs
+  getEventAttrs,
+  testValuesRegex
 } from "../../../../shared/utils";
 import {
   DataType,
@@ -42,7 +43,8 @@ import {
   ImportDataType,
   DynamicKeyObjectType,
   IdType,
-  ArrayStringType
+  ArrayStringType,
+  ValuesArguments
 } from "../../../../types/types";
 import { createEachDynamicNodeComponentType } from "../../../functions/data/create-each-dynamic-node-component";
 import { createNode } from "../../../functions/data/create-node";
@@ -55,10 +57,10 @@ import { renderIndexData } from "../../../functions/render/render-index-data";
 import { renderScript } from "../../../functions/render/render-script";
 import { renderTemplateElement } from "../../../functions/render/render-template-element";
 import { DataComponent } from "../../data-component/data-component";
-import { renderComponentDynamicKeyData } from "../../../functions/data/render-component-dynamic-key-data";
 import { createArgumentsTemplateFunction } from "../../../functions/data/create-arguments-template-function";
 import { renderKey } from "../../../functions/render/render-key";
 import { renderStaticExport } from "../../../functions/data/render-static-export";
+import { renderDynamicKey } from "../../../functions/render/render-dynamic-key";
 
 export class Each extends DataComponent {
   public data: EachDataType;
@@ -118,7 +120,20 @@ export class Each extends DataComponent {
               );
             }
           }
-
+          const getValues = (dataId: number, eachIndex?: number) => {
+            const indexData = renderIndexData(getData(dataId), eachIndex);
+            if (this.values) {
+              if (checkFunction(this.values)) {
+                const valuesArguments: ValuesArguments = {
+                  [this.valueName]: indexData,
+                  currentData: getData(dataId),
+                  [this.importedDataName]: getImportData(dataId)
+                };
+                const values = this.values(valuesArguments);
+                return values;
+              } else createError("Values error");
+            } else return undefined;
+          };
           const renderEachFunction = (
             updateFunction: (
               name: string,
@@ -151,12 +166,17 @@ export class Each extends DataComponent {
                   const newKey = getKey(filtredVal.key);
                   if (
                     newKey === this.valueName ||
-                    newKey === this.importedDataName
+                    newKey === this.importedDataName ||
+                    testValuesRegex(filtredVal.key)
                   ) {
-                    const dataArray = renderComponentDynamicKeyData(
+                    const values = testValuesRegex(filtredVal.key)
+                      ? getValues(e.dataId, e.eachIndex)
+                      : undefined;
+                    const dataArray = renderDynamicKey(
                       newKey === this.valueName ? val : importData,
                       newKey === this.valueName ? index : 0,
                       filtredVal.key,
+                      values,
                       true,
                       newKey === this.valueName ? this.componentData : false
                     );
@@ -189,12 +209,17 @@ export class Each extends DataComponent {
                     const newKey = getKey(keyAttr);
                     if (
                       newKey === this.valueName ||
-                      newKey === this.importedDataName
+                      newKey === this.importedDataName ||
+                      testValuesRegex(keyAttr)
                     ) {
-                      const dataArray = renderComponentDynamicKeyData(
+                      const values = testValuesRegex(keyAttr)
+                        ? getValues(e.dataId, e.eachIndex)
+                        : undefined;
+                      const dataArray = renderDynamicKey(
                         newKey === this.valueName ? indexData : importData,
                         newKey === this.valueName ? index : 0,
                         keyAttr,
+                        values,
                         true,
                         newKey === this.valueName ? this.componentData : false
                       );
@@ -613,10 +638,14 @@ export class Each extends DataComponent {
             const indexData = renderIndexData(getData(dataId), eachIndex);
             const importData = getImportData(dataId);
             const newKey = getKey(key);
-            const dataArray = renderComponentDynamicKeyData(
+            const values = testValuesRegex(key)
+              ? getValues(dataId, eachIndex)
+              : undefined;
+            const dataArray = renderDynamicKey(
               newKey === this.valueName ? indexData : importData,
               newKey === this.valueName ? index : 0,
               key,
+              values,
               true,
               newKey === this.valueName ? this.componentData : false
             );
@@ -726,7 +755,6 @@ export class Each extends DataComponent {
                   } else {
                     dataValue = undefined;
                   }
-
                   setNode(
                     el,
                     index,
@@ -765,12 +793,20 @@ export class Each extends DataComponent {
                 const newKey = getKey(val.key);
                 if (
                   newKey === this.valueName ||
-                  newKey === this.importedDataName
+                  newKey === this.importedDataName ||
+                  testValuesRegex(val.key)
                 ) {
-                  const dataArray = renderComponentDynamicKeyData(
+                  const values = testValuesRegex(val.key)
+                    ? getValues(
+                        this._dynamic.dynamicNodes[i].dataId,
+                        this._dynamic.dynamicNodes[i].eachIndex
+                      )
+                    : undefined;
+                  const dataArray = renderDynamicKey(
                     newKey === this.valueName ? indexData : importData,
                     newKey === this.valueName ? index : 0,
                     val.key,
+                    values,
                     true,
                     newKey === this.valueName ? this.componentData : false
                   );
@@ -806,12 +842,20 @@ export class Each extends DataComponent {
                     const newKey = getKey(keyAttr);
                     if (
                       newKey === this.valueName ||
-                      newKey === this.importedDataName
+                      newKey === this.importedDataName ||
+                      testValuesRegex(keyAttr)
                     ) {
-                      const dataArray = renderComponentDynamicKeyData(
+                      const values = testValuesRegex(keyAttr)
+                        ? getValues(
+                            this._dynamic.dynamicNodes[i].dataId,
+                            this._dynamic.dynamicNodes[i].eachIndex
+                          )
+                        : undefined;
+                      const dataArray = renderDynamicKey(
                         newKey === this.valueName ? indexData : importData,
                         newKey === this.valueName ? index : 0,
                         keyAttr,
+                        values,
                         true,
                         newKey === this.valueName ? this.componentData : false
                       );

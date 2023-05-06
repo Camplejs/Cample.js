@@ -4,7 +4,8 @@ import {
   createError,
   getTextArray,
   isValuesEqual,
-  testKeyRegex
+  testKeyRegex,
+  testValuesRegex
 } from "../../../shared/utils";
 import { TextArrayType, DynamicTextType } from "../../../types/types";
 import { renderData } from "../render/render-data";
@@ -20,7 +21,7 @@ export const updateText = (
   isComponentData = true
 ) => {
   if (el) {
-    const { key } = updTxt;
+    let { key } = updTxt;
     const newVal = updTxt;
     if (updTxt.texts.length) {
       updTxt.texts.forEach((e, i) => {
@@ -95,6 +96,32 @@ export const updateText = (
                 }
                 return str;
               });
+              if (testValuesRegex(key)) {
+                const getKey = (text: string) => {
+                  const newText = text;
+                  const regex = /\[+(.*?)\]+/g;
+                  let valuesKey = "";
+                  newText.replace(regex, (str, d) => {
+                    const key = d.trim();
+                    valuesKey = key;
+                    return str;
+                  });
+                  return valuesKey;
+                };
+                const newReg = /{{\[+(.*?)\]}}+/g;
+                const newKey = t.textContent;
+                let valuesKey = "";
+                const valuesText = newKey.replace(newReg, (str, d) => {
+                  const regKey = d.trim();
+                  if (regKey === getKey(key)) {
+                    valuesKey = regKey;
+                    return `{{${regKey}}}`;
+                  }
+                  return str;
+                });
+                key = valuesKey;
+                t.textContent = valuesText;
+              }
               const reg = new RegExp(`{{${key}}}(.*)`, "s");
               const arrSplit = t.textContent.split(reg);
               const filteredArr = arrSplit.filter((txt) => txt);

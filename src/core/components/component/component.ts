@@ -37,7 +37,8 @@ import {
   ExportTemplateFunctionArrayType,
   FunctionsType,
   ExportTemplateFunctionsValueType,
-  EventKeyObjectArrayType
+  EventKeyObjectArrayType,
+  ValuesArguments
 } from "../../../types/types";
 import {
   checkFunction,
@@ -60,13 +61,13 @@ import { checkObject } from "../../../shared/utils";
 import { renderImport } from "../../functions/render/render-import";
 import { DataComponent } from "../data-component/data-component";
 import { createNode } from "../../functions/data/create-node";
-import { renderComponentDynamicKeyData } from "../../functions/data/render-component-dynamic-key-data";
 import { renderKey } from "../../functions/render/render-key";
 import { renderElements } from "../../functions/render/render-elements";
 import { createComponentDynamicNodeComponentType } from "../../functions/data/create-component-dynamic-node-component";
 import { renderData } from "../../functions/render/render-data";
 import { renderEventKey } from "../../functions/render/render-event-key";
 import { renderStaticExport } from "../../functions/data/render-static-export";
+import { renderDynamicKey } from "../../functions/render/render-dynamic-key";
 
 export class Component extends DataComponent {
   public data: DataComponentType;
@@ -174,10 +175,12 @@ export class Component extends DataComponent {
       const renderDynamicNodes = (key: string, index: number) => {
         if (this._dynamic.dynamicNodes.length < 2048) {
           this._dynamic.dynamicNodes.forEach((e, i) => {
-            const dataArray = renderComponentDynamicKeyData(
+            const values = getValues(e.dataId);
+            const dataArray = renderDynamicKey(
               getData(e.dataId),
               index,
-              key
+              key,
+              values
             );
             const val = dataArray[0];
             const isProperty = dataArray[1];
@@ -227,21 +230,31 @@ export class Component extends DataComponent {
         this._dynamic.data.nodes.push(node);
       };
       const getEventsData = (key: string, dataId: number, index: number) => {
-        const dataArray = renderComponentDynamicKeyData(
-          getData(dataId),
-          index,
-          key
-        );
+        const values = getValues(dataId);
+        const dataArray = renderDynamicKey(getData(dataId), index, key, values);
         return dataArray[0];
+      };
+      const getValues = (dataId: number) => {
+        if (this.values) {
+          if (checkFunction(this.values)) {
+            const valuesArguments: ValuesArguments = {
+              data: getData(dataId)
+            };
+            const values = this.values(valuesArguments);
+            return values;
+          } else createError("Values error");
+        } else return undefined;
       };
       const render = (index: number, isFirst = true) => {
         setDynamicNodes("", true);
         for (let i = 0; i < this._dynamic.dynamicNodes.length; i++) {
           this._dynamic.dynamicNodes[i].dynamicTexts.forEach((val, j) => {
-            const dataArray = renderComponentDynamicKeyData(
+            const values = getValues(this._dynamic.dynamicNodes[i].dataId);
+            const dataArray = renderDynamicKey(
               getData(this._dynamic.dynamicNodes[i].dataId),
               index,
-              val.key
+              val.key,
+              values
             );
             const newData = dataArray[0];
             const isProperty = dataArray[1];
@@ -268,10 +281,12 @@ export class Component extends DataComponent {
           });
           if (Object.keys(this._dynamic.dynamicNodes[i].attrs).length) {
             this._dynamic.dynamicNodes[i].dynamicAttrs.forEach((keyAttr) => {
-              const dataArray = renderComponentDynamicKeyData(
+              const values = getValues(this._dynamic.dynamicNodes[i].dataId);
+              const dataArray = renderDynamicKey(
                 getData(this._dynamic.dynamicNodes[i].dataId),
                 index,
-                keyAttr
+                keyAttr,
+                values
               );
               const newData = dataArray[0];
               const isProperty = dataArray[1];
@@ -396,10 +411,12 @@ export class Component extends DataComponent {
       ) => {
         const newObjectData = cloneExportObject(obj);
         const renderNewData = (value: string) => {
-          const dataArray = renderComponentDynamicKeyData(
+          const values = getValues(index);
+          const dataArray = renderDynamicKey(
             getData(index),
             index,
-            value
+            value,
+            values
           );
           const newData = dataArray[0];
           const isProperty = dataArray[1];

@@ -1,3 +1,5 @@
+"use-strict";
+
 import { ElementsElementType, ScriptElementsType } from "../../../types/types";
 
 export const renderScriptElements = (

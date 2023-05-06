@@ -1,3 +1,4 @@
+"use-strict";
 import { checkObject } from "../../../shared/utils";
 import { ScriptType } from "../../../types/types";
 
