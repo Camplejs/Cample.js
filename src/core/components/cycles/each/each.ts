@@ -482,7 +482,7 @@ export class Each extends DataComponent {
                 renderDynamicNodes(index, importData);
               } catch (err) {
                 this._dynamic.dynamicNodes = [];
-                createError("Maximum render");
+                createError("Render error");
               }
               renderEachFunction(
                 updateFunction,
@@ -1107,7 +1107,7 @@ export class Each extends DataComponent {
               renderDynamicNodes(index, importData);
             } catch (err) {
               this._dynamic.dynamicNodes = [];
-              createError("Maximum render");
+              createError("Render error");
             }
           };
           if (this.selector) {

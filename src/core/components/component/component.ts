@@ -1147,7 +1147,7 @@ export class Component extends DataComponent {
               data,
               updateFunction,
               true,
-              undefined,
+              this._dynamic.data.data.currentId,
               index,
               []
             );
