@@ -237,6 +237,7 @@ export type EventEachGetDataType = (
 ) => any;
 
 export type EventFunctionType = (...args: any[]) => any;
+
 export type ListenerValueType = {
   value: EventKeyObjectType;
   fn?: EventFunctionType;

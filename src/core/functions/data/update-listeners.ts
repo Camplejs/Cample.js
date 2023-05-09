@@ -19,7 +19,7 @@ export const updateListeners = (
     if (isFirst) {
       el.addEventListener(key, () => {
         const newArgs = args.map((e) => getEventsData(e));
-        fn.apply(this, newArgs);
+        fn().apply(this, newArgs);
       });
     }
   }
