@@ -156,7 +156,7 @@ export class Each extends DataComponent {
             index: number,
             importData: ImportDataType | undefined
           ) => {
-            if (this._dynamic.dynamicNodes.length < 2048) {
+            if (this._dynamic.dynamicNodes.length < 65536) {
               this._dynamic.dynamicNodes.forEach((e, i) => {
                 const val = renderIndexData(getData(e.dataId), e.eachIndex);
                 e.dynamicTexts.forEach((filtredVal: DynamicTextType) => {

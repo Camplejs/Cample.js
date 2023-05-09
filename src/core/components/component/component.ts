@@ -173,7 +173,7 @@ export class Component extends DataComponent {
         return this._dynamic.data.data.values[dynamicIndex];
       };
       const renderDynamicNodes = (key: string, index: number) => {
-        if (this._dynamic.dynamicNodes.length < 2048) {
+        if (this._dynamic.dynamicNodes.length < 65536) {
           this._dynamic.dynamicNodes.forEach((e, i) => {
             const values = getValues(e.dataId);
             const dataArray = renderDynamicKey(
