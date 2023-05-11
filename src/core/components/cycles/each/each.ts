@@ -156,26 +156,68 @@ export class Each extends DataComponent {
             index: number,
             importData: ImportDataType | undefined
           ) => {
-            if (this._dynamic.dynamicNodes.length < 65536) {
-              this._dynamic.dynamicNodes.forEach((e, i) => {
-                const val = renderIndexData(getData(e.dataId), e.eachIndex);
-                e.dynamicTexts.forEach((filtredVal: DynamicTextType) => {
-                  const index = e.dynamicTexts.indexOf(filtredVal);
+            this._dynamic.dynamicNodes.forEach((e, i) => {
+              const val = renderIndexData(getData(e.dataId), e.eachIndex);
+              e.dynamicTexts.forEach((filtredVal: DynamicTextType) => {
+                const index = e.dynamicTexts.indexOf(filtredVal);
+                let newData: any = undefined;
+                let isProperty = false;
+                const newKey = getKey(filtredVal.key);
+                if (
+                  newKey === this.valueName ||
+                  newKey === this.importedDataName ||
+                  testValuesRegex(filtredVal.key)
+                ) {
+                  const values = testValuesRegex(filtredVal.key)
+                    ? getValues(e.dataId, e.eachIndex)
+                    : undefined;
+                  const dataArray = renderDynamicKey(
+                    newKey === this.valueName ? val : importData,
+                    newKey === this.valueName ? index : 0,
+                    filtredVal.key,
+                    values,
+                    true,
+                    newKey === this.valueName ? this.componentData : false
+                  );
+                  newData = dataArray[0];
+                  isProperty = dataArray[1];
+                }
+                this._dynamic.dynamicNodes[i].dynamicTexts[index] =
+                  e.updateText(newData, filtredVal, e.texts, isProperty);
+                this._dynamic.dynamicNodes[i].texts = filterDuplicate(
+                  concatArrays(
+                    this._dynamic.dynamicNodes[i].texts,
+                    this._dynamic.dynamicNodes[i].dynamicTexts[index].texts
+                  )
+                );
+                this._dynamic.dynamicNodes[i].texts =
+                  this._dynamic.dynamicNodes[i].texts.filter((text) => {
+                    if (text) {
+                      return text;
+                    }
+                  });
+              });
+              if (Object.keys(e.attrs).length) {
+                e.dynamicAttrs.forEach((keyAttr) => {
+                  const indexData = renderIndexData(
+                    getData(e.dataId),
+                    e.eachIndex
+                  );
                   let newData: any = undefined;
                   let isProperty = false;
-                  const newKey = getKey(filtredVal.key);
+                  const newKey = getKey(keyAttr);
                   if (
                     newKey === this.valueName ||
                     newKey === this.importedDataName ||
-                    testValuesRegex(filtredVal.key)
+                    testValuesRegex(keyAttr)
                   ) {
-                    const values = testValuesRegex(filtredVal.key)
+                    const values = testValuesRegex(keyAttr)
                       ? getValues(e.dataId, e.eachIndex)
                       : undefined;
                     const dataArray = renderDynamicKey(
-                      newKey === this.valueName ? val : importData,
+                      newKey === this.valueName ? indexData : importData,
                       newKey === this.valueName ? index : 0,
-                      filtredVal.key,
+                      keyAttr,
                       values,
                       true,
                       newKey === this.valueName ? this.componentData : false
@@ -183,74 +225,28 @@ export class Each extends DataComponent {
                     newData = dataArray[0];
                     isProperty = dataArray[1];
                   }
-                  this._dynamic.dynamicNodes[i].dynamicTexts[index] =
-                    e.updateText(newData, filtredVal, e.texts, isProperty);
-                  this._dynamic.dynamicNodes[i].texts = filterDuplicate(
-                    concatArrays(
-                      this._dynamic.dynamicNodes[i].texts,
-                      this._dynamic.dynamicNodes[i].dynamicTexts[index].texts
-                    )
-                  );
-                  this._dynamic.dynamicNodes[i].texts =
-                    this._dynamic.dynamicNodes[i].texts.filter((text) => {
-                      if (text) {
-                        return text;
-                      }
-                    });
+                  this._dynamic.dynamicNodes[i].attrs =
+                    this._dynamic.dynamicNodes[i].updateAttr(
+                      newData,
+                      keyAttr,
+                      isProperty
+                    );
                 });
-                if (Object.keys(e.attrs).length) {
-                  e.dynamicAttrs.forEach((keyAttr) => {
-                    const indexData = renderIndexData(
-                      getData(e.dataId),
-                      e.eachIndex
-                    );
-                    let newData: any = undefined;
-                    let isProperty = false;
-                    const newKey = getKey(keyAttr);
-                    if (
-                      newKey === this.valueName ||
-                      newKey === this.importedDataName ||
-                      testValuesRegex(keyAttr)
-                    ) {
-                      const values = testValuesRegex(keyAttr)
-                        ? getValues(e.dataId, e.eachIndex)
-                        : undefined;
-                      const dataArray = renderDynamicKey(
-                        newKey === this.valueName ? indexData : importData,
-                        newKey === this.valueName ? index : 0,
-                        keyAttr,
-                        values,
-                        true,
-                        newKey === this.valueName ? this.componentData : false
-                      );
-                      newData = dataArray[0];
-                      isProperty = dataArray[1];
-                    }
-                    this._dynamic.dynamicNodes[i].attrs =
-                      this._dynamic.dynamicNodes[i].updateAttr(
-                        newData,
-                        keyAttr,
-                        isProperty
-                      );
-                  });
-                }
-                if (Object.keys(e.listeners).length) {
-                  Object.entries(e.listeners).forEach(([key, value]) => {
-                    const newArgs = [...value.value.arguments];
-                    this._dynamic.dynamicNodes[i].updateListeners(
-                      value.fn,
-                      newArgs,
-                      key,
-                      e.isListeners,
-                      e.eachIndex
-                    );
-                    this._dynamic.dynamicNodes[i].isListeners = false;
-                  });
-                }
-              });
-            } else {
-              createError("Maximum render");
-            }
+              }
+              if (Object.keys(e.listeners).length) {
+                Object.entries(e.listeners).forEach(([key, value]) => {
+                  const newArgs = [...value.value.arguments];
+                  this._dynamic.dynamicNodes[i].updateListeners(
+                    value.fn,
+                    newArgs,
+                    key,
+                    e.isListeners,
+                    e.eachIndex
+                  );
+                  this._dynamic.dynamicNodes[i].isListeners = false;
+                });
+              }
+            });
             this._dynamic.dynamicNodes = [];
           };
           const setElement = (
@@ -363,16 +359,15 @@ export class Each extends DataComponent {
                 : Object.keys(newData).length;
               if (oldDataLength < newDataLength) {
                 const diffrenceLength = newDataLength - oldDataLength;
-                const lastIndex = oldDataLength ? oldDataLength - 1 : 0;
+                let newNodePrevious = nodePrevious;
                 for (let i = 0; i < diffrenceLength; i++) {
                   const newIndex = oldDataLength + i;
-                  const el: LastNodeType = elements[lastIndex];
                   if (oldDataLength === 0) {
-                    if (nodePrevious) {
+                    if (newNodePrevious) {
                       setElement(
                         currentDynamicNodeComponentType,
                         newData,
-                        nodePrevious,
+                        newNodePrevious,
                         parentNode,
                         index,
                         dataId,
@@ -380,6 +375,7 @@ export class Each extends DataComponent {
                         undefined,
                         importData
                       );
+                      newNodePrevious = newNodePrevious.nextSibling;
                     } else if (nodeNext) {
                       setElement(
                         currentDynamicNodeComponentType,
@@ -408,6 +404,8 @@ export class Each extends DataComponent {
                       createError("Each render error");
                     }
                   } else {
+                    if (elements.length === 0) createError("Elements error");
+                    let el: LastNodeType = elements[elements.length - 1];
                     setElement(
                       currentDynamicNodeComponentType,
                       newData,
@@ -419,6 +417,9 @@ export class Each extends DataComponent {
                       undefined,
                       importData
                     );
+                    if (el.nextSibling) {
+                      el = el.nextSibling;
+                    } else createError("Each render error");
                   }
                 }
               } else if (oldDataLength > newDataLength) {

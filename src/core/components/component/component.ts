@@ -173,51 +173,47 @@ export class Component extends DataComponent {
         return this._dynamic.data.data.values[dynamicIndex];
       };
       const renderDynamicNodes = (key: string, index: number) => {
-        if (this._dynamic.dynamicNodes.length < 65536) {
-          this._dynamic.dynamicNodes.forEach((e, i) => {
-            const values = getValues(e.dataId);
-            const dataArray = renderDynamicKey(
-              getData(e.dataId),
-              index,
-              key,
-              values
+        this._dynamic.dynamicNodes.forEach((e, i) => {
+          const values = getValues(e.dataId);
+          const dataArray = renderDynamicKey(
+            getData(e.dataId),
+            index,
+            key,
+            values
+          );
+          const val = dataArray[0];
+          const isProperty = dataArray[1];
+          const filtredValues = filterKey(e.dynamicTexts, key);
+          filtredValues.forEach((filtredVal: DynamicTextType) => {
+            const index = e.dynamicTexts.indexOf(filtredVal);
+            this._dynamic.dynamicNodes[i].dynamicTexts[index] = e.updateText(
+              val,
+              filtredVal,
+              e.texts,
+              isProperty
             );
-            const val = dataArray[0];
-            const isProperty = dataArray[1];
-            const filtredValues = filterKey(e.dynamicTexts, key);
-            filtredValues.forEach((filtredVal: DynamicTextType) => {
-              const index = e.dynamicTexts.indexOf(filtredVal);
-              this._dynamic.dynamicNodes[i].dynamicTexts[index] = e.updateText(
-                val,
-                filtredVal,
-                e.texts,
-                isProperty
-              );
-              this._dynamic.dynamicNodes[i].texts = filterDuplicate(
-                concatArrays(
-                  this._dynamic.dynamicNodes[i].texts,
-                  this._dynamic.dynamicNodes[i].dynamicTexts[index].texts
-                )
-              );
-              this._dynamic.dynamicNodes[i].texts = this._dynamic.dynamicNodes[
-                i
-              ].texts.filter((text) => {
-                if (text) {
-                  return text;
-                }
-              });
+            this._dynamic.dynamicNodes[i].texts = filterDuplicate(
+              concatArrays(
+                this._dynamic.dynamicNodes[i].texts,
+                this._dynamic.dynamicNodes[i].dynamicTexts[index].texts
+              )
+            );
+            this._dynamic.dynamicNodes[i].texts = this._dynamic.dynamicNodes[
+              i
+            ].texts.filter((text) => {
+              if (text) {
+                return text;
+              }
             });
-            if (Object.keys(e.attrs).length) {
-              this._dynamic.dynamicNodes[i].attrs = e.updateAttr(
-                val,
-                key,
-                isProperty
-              );
-            }
           });
-        } else {
-          createError("Maximum render");
-        }
+          if (Object.keys(e.attrs).length) {
+            this._dynamic.dynamicNodes[i].attrs = e.updateAttr(
+              val,
+              key,
+              isProperty
+            );
+          }
+        });
         this._dynamic.dynamicNodes = [];
       };
       const setNode = (
