@@ -22,7 +22,7 @@
 
 ## About
 
-Cample.js - typed javascript web framework for creating site UI. Cample.js is great for creating most of the various sites, due to its extensive functionality. 
+Cample.js - typed javascript web framework for creating site UI. 
   
 This framework supports component approach and reactivity without Virtual DOM. 
   
