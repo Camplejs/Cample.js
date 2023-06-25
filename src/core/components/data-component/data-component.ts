@@ -7,6 +7,7 @@ import {
   ExportDynamicType,
   ExportIdType,
   ExportObjectDataArrayType,
+  FunctionsObjType,
   ImportObjectType,
   ScriptType,
   SelectorType,
@@ -23,8 +24,8 @@ export class DataComponent extends ParentComponent {
   public exportDataObjects: ExportObjectDataArrayType;
   public export?: ExportDataType | ExportDynamicType;
   public exportObj?: DataExportObjectType;
-  public isExportStatic?: boolean;
   public values?: ValuesType;
+  public functions?: FunctionsObjType;
   public setExportData?: (...args: any[]) => any;
 
   constructor(
@@ -40,9 +41,8 @@ export class DataComponent extends ParentComponent {
     this.setExportData = undefined;
     this.exportDataObjects = [];
     this.exportObj = undefined;
+    this.functions = options.functions;
     this.values = options.values !== undefined ? options.values : undefined;
-    this.isExportStatic =
-      options.isExportStatic !== undefined ? options.isExportStatic : false;
   }
 
   get _getImport(): ImportObjectType | undefined {

@@ -9,14 +9,11 @@ import {
   ScriptArgumentsType,
   ScriptElementsType
 } from "../../../types/types";
-import { renderScriptElements } from "./render-script-elements";
+
 export const renderScript = (
   script: ScriptType,
-  element: any,
   functions: FunctionsType,
-  exportData: DataType,
-  isEach = false,
-  isReplaceTags = false,
+  exportData: DataType | undefined,
   currentElements?: ScriptElementsType
 ): void => {
   let scripts: ScriptFunctionType;
@@ -24,7 +21,7 @@ export const renderScript = (
   const createScriptArguments = (
     currentElements: ScriptElementsType,
     currentFunctions: FunctionsType,
-    currentData: DataType
+    currentData: DataType | undefined
   ): ScriptArgumentsType => {
     return {
       elements: currentElements,
@@ -38,11 +35,7 @@ export const renderScript = (
     options = script[1];
     let elements: ScriptElementsType = {};
     if (typeof options.elements !== "undefined") {
-      if (isReplaceTags) {
-        elements = currentElements ? currentElements : {};
-      } else {
-        elements = renderScriptElements(options.elements, element, isEach);
-      }
+      elements = currentElements ? currentElements : {};
     }
     const scriptArguments = createScriptArguments(
       elements,

@@ -1,35 +1,8 @@
 "use strict";
 import { Cample } from "../src/core/cample";
 import { Component } from "../src/core/components/component/component";
-import { Cycle } from "../src/core/components/cycles/cycle/cycle";
-import { Each } from "../src/core/components/cycles/each/each";
-import { Ternary } from "../src/core/components/operators/ternary/ternary";
-import { Addition } from "../src/core/components/operators/addition/addition";
-import { AnimationComponent } from "../src/core/components/animation/animation";
-import { If } from "../src/core/components/operators/if/if";
+import { Each } from "../src/core/components/each/each";
 import { cample } from "../src/core/functions/class/cample/cample";
 import { component } from "../src/core/functions/class/component/component";
-import { cycle } from "../src/core/functions/class/cycles/cycle/cycle";
-import { each } from "../src/core/functions/class/cycles/each/each";
-import { ternary } from "../src/core/functions/class/operators/ternary/ternary";
-import { addition } from "../src/core/functions/class/operators/addition/addition";
-import { animationComponent } from "../src/core/functions/class/animation/animation";
-import { ifComponent } from "../src/core/functions/class/operators/if/if";
-export {
-  Cample,
-  Component,
-  Cycle,
-  Ternary,
-  Addition,
-  AnimationComponent,
-  If,
-  Each,
-  cample,
-  component,
-  cycle,
-  ternary,
-  addition,
-  animationComponent,
-  ifComponent,
-  each
-};
+import { each } from "../src/core/functions/class/each/each";
+export { Cample, Component, Each, cample, component, each };

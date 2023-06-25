@@ -13,7 +13,6 @@ export class ParentComponent {
   public style: StyleType | undefined;
   public attributes: AttributesType | undefined;
   public exportId?: ExportIdType;
-  public replaceTag?: boolean;
   public trimHTML?: boolean;
   public options: DefaultOptionsType;
 
@@ -24,7 +23,6 @@ export class ParentComponent {
     this.selector = selector;
     this.template = "";
     this.options = options;
-    this.replaceTag = options.replaceTag;
     this.trimHTML = options.trimHTML;
     this.attributes = options.attributes;
     this.style = options.style;

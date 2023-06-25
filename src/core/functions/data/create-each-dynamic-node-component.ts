@@ -3,7 +3,8 @@ import {
   EachDynamicNodeComponentType,
   DynamicNodeComponentNodeType,
   ElementsType,
-  ImportObjectType
+  ImportObjectType,
+  EachTemplateType
 } from "../../../types/types";
 
 export const createEachDynamicNodeComponentType = (
@@ -12,7 +13,8 @@ export const createEachDynamicNodeComponentType = (
   parentNode: ParentNode,
   nodePrevious?: DynamicNodeComponentNodeType,
   nodeNext?: DynamicNodeComponentNodeType,
-  currentImport?: ImportObjectType
+  currentImport?: ImportObjectType,
+  template?: EachTemplateType
 ): EachDynamicNodeComponentType => {
   const DynamicNodeComponentType = {
     id: dataId,
@@ -20,6 +22,7 @@ export const createEachDynamicNodeComponentType = (
     elements,
     nodePrevious,
     nodeNext,
+    template,
     nodeParentNode: parentNode,
     parentNode
   };

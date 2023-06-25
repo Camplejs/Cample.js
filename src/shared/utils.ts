@@ -1,7 +1,7 @@
 "use strict";
 import {
   DataAttributesArrayType,
-  ElementsType,
+  DynamicElement,
   ExportCampleDataType,
   ExportDataValueType,
   ExportIdType,
@@ -9,11 +9,7 @@ import {
   ImportObjectType
 } from "./../types/types";
 
-import {
-  ArrayStringType,
-  DynamicTextArrayType,
-  ExportDataType
-} from "../types/types";
+import { ArrayStringType, ExportDataType } from "../types/types";
 
 const regex = /\{{(.*?)}}/g;
 
@@ -30,18 +26,20 @@ export const objectEmpty = (obj: object): boolean => {
 };
 
 export const testRegex = (text: string): boolean => {
-  const filterText = text.replace(regex, (str, d) => {
+  let isKey = false;
+  text.replace(regex, (str, d) => {
     const key = d.trim();
-    if (/^[0-9]+$/.test(key[0])) {
-      return "";
+    if (key && !/^[0-9]+$/.test(key[0])) {
+      isKey = true;
     }
     return str;
   });
-  return regex.test(filterText);
+  return isKey;
 };
 export const checkObject = (val: any) => {
   return typeof val === "object" && !Array.isArray(val) && val !== null;
 };
+
 const checkObjectCondition = (val1: any, val2: any) => {
   return (
     typeof val1 === "object" &&
@@ -55,8 +53,39 @@ const checkObjectCondition = (val1: any, val2: any) => {
 export const equalArrayCondition = (arr1: any, arr2: any) => {
   return Array.isArray(arr1) && Array.isArray(arr2);
 };
-export const cloneObject = (obj1: object) => {
+export const cloneJSON = (obj1: object) => {
   return JSON.parse(JSON.stringify(obj1));
+};
+export const getIsValue = (key: string) => {
+  if (key.includes("[")) {
+    if (!key.includes("]")) createError("Syntax value error");
+    return true;
+  } else return false;
+};
+export const getElement = (template: string, trim?: boolean) => {
+  const elWrapper = document.createElement("template");
+  elWrapper.innerHTML = trim ? template.trim() : template;
+  if (elWrapper.content.children.length > 1) {
+    createError("Component include only one node with type 'Element'");
+  }
+  const prepareNode = (node: ChildNode) => {
+    switch (node.nodeType) {
+      case Node.ELEMENT_NODE:
+        if ((node as Element).tagName === "pre") return;
+        break;
+      case Node.TEXT_NODE:
+        if (!/\S/.test(node.textContent as string)) {
+          node.remove();
+          return;
+        }
+        break;
+    }
+    for (let i = 0; i < node.childNodes.length; i++) {
+      prepareNode(node.childNodes.item(i));
+    }
+  };
+  prepareNode(elWrapper.content.childNodes[0]);
+  return elWrapper.content.firstElementChild;
 };
 export const isValuesEqual = (val: any, newVal: any): boolean => {
   if (val === newVal) return true;
@@ -125,12 +154,7 @@ export const getTextArray = (arr: Array<ChildNode>) => {
 export const concatArrays = (arr1: Array<any>, arr2: Array<any>) => {
   return arr1.concat(arr2.filter((item) => arr1.indexOf(item) < 0));
 };
-export const filterKey = (
-  arr: DynamicTextArrayType,
-  key: string
-): DynamicTextArrayType => {
-  return arr.filter((val) => val.key === key);
-};
+
 const getRegexKeys = (
   text: string,
   arr: ArrayStringType,
@@ -155,10 +179,35 @@ const getRegexKeys = (
     return str;
   });
 };
+export const filterDuplicateArrObj = (arr: Array<any>) => {
+  return arr.filter(
+    (value, index, arr) =>
+      arr.findIndex((e) => JSON.stringify(e) === JSON.stringify(value)) ===
+      index
+  );
+};
 export const filterDuplicate = (arr: Array<any>) => {
   return arr.filter((item, index) => {
     return arr.indexOf(item) === index;
   });
+};
+export const getIsProperty = (txt?: string) => {
+  if (txt) {
+    return txt.split(".").length > 1;
+  } else return false;
+};
+export const getTextKey = (text: string) => {
+  let key: string | undefined = undefined;
+  text.replace(regex, (str, d) => {
+    const currentKey = d.trim();
+    if (currentKey.includes("(") || currentKey.includes(")")) {
+      createError("Function key includes only in event attr");
+    } else {
+      key = currentKey;
+    }
+    return str;
+  });
+  return key;
 };
 export const getAttrKeys = (
   el: Element
@@ -272,50 +321,37 @@ export const getEventAttrs = (el: Element) => {
   }
   return eventAttrs;
 };
+export const isDynamic = (child: Element, isExport = false) => {
+  const arrayText = isExport ? [] : getTextArray(Array.from(child.childNodes));
+  const isRegex = isExport
+    ? Array.from(child.attributes).some((attr) => {
+        return (
+          attr.name === "data-cample-import" && testExportRegex(attr.value)
+        );
+      })
+    : Array.from(child.attributes).some((attr) => testRegex(attr.value));
+  return !!(
+    (arrayText.length &&
+      arrayText.some((t) => testRegex(t.textContent ?? ""))) ||
+    isRegex
+  );
+};
 
-export const getDynamicElements = (
+export const getDynamicElement = (
   e: Element,
   isExport = false
-): ElementsType => {
-  const els: ElementsType = [];
+): DynamicElement => {
+  const dynamicEl: DynamicElement = {
+    el: undefined,
+    els: []
+  };
   if (e) {
-    const getDynamicEls = (child: Element) => {
-      const arrayText = isExport
-        ? []
-        : getTextArray(Array.from(child.childNodes));
-      const regexAttr = isExport
-        ? Array.from(child.attributes)
-            .filter((attr) => {
-              return (
-                attr.name === "data-cample-import" &&
-                testExportRegex(attr.value)
-              );
-            })
-            .map((attr) => attr.value)
-        : Array.from(child.attributes)
-            .map((attr) => attr.value)
-            .filter((a) => testRegex(a));
-      if (
-        (arrayText.length &&
-          testRegex(
-            arrayText
-              .map((n) => n.textContent)
-              .join()
-              .trim()
-          )) ||
-        regexAttr.length
-      ) {
-        if (els.indexOf(child) < 0) {
-          els.push(child);
-        }
-      }
-    };
-    getDynamicEls(e);
-    for (const child of e.getElementsByTagName("*")) {
-      getDynamicEls(child);
-    }
+    dynamicEl.el = isDynamic(e, isExport) ? e : undefined;
+    dynamicEl.els = [...e.getElementsByTagName("*")].filter((j) =>
+      isDynamic(j, isExport)
+    );
   }
-  return els;
+  return dynamicEl;
 };
 
 export const createEl = (
@@ -376,13 +412,4 @@ export const cloneValue = (value: any): any => {
   } else {
     return value;
   }
-};
-
-export const createElement = (template: string) => {
-  const elWrapper = document.createElement("template");
-  elWrapper.innerHTML = template;
-  if (elWrapper.content.children.length > 1) {
-    createError("Component include only one node with type 'Element'");
-  }
-  return elWrapper.content.firstElementChild;
 };

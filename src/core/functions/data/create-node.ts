@@ -2,161 +2,152 @@
 import {
   checkFunction,
   createError,
-  getAttrKeys,
-  getTextKeys,
-  testRegex
+  testRegex,
+  testValuesRegex
 } from "../../../shared/utils";
 import {
-  ArgumentsArrayType,
-  DataComponentType,
-  DynamicTextArrayType,
-  DynamicTextType,
-  EachDataValueType,
+  AttributesValType,
+  CurrentKeyType,
+  EachTemplateNodesType,
   EventEachGetDataType,
-  EventFunctionType,
   EventGetDataType,
-  ImportDataType,
-  ListenersType,
   NodeType,
-  TextArrayType
+  NodeValuesType,
+  ValuesTemplateType
 } from "../../../types/types";
+import { parseKey } from "../parse/parse-key";
 import { renderEventKey } from "../render/render-event-key";
-import { renderComponentDynamicKeyData } from "./render-component-dynamic-key-data";
-import { updateAttributes } from "./update-attributes";
-import { updateListeners } from "./update-listeners";
-import { updateText } from "./update-text";
+import { renderListeners } from "./render-listeners";
 
-export const createNode = (
+export const renderEl = (
   el: Element,
   index: number,
+  idElement: number,
   getEventsData: EventGetDataType | EventEachGetDataType,
-  data: DataComponentType | EachDataValueType,
+  nodes: EachTemplateNodesType,
   id: number,
   isEach: boolean,
-  eachIndex?: number,
-  isComponentData = true,
-  importData: ImportDataType | undefined = undefined
-): NodeType => {
-  const keys = getTextKeys(el);
-  const dynamicTexts: DynamicTextArrayType = [];
-  const attrs = {};
-  const listeners: ListenersType = {};
-  const attrsKeysArray = getAttrKeys(el);
-  const dynamicAttrs = attrsKeysArray[0];
+  values: ValuesTemplateType,
+  valueName?: string,
+  importedDataName?: string
+) => {
   const arrayAttr = Array.from(el.attributes);
-  const regexAttr = arrayAttr
-    .map((attr) => attr.value)
-    .filter((a) => testRegex(a));
-
+  const regexAttr = arrayAttr.filter((a) => testRegex(a.value));
   if (regexAttr.length) {
     const regex = /\{{(.*?)}}/g;
-    arrayAttr.forEach((e) => {
-      if (
-        !(
-          e.name.includes(":") ||
-          e.value.includes("(") ||
-          e.value.includes(")")
-        )
-      ) {
-        const valArr = {};
-        e.value.replace(regex, (str, d) => {
-          const key = d.trim();
-          valArr[key] = undefined;
-          return str;
-        });
-        const attr = {
-          values: valArr,
-          value: e.value,
-          renderedValue: e.value
-        };
-        attrs[e.name] = attr;
+    regexAttr.forEach((e) => {
+      const value = e.value;
+      if (e.name !== "data-cample-import") {
+        if (
+          !(
+            e.name.includes(":") ||
+            e.value.includes("(") ||
+            e.value.includes(")")
+          )
+        ) {
+          const attr: AttributesValType = {};
+          const isValue = testValuesRegex(value);
+          const keys: {
+            [key: string]: CurrentKeyType;
+          } = {};
+          if (!isValue)
+            value.replace(regex, (str, d) => {
+              if (!keys.hasOwnProperty(d)) {
+                const renderedKey = parseKey(d, valueName, importedDataName);
+                keys[d] = renderedKey;
+              }
+              return d;
+            });
+          attr[e.name] = {
+            value: isValue ? [value, isValue] : value,
+            keys
+          };
+          values.push({
+            id: values.length,
+            type: "attribute",
+            value: attr
+          });
+          nodes.push(idElement);
+        } else {
+          if (e.name[0] !== ":") createError("Event error");
+          let key = "";
+          value.replace(regex, (str, d) => {
+            const filtredKey = d.trim();
+            key = filtredKey;
+            return str;
+          });
+          const renderedKey = renderEventKey(key);
+          const args = [...renderedKey.arguments];
+          const fn = isEach
+            ? (getEventsData as EventEachGetDataType)(
+                renderedKey.key,
+                id,
+                0,
+                index
+              )
+            : (getEventsData as EventGetDataType)(renderedKey.key, id, index);
+          if (!checkFunction(fn)) createError("Data key is of function type");
+          el.removeAttribute(e.name);
+          const setEvent = (element: Element, eIndex?: number) => {
+            renderListeners(
+              element,
+              fn,
+              args,
+              e.name.substring(1),
+              (key: string) =>
+                isEach
+                  ? (getEventsData as EventEachGetDataType)(
+                      key,
+                      id,
+                      eIndex,
+                      index
+                    )
+                  : (getEventsData as EventGetDataType)(key, id, index)
+            );
+          };
+          values.push({
+            id: values.length,
+            type: "event",
+            value: (element: Element, eIndex?: number) =>
+              setEvent(element, eIndex)
+          });
+          nodes.push(idElement);
+        }
       } else {
-        if (e.name[0] !== ":") createError("Event error");
-        let key = "";
-        e.value.replace(regex, (str, d) => {
-          const filtredKey = d.trim();
-          key = filtredKey;
-          return str;
+        values.push({
+          id: values.length,
+          type: "import",
+          value: {
+            value: value.replace(/\{{{(.*?)}}}/g, (str, d) => {
+              const key: string = d;
+              if (key) return key;
+              return str;
+            })
+          }
         });
-        const renderedKey = renderEventKey(key);
-        const fn = isEach
-          ? (getEventsData as EventEachGetDataType)(
-              renderedKey.key,
-              id,
-              eachIndex,
-              index
-            )
-          : (getEventsData as EventGetDataType)(renderedKey.key, id, index);
-        if (!checkFunction(fn)) createError("Data key is of function type");
-        listeners[e.name.substring(1)] = {
-          value: renderedKey,
-          fn
-        };
+        nodes.push(idElement);
       }
     });
   }
-
-  keys.forEach((e) => {
-    const dynamicText: DynamicTextType = {
-      key: e,
-      texts: [],
-      oldValue: renderComponentDynamicKeyData(
-        data,
-        index,
-        e,
-        isEach,
-        isComponentData
-      )[0],
-      value: renderComponentDynamicKeyData(
-        data,
-        index,
-        e,
-        isEach,
-        isComponentData
-      )[0]
-    };
-    dynamicTexts.push(dynamicText);
-  });
-
+};
+export const createNode = (
+  values: NodeValuesType,
+  index: number,
+  id: number,
+  isEach: boolean,
+  eachIndex?: number,
+  isFirst = false
+): NodeType => {
   const node: NodeType = {
-    updateText: (
-      val: any = undefined,
-      updVal: DynamicTextType,
-      texts: TextArrayType,
-      isProperty: boolean
-    ) => updateText(el, val, updVal, texts, index, isProperty, isComponentData),
-    updateAttr: (val: any, key: string, isProperty: boolean) =>
-      updateAttributes(el, val, index, attrs, key, isProperty, isComponentData),
-    updateListeners: (
-      fn: EventFunctionType,
-      args: ArgumentsArrayType,
-      key: string,
-      isFirst = true,
-      eachIndex?: number
-    ) =>
-      updateListeners(
-        el,
-        fn,
-        args,
-        key,
-        (key: string) =>
-          isEach
-            ? (getEventsData as EventEachGetDataType)(key, id, eachIndex, index)
-            : (getEventsData as EventGetDataType)(key, id, index),
-        isFirst
-      ),
     index,
-    attrs,
-    listeners,
-    texts: [],
-    dynamicAttrs,
-    dynamicTexts,
+    values,
     dataId: id
   };
+  if (!isFirst) {
+    node.isNew = true;
+  }
   if (isEach) {
     node.eachIndex = eachIndex;
-    node.isListeners = true;
   }
-
   return node;
 };

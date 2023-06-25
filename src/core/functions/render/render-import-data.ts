@@ -1,5 +1,5 @@
 "use-strict";
-import { checkObject, createError } from "../../../shared/utils";
+import { createError } from "../../../shared/utils";
 import {
   CycleValueType,
   DataType,
@@ -12,11 +12,10 @@ import {
 export const renderImportData = (
   el: Element | null,
   exportData: ExportDataType | undefined,
-  condition: boolean | undefined,
   importObject?: ImportObjectType,
   importIndex?: IndexType
-): DataType => {
-  const result = {};
+): DataType | undefined => {
+  let result: undefined | DataType = undefined;
   const renderData = (
     exportId: ExportIdType,
     currentIndex: IndexType | string,
@@ -54,35 +53,17 @@ export const renderImportData = (
         });
         dataSetArr.forEach((e: Array<string> | CycleValueType | string) => {
           if (exportData.hasOwnProperty(exportId)) {
-            if (checkObject(e)) {
-              e = e as CycleValueType;
-              const testString = e.index.replace(/[0-9]/g, "");
-              if (!testString) {
-                if (
-                  exportData[exportId][currentIndex].data.hasOwnProperty(
-                    e.value
-                  )
-                ) {
-                  const bindIndex = Number(e.index);
-                  result[e.value] =
-                    exportData[exportId][currentIndex].data[e.value][0][
-                      bindIndex
-                    ];
-                } else {
-                  createError(`Property value "${e.value}" not found`);
-                }
-              } else {
-                createError(`Bind index type is number`);
-              }
-            } else if (Array.isArray(e)) {
+            if (Array.isArray(e)) {
               if (e.length === 2) {
                 const key = e[0];
                 const indexKey = e[1];
                 const currentData = exportData[exportId][currentIndex];
                 if (currentData) {
                   if (currentData.data.hasOwnProperty(key)) {
+                    if (!result) result = {};
                     result[key] = currentData.data[key][indexKey];
                   } else if (currentData.functions.hasOwnProperty(key)) {
+                    if (!result) result = {};
                     result[key] = currentData.functions[key][indexKey];
                   } else {
                     createError(`Property value "${e[0]}" not found`);
@@ -99,6 +80,7 @@ export const renderImportData = (
               const setData = (data: object, key: string) => {
                 const value = data[key];
                 if (Array.isArray(value)) {
+                  if (!result) result = {};
                   result[key] = value[0];
                 } else {
                   createError(`Data error`);
@@ -136,9 +118,6 @@ export const renderImportData = (
         } else {
           createError("Nothing to import");
         }
-      }
-      if (!condition) {
-        el.removeAttribute("data-cample-import");
       }
     }
   } else {

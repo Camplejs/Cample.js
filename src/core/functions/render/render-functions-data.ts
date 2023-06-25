@@ -1,12 +1,11 @@
 "use-strict";
 import {
   DynamicKeyObjectArrayType,
-  DataType,
-  IdType
+  IdType,
+  FunctionsObjType
 } from "../../../types/types";
 
 export const renderFunctionsData = (
-  data: DataType | undefined,
   updateFunction: (
     name: string,
     key: string,
@@ -17,30 +16,17 @@ export const renderFunctionsData = (
   ) => void,
   isRender: boolean,
   id: IdType,
+  functions: FunctionsObjType | undefined,
   index: number,
   keys: DynamicKeyObjectArrayType
 ): void => {
-  if (data !== undefined) {
-    for (const key in data) {
-      if (
-        data[key] &&
-        (data[key].hasOwnProperty("value") ||
-          data[key].hasOwnProperty("defaultValue")) &&
-        data[key].function &&
-        typeof data[key].function === "string"
-      ) {
-        const filtredKeys = keys.filter(
-          (currentDynamicKey) => currentDynamicKey.key === key
-        );
-        updateFunction(
-          data[key].function,
-          key,
-          isRender,
-          id,
-          index,
-          filtredKeys
-        );
-      }
-    }
+  if (functions) {
+    Object.entries(functions).forEach(([fn, value]) => {
+      const val: string = Array.isArray(value) ? value[1] : value;
+      const filtredKeys = keys.filter(
+        (currentDynamicKey) => currentDynamicKey.key === val
+      );
+      updateFunction(fn, val, isRender, id, index, filtredKeys);
+    });
   }
 };

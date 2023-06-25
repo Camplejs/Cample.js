@@ -91,32 +91,38 @@ export type EachDataFunctionType = (
   argument?: DataFunctionArgumentsType
 ) => EachDataValueType;
 
-export type EachDataType = EachDataFunctionType | EachDataValueType;
-
 export type DataAttributesArrayType = Array<DataAttributeType>;
-
-export type DynamicTextArrayType = Array<DynamicTextType>;
 
 export type AttrValueType = {
   [key: string]: any;
 };
 
-export type AttrType = {
-  values: AttrValueType;
-  value: string;
-  renderedValue: string;
-};
-
 export type AttributesValType = {
-  [key: string]: AttrType;
+  [key: string]: {
+    value: string | [string, boolean];
+    keys: {
+      [key: string]: CurrentKeyType;
+    };
+  };
+};
+export type AttributesValObjType = {
+  id: IdType;
+  attrs: AttributesValType;
+};
+export type DynamicEl = Element | undefined;
+export type DynamicEls = Array<Element>;
+export type DynamicElement = {
+  el: DynamicEl;
+  els: DynamicEls;
 };
 
 export type DynamicTextType = {
-  key: string;
-  texts: Array<Text>;
-  oldValue: any;
-  value: any;
+  key: CurrentKeyType;
+  isProperty?: boolean;
+  texts: Array<Text | number>;
 };
+
+export type DynamicTextArrayType = Array<DynamicTextType>;
 
 export type TextArrayType = Array<Text>;
 
@@ -134,7 +140,41 @@ export type DynamicDataType = {
   importData?: ImportDataType;
   id: number;
 };
+export type ElementIndexType = {
+  id: number;
+  path: Array<number>;
+};
+export type FunctionEventType = (...args: any[]) => any;
+export type FunctionsEventsType = Array<FunctionEventType>;
+export type EventType = {
+  id: IdType;
+  events: FunctionsEventsType;
+};
 
+export type EventsType = Array<EventType>;
+
+export type CampleImportType = {
+  value: string;
+};
+
+export type ValueValueType =
+  | FunctionEventType
+  | AttributesValType
+  | DynamicTextType
+  | CampleImportType;
+
+export type ValueType = {
+  id?: IdType;
+  type: "event" | "dynamicText" | "attribute" | "import";
+  value: ValueValueType;
+};
+export type ValuesTemplateType = Array<ValueType>;
+export type EachTemplateNodesType = Array<number>;
+export type EachTemplateType = {
+  el: Element | null;
+  nodes: EachTemplateNodesType;
+  values: ValuesTemplateType;
+};
 export type ElementsType = Element[];
 export type DynamicNodeComponentNodeType = ChildNode | null | undefined;
 export type DynamicNodeComponentParentNodeType = ParentNode | null | undefined;
@@ -142,6 +182,7 @@ export type EachDynamicNodeComponentType = {
   elements: ElementsType;
   import?: ImportObjectType;
   parentNode: ParentNode;
+  template?: EachTemplateType;
   nodeNext: DynamicNodeComponentNodeType;
   nodePrevious: DynamicNodeComponentNodeType;
   nodeParentNode: DynamicNodeComponentParentNodeType;
@@ -200,7 +241,7 @@ export type ScriptElementsType = {
 export type ScriptArgumentsType = {
   elements: ScriptElementsType;
   functions: FunctionsType;
-  data: DataType;
+  data: DataType | undefined;
   import?: DataType;
 };
 
@@ -232,7 +273,7 @@ export type EventGetDataType = (
 export type EventEachGetDataType = (
   key: string,
   dataId: number,
-  eachIndex: number | undefined,
+  eachIndex: IdType,
   index: number
 ) => any;
 
@@ -246,18 +287,35 @@ export type ListenerValueType = {
 export type ListenersType = {
   [key: string]: ListenerValueType;
 };
-
-export type NodeType = {
-  updateText: any;
-  updateAttr: any;
-  updateListeners: any;
-  index: number;
-  attrs: AttributesValType;
-  texts: TextArrayType;
-  isListeners?: boolean;
-  listeners: ListenersType;
-  dynamicAttrs: ArrayStringType;
+export type DynamicTextsObj = {
+  id: IdType;
   dynamicTexts: DynamicTextArrayType;
+};
+export type DynamicTextsType = Array<DynamicTextsObj>;
+export type DynamicAttributesType = Array<AttributesValObjType>;
+export type CurrentKeyType = {
+  originKey: string;
+  key: string;
+  properties?: Array<string>;
+  isProperty?: boolean;
+  isOrigin?: boolean;
+  isValue?: boolean;
+};
+export type NodeTextType = {
+  key: CurrentKeyType;
+  value: string;
+};
+
+export type NodeValueType = {
+  render: any;
+  type: "dynamicText" | "attribute";
+  value: AttributesValType | NodeTextType;
+};
+export type NodeValuesType = Array<NodeValueType>;
+export type NodeType = {
+  isNew?: boolean;
+  index: number;
+  values: NodeValuesType;
   dataId: number;
   eachIndex?: number;
 };
@@ -290,6 +348,14 @@ export type ElementType = {
   attributes?: AttributesType;
 };
 
+export type FunctionsArrayType = [
+  (...args: any[]) => (...args: any[]) => any,
+  string
+];
+export type FunctionsObjType = {
+  [key: string]: string | FunctionsArrayType;
+};
+
 export type RootOptionsType = {
   attributes?: AttributesType;
   style?: StyleType;
@@ -310,7 +376,7 @@ export type DefaultDataOptionsType = RootOptionsType & {
   import?: ImportObjectType;
   script?: ScriptType;
   values?: ValuesType;
-  isExportStatic?: boolean;
+  functions?: FunctionsObjType;
 };
 export type IndexValueDataType = {
   [key: string]: number;
@@ -370,13 +436,11 @@ export type TemplateExportValueType = {
   functions?: ExportTemplateFunctionsType;
 };
 
-export type TemplateExportType = {
+export type ExportDynamicType = {
   [key: string]: TemplateExportValueType;
 };
-export type ExportDynamicType = {
-  data: ExportDataType;
-  template?: TemplateExportType;
-};
+
+export type IterationFunctionType = (...args: any[]) => void;
 
 export type EachOptionsType = DefaultDataOptionsType & {
   functionName?: string;
@@ -384,11 +448,11 @@ export type EachOptionsType = DefaultDataOptionsType & {
   importedDataName?: string;
   element?: ElementType;
   componentData?: boolean;
+  iteration?: IterationFunctionType;
 };
 
 export type DataPropertyType = {
   value?: any;
-  defaultValue?: any;
 };
 
 export type DataType = {
@@ -453,7 +517,7 @@ export type ExportFunctionDataType = (
 export type ExportDynamicDataType = ExportFunctionDataType | ExportDataType;
 
 export type DataFunctionArgumentsType = {
-  data?: ExportDataType;
+  importedData?: ExportDataType;
   currentData?: DataType | EachDataValueType;
 };
 
