@@ -17,7 +17,7 @@
 
 </div>
 
-<div align="center"><b>Links:<br> <a href="https://camplejs.github.io">Website</a> </div> • <a href="https://github.com/Camplejs/example/blob/main/example.js">Example source</a> • <a href="https://camplejs.github.io/example.html"> Example </a>
+<div align="center"><b>Links:<br> <a href="https://camplejs.github.io">Website</a> • <a href="https://github.com/Camplejs/example/blob/main/example.js">Example source</a> • <a href="https://camplejs.github.io/example.html"> Example </a> </div>
 <br>
 
 ## About
