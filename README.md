@@ -36,7 +36,7 @@ Cample.js provides the following features:
 
 - **Reactivity without Virtual DOM**
 - **Supporting component approach**
-- **Each component for dynamic HTML**
+- **Each component**
 - **Working with data**
 - **No dependencies**
 - **Typed**
