@@ -42,7 +42,8 @@ import {
   CurrentKeyType,
   AttributesValType,
   CampleImportType,
-  NodeTextType
+  NodeTextType,
+  ValueType
 } from "../../../types/types";
 import {
   checkFunction,
@@ -113,12 +114,9 @@ export class Component extends DataComponent {
                   }
                 } else {
                   const value = val.value as AttributesValType;
-                  const attrs = Object.entries(value);
-                  for (let i = 0; i < attrs.length; i++) {
-                    if (attrs[i][1].keys.hasOwnProperty(key)) {
-                      nodeIsKey = true;
-                      break;
-                    }
+                  if (value.keys.hasOwnProperty(key)) {
+                    nodeIsKey = true;
+                    break;
                   }
                   if (nodeIsKey) {
                     break;
@@ -935,7 +933,7 @@ export class Component extends DataComponent {
             return {
               ...o,
               value: checkFunction(o.value) ? o.value : { ...o.value }
-            };
+            } as ValueType;
           });
           let i = -1;
           function renderNode(node: ChildNode) {

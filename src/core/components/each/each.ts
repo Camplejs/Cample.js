@@ -42,7 +42,8 @@ import {
   AttributesValType,
   NodeTextType,
   CurrentKeyType,
-  IterationFunctionType
+  IterationFunctionType,
+  ValueType
 } from "../../../types/types";
 import { createEachDynamicNodeComponentType } from "../../functions/data/create-each-dynamic-node-component";
 import { createNode } from "../../functions/data/create-node";
@@ -242,7 +243,7 @@ export class Each extends DataComponent {
               return {
                 ...o,
                 value: checkFunction(o.value) ? o.value : { ...o.value }
-              };
+              } as ValueType;
             });
             let i = -1;
             function renderNode(node: ChildNode) {

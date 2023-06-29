@@ -45,7 +45,6 @@ export const renderEl = (
             e.value.includes(")")
           )
         ) {
-          const attr: AttributesValType = {};
           const isValue = testValuesRegex(value);
           const keys: {
             [key: string]: CurrentKeyType;
@@ -58,7 +57,8 @@ export const renderEl = (
               }
               return d;
             });
-          attr[e.name] = {
+          const attr: AttributesValType = {
+            name: e.name,
             value: isValue ? [value, isValue] : value,
             keys
           };

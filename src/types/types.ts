@@ -98,12 +98,12 @@ export type AttrValueType = {
 };
 
 export type AttributesValType = {
-  [key: string]: {
-    value: string | [string, boolean];
-    keys: {
-      [key: string]: CurrentKeyType;
-    };
+  name: string;
+  value: string | [string, boolean];
+  keys: {
+    [key: string]: CurrentKeyType;
   };
+  oldValue?: string;
 };
 export type AttributesValObjType = {
   id: IdType;
