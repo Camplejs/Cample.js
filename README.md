@@ -22,7 +22,7 @@
 
 ## :watch: Benchmark
 
-| Name  | Cample.js (chrome 114) |
+| Name  | Cample.js |
 | ------------- | ------------- |
 | create rows  | 43.9  |
 | replace all rows  | 19.7  |
