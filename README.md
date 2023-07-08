@@ -3,7 +3,7 @@
         <img src="https://github.com/Camplejs/media/blob/main/logo.png" alt="cample" >
     </a>
 </p>
-<h1 align="center">Cample.js - typed javascript web framework for creating site UI.</h1>
+<h1 align="center">Cample.js - perspective javascript framework.</h1>
 <h3 align="center">Reactivity without Virtual DOM!</h3>
 <div align="center">
 
@@ -17,12 +17,29 @@
 
 </div>
 
-<div align="center"><b>Links:<br> <a href="https://camplejs.github.io">Website</a> • <a href="https://camplejs.github.io/example.html"> Example </a> • <a href="https://github.com/Camplejs/example/blob/main/example.js">Example source</a></div>
+<div align="center"><b>Links:<br> <a href="https://camplejs.github.io">Website</a> • <a href="https://camplejs.github.io/documentation/introduction.html">Documentation</a> • <a href="https://camplejs.github.io/examples.html"> Examples </a> • <a href="https://codepen.io/Camplejs">Examples source</a></div>
 <br>
+
+## :watch: Benchmark
+
+| Name  | Cample.js (chrome 114) |
+| ------------- | ------------- |
+| create rows  | 43.9  |
+| replace all rows  | 19.7  |
+| partial update  | 120.9  |
+| select row  | 46.2  |
+| swap rows  | 26.8  |
+| remove row  | 76.1  |
+| create many rows  | 471.1  |
+| append rows to large table  | 97.4  |
+| clear rows | 31.6  |
+| geometric mean | 1.55  |
+
+js-framework-benchmark/frameworks/non-keyed/cample
 
 ## About
 
-Cample.js - typed javascript web framework for creating site UI. 
+Cample.js - perspective javascript framework. 
   
 This framework supports component approach and reactivity without Virtual DOM. 
   
@@ -49,6 +66,28 @@ npm i -D cample
 ```
 Installing via npm is currently the default. The framework can work with most modern bundlers.
 
+## Getting started
+An instance of the Cample class is created, which is the main handler for all components.
+  
+### JavaScript
+```javascript
+const newComponent = component("new-component", "<span>component</span>")
+            
+const newCample = cample("#page");
+newCample.render(`
+    <div> class="content">
+        {{newComponent}}
+    </div>
+`,{
+    newComponent
+});
+```
+### HTML
+```html
+<div id="page"></div>
+```
+Link article: <a href="https://camplejs.github.io/documentation/getting-started.html">Getting started</a>.<br>
+See <a href="https://camplejs.github.io/documentation/introduction.html">Cample.js docs</a> for more details.
 
 ## Repository
   
@@ -61,6 +100,10 @@ Installing via npm is currently the default. The framework can work with most mo
 ## Contribution
   
 If you would like to contribute to this framework, please see [Contributing Guide](https://github.com/Camplejs/Cample.js/blob/main/CONTRIBUTING.md). Thank you!
+
+## Inspiration
+
+If you like the framework, it will be very cool if you rate the repository with a star [★](https://github.com/Camplejs/Cample.js)
 
 ## License
 [Licensed under MIT](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
