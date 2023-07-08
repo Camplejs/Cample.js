@@ -103,7 +103,7 @@ If you would like to contribute to this framework, please see [Contributing Guid
 
 ## Inspiration
 
-If you like the framework, it will be very cool if you rate the repository with a star [★](https://github.com/Camplejs/Cample.js)
+If you like the framework, it will be very cool if you rate the repository with a star ★
 
 ## License
 [Licensed under MIT](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
