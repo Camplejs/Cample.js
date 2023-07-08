@@ -233,7 +233,7 @@ export class Component extends DataComponent {
         if (this.values) {
           if (checkFunction(this.values)) {
             const valuesArguments: ValuesArguments = {
-              data: getData(dataId)
+              currentData: getData(dataId)
             };
             const values = this.values(valuesArguments);
             return values;
@@ -244,7 +244,7 @@ export class Component extends DataComponent {
         if (this.values) {
           if (checkFunction(this.values)) {
             const valuesArguments: ValuesArguments = {
-              data
+              currentData: data
             };
             const values = this.values(valuesArguments);
             return values;
@@ -608,9 +608,11 @@ export class Component extends DataComponent {
       ) => {
         if (typeof this.script !== "undefined") {
           const component = getComponent(index);
+          const oldData = getData(index, true);
           if (Array.isArray(this.script)) {
             if (this.script[1].start === start) {
               renderScript(
+                oldData,
                 this.script,
                 component?.functions,
                 importData,
@@ -619,6 +621,7 @@ export class Component extends DataComponent {
             } else {
               if (this.script[1].start === undefined && start === "afterLoad") {
                 renderScript(
+                  oldData,
                   this.script,
                   component?.functions,
                   importData,
@@ -629,6 +632,7 @@ export class Component extends DataComponent {
           } else {
             if (start === "afterLoad")
               renderScript(
+                oldData,
                 this.script,
                 component?.functions,
                 importData,

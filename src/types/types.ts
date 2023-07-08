@@ -236,13 +236,13 @@ export type DynamicNodeComponentType =
 export type LastNodeType = Element | ChildNode | ParentNode;
 
 export type ScriptElementsType = {
-  [key: string]: Element | null;
+  [key: string]: Element | null | Array<Element | null>;
 };
 export type ScriptArgumentsType = {
   elements: ScriptElementsType;
   functions: FunctionsType;
-  data: DataType | undefined;
-  import?: DataType;
+  currentData: DataType | undefined;
+  importedData?: DataType;
 };
 
 export type DynamicType = {
@@ -446,7 +446,6 @@ export type EachOptionsType = DefaultDataOptionsType & {
   functionName?: string;
   valueName?: string;
   importedDataName?: string;
-  element?: ElementType;
   componentData?: boolean;
   iteration?: IterationFunctionType;
 };

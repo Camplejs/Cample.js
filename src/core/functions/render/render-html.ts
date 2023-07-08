@@ -31,7 +31,7 @@ export const renderHTML = (
           ) {
             let elementsObject: ScriptElementsType = {};
             if (renderType === "component" && elements) {
-              elementsObject = renderScriptElements(elements, content, false);
+              elementsObject = renderScriptElements(elements, content);
             }
             parent.insertBefore(content.firstElementChild, e);
             const el = e.previousElementSibling;

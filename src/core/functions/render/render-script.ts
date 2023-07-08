@@ -11,6 +11,7 @@ import {
 } from "../../../types/types";
 
 export const renderScript = (
+  data: DataType | undefined,
   script: ScriptType,
   functions: FunctionsType,
   exportData: DataType | undefined,
@@ -26,8 +27,8 @@ export const renderScript = (
     return {
       elements: currentElements,
       functions: currentFunctions,
-      data: currentData,
-      import: exportData
+      currentData: data,
+      importedData: exportData
     };
   };
   if (Array.isArray(script)) {

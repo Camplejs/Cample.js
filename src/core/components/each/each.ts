@@ -43,7 +43,8 @@ import {
   NodeTextType,
   CurrentKeyType,
   IterationFunctionType,
-  ValueType
+  ValueType,
+  ScriptElementsType
 } from "../../../types/types";
 import { createEachDynamicNodeComponentType } from "../../functions/data/create-each-dynamic-node-component";
 import { createNode } from "../../functions/data/create-node";
@@ -54,7 +55,6 @@ import { renderImport } from "../../functions/render/render-import";
 import { renderImportData } from "../../functions/render/render-import-data";
 import { renderIndexData } from "../../functions/render/render-index-data";
 import { renderScript } from "../../functions/render/render-script";
-import { renderTemplateElement } from "../../functions/render/render-template-element";
 import { DataComponent } from "../data-component/data-component";
 import { renderKey } from "../../functions/render/render-key";
 import { renderDynamicKey } from "../../functions/render/render-dynamic-key";
@@ -106,18 +106,8 @@ export class Each extends DataComponent {
     if (typeof this.selector !== "undefined" && isDataEachFunction) {
       const isFunction = checkFunction(this.eachTemplate);
       if (isFunction || typeof this.eachTemplate === "string") {
-        let templateElement: any = null;
+        const templateElement: any = null;
         const trim = (trimHTML && this.trimHTML === undefined) || this.trimHTML;
-        if (typeof this.options !== "undefined") {
-          if (this.options.element) {
-            templateElement = renderTemplateElement(
-              this.options.element.selector,
-              this.options.element.id,
-              this.options.element.class,
-              this.options.element.attributes
-            );
-          }
-        }
         const getValues = (dataId: number, eachIndex?: number) => {
           const indexData = renderIndexData(getData(dataId), eachIndex);
           if (this.values) {
@@ -763,6 +753,7 @@ export class Each extends DataComponent {
             template
           );
           this._dynamic.data.data.components.push(DynamicNodeComponent);
+          return DynamicNodeComponent;
         };
 
         const setDynamicNodes = () => {
@@ -825,7 +816,7 @@ export class Each extends DataComponent {
             this.importedDataName
           );
           renderEachFunction(updateFunction, dataId, data, index, importData);
-          setDynamicNodeComponentType(
+          const component = setDynamicNodeComponentType(
             dataId,
             [],
             parentNode,
@@ -834,11 +825,26 @@ export class Each extends DataComponent {
             importObject,
             newTemplateObj
           );
+          const elements: ScriptElementsType = {};
           try {
             renderNewData(oldData, data, dataId, index, importData, true);
           } catch (e) {
             createError(`${e}`);
           }
+          if (
+            component.elements.length > 0 &&
+            Array.isArray(this.script) &&
+            this.script[1].elements
+          ) {
+            const els = this.script[1].elements;
+            els.forEach((e) => {
+              const key = Object.keys(e)[0];
+              elements[key] = component.elements.map((el) =>
+                el.querySelector(e[key])
+              );
+            });
+          }
+          renderScriptsAndStyles(data, null, "afterLoad", importData, elements);
           this._dynamic.data.data.currentId += 1;
         };
 
@@ -862,25 +868,45 @@ export class Each extends DataComponent {
           return this._dynamic.data.data.values[dynamicIndex];
         };
         const renderScriptsAndStyles = (
+          data: EachDataValueType,
           e: Element | null,
           start: StartType,
-          importData: DataType | undefined
+          importData: DataType | undefined,
+          elements?: ScriptElementsType
         ) => {
           if (typeof this.script !== "undefined") {
             if (Array.isArray(this.script)) {
               if (this.script[1].start === start) {
-                renderScript(this.script, this.eachFunctions, importData);
+                renderScript(
+                  data,
+                  this.script,
+                  this.eachFunctions,
+                  importData,
+                  elements
+                );
               } else {
                 if (
                   this.script[1].start === undefined &&
                   start === "afterLoad"
                 ) {
-                  renderScript(this.script, this.eachFunctions, importData);
+                  renderScript(
+                    data,
+                    this.script,
+                    this.eachFunctions,
+                    importData,
+                    elements
+                  );
                 }
               }
             } else {
               if (start === "afterLoad")
-                renderScript(this.script, this.eachFunctions, importData);
+                renderScript(
+                  data,
+                  this.script,
+                  this.eachFunctions,
+                  importData,
+                  elements
+                );
             }
           }
           if (typeof this.attributes !== "undefined") {
@@ -965,7 +991,13 @@ export class Each extends DataComponent {
                 );
                 const data = templateData?.value;
                 const isDataObject = checkObject(data);
-                renderScriptsAndStyles(e, "beforeLoad", importData);
+                renderScriptsAndStyles(
+                  data as EachDataValueType,
+                  e,
+                  "beforeLoad",
+                  importData,
+                  {}
+                );
                 const template = templateElement;
                 const functionsArray: FunctionsArray = [];
                 functionsArray.push(
@@ -985,9 +1017,6 @@ export class Each extends DataComponent {
                       importObject,
                       importData
                     )
-                );
-                functionsArray.push((el: Element | null) =>
-                  renderScriptsAndStyles(el, "afterLoad", importData)
                 );
                 renderHTML(e, template, functionsArray, "each");
               });
