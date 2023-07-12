@@ -400,8 +400,8 @@ export type ExportTemplateDataType = {
 };
 
 export type ImportObjectArrayType = {
-  data: ArrayStringType;
-  functions: ArrayStringType;
+  data?: ArrayStringType;
+  functions?: ArrayStringType;
 };
 
 export type ExportTemplateDataNewType = {
@@ -458,7 +458,7 @@ export type DataType = {
   [key: string]: any | DataPropertyType;
 };
 
-export type ElementsElementType = {
+export type ElementsOptionsType = {
   [key: string]: string;
 };
 
@@ -466,7 +466,7 @@ export type StartType = "afterLoad" | "beforeLoad";
 
 export type ScriptOptionsType = {
   start?: StartType;
-  elements?: Array<ElementsElementType>;
+  elements?: ElementsOptionsType;
 };
 
 export type ExportDataArrayType = Array<ExportDataType | undefined>;

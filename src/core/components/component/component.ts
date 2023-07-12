@@ -669,10 +669,10 @@ export class Component extends DataComponent {
         indexValues: IndexValuesType,
         importIndex?: number
       ): string => {
-        const importObj: ImportObjectArrayType = {
-          data: [],
-          functions: []
-        };
+        const importObj: ImportObjectArrayType = {};
+        if (data.hasOwnProperty("data")) importObj.data = [];
+        if (data.hasOwnProperty("functions")) importObj.functions = [];
+        if (data.data) importObj.data = [];
         Object.entries(data).forEach(([key, value]) => {
           if (key === "data" || key === "functions") {
             Object.entries(value).forEach(([newKey, newValue]) => {
@@ -688,8 +688,8 @@ export class Component extends DataComponent {
                     ? indexValues[key][newKey][0]
                     : indexValues[key][newKey]
                 ]);
-                importObj[key].push(valString);
-              } else importObj[key].push(newKey);
+                importObj[key]?.push(valString);
+              } else importObj[key]?.push(newKey);
             });
           }
         });
@@ -885,7 +885,6 @@ export class Component extends DataComponent {
             functions: {}
           };
           let importIndex: number | undefined = undefined;
-
           if (currentExportObject) {
             const newExportObject = renderExportObject(
               componentName,

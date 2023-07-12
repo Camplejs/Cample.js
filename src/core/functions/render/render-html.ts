@@ -1,7 +1,7 @@
 "use-strict";
 import { createError } from "../../../shared/utils";
 import {
-  ElementsElementType,
+  ElementsOptionsType,
   FunctionsArray,
   RenderComponentType,
   ScriptElementsType
@@ -14,7 +14,7 @@ export const renderHTML = (
   template: Element | null,
   functions: FunctionsArray,
   renderType: RenderComponentType,
-  elements?: ElementsElementType[]
+  elements?: ElementsOptionsType
 ) => {
   if (e instanceof HTMLTemplateElement) {
     const content = e.content;

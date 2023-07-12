@@ -837,10 +837,9 @@ export class Each extends DataComponent {
             this.script[1].elements
           ) {
             const els = this.script[1].elements;
-            els.forEach((e) => {
-              const key = Object.keys(e)[0];
+            Object.entries(els).forEach(([key, value]) => {
               elements[key] = component.elements.map((el) =>
-                el.querySelector(e[key])
+                el.querySelector(value)
               );
             });
           }

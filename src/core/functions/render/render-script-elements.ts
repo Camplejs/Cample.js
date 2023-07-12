@@ -1,16 +1,15 @@
 "use-strict";
 
-import { ElementsElementType, ScriptElementsType } from "../../../types/types";
+import { ElementsOptionsType, ScriptElementsType } from "../../../types/types";
 
 export const renderScriptElements = (
-  elements: ElementsElementType[] | undefined,
+  elements: ElementsOptionsType | undefined,
   element: Element | DocumentFragment
 ): ScriptElementsType => {
   const elementsObject: ScriptElementsType = {};
-  elements?.forEach((e) => {
-    elementsObject[Object.keys(e)[0]] = element.querySelector(
-      e[Object.keys(e)[0]]
-    );
-  });
+  if (elements)
+    Object.entries(elements).forEach(([key, value]) => {
+      elementsObject[key] = element.querySelector(value);
+    });
   return elementsObject;
 };

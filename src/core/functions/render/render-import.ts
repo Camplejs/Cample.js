@@ -29,8 +29,12 @@ export const renderImport = (
                 createError("Index included");
               }
               const importObjData = JSON.parse(oldData.import);
-              const dataSetArr = importObjData.data.split(";");
-              const functionsSetArr = importObjData.functions.split(";");
+              const dataSetArr = importObjData.data
+                ? importObjData.data.split(";")
+                : [];
+              const functionsSetArr = importObjData.functions
+                ? importObjData.functions.split(";")
+                : [];
               const dataArr = concatArrays(dataSetArr, functionsSetArr);
               if (oldData.exportId === importData.exportId) {
                 const concatArrays = (
