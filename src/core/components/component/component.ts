@@ -672,7 +672,6 @@ export class Component extends DataComponent {
         const importObj: ImportObjectArrayType = {};
         if (data.hasOwnProperty("data")) importObj.data = [];
         if (data.hasOwnProperty("functions")) importObj.functions = [];
-        if (data.data) importObj.data = [];
         Object.entries(data).forEach(([key, value]) => {
           if (key === "data" || key === "functions") {
             Object.entries(value).forEach(([newKey, newValue]) => {
