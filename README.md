@@ -79,7 +79,7 @@ const newComponent = component("new-component", "<span>component</span>");
 
 const newCample = cample("#page");
 newCample.render(
-  `
+`
     <div class="content">
         {{newComponent}}
     </div>
