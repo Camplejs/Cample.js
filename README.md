@@ -24,16 +24,16 @@
 
 | Name                       | Cample.js |
 | -------------------------- | --------- |
-| create rows                | 40.6      |
-| replace all rows           | 18.8      |
-| partial update             | 105.9     |
-| select row                 | 39.2      |
-| swap rows                  | 23.7      |
-| remove row                 | 75.5      |
-| create many rows           | 465.7     |
-| append rows to large table | 95.3      |
-| clear rows                 | 29.8      |
-| geometric mean             | 1.50      |
+| create rows                | 41.9      |
+| replace all rows           | 19.4      |
+| partial update             | 110.7     |
+| select row                 | 35.7      |
+| swap rows                  | 25.1      |
+| remove row                 | 73.9      |
+| create many rows           | 469.8     |
+| append rows to large table | 96.4      |
+| clear rows                 | 31.3      |
+| geometric mean             | 1.46      |
 
 js-framework-benchmark/frameworks/non-keyed/cample
 
