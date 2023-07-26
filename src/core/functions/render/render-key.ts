@@ -1,11 +1,9 @@
 "use strict";
 
 import { createError } from "../../../shared/utils";
-import { DynamicKeyObjectType, DynamicKeyType } from "../../../types/types";
+import { DynamicKeyType, RenderedKeyType } from "../../../types/types";
 
-export const renderKey = (
-  key: string
-): string | DynamicKeyObjectType | undefined => {
+export const renderKey = (key: string): RenderedKeyType => {
   if (key.includes(".")) {
     const attrKey = key.split(".");
     if (attrKey.length > 1) {

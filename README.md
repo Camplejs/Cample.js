@@ -22,29 +22,29 @@
 
 ## :watch: Benchmark
 
-| Name  | Cample.js |
-| ------------- | ------------- |
-| create rows  | 43.9  |
-| replace all rows  | 19.7  |
-| partial update  | 120.9  |
-| select row  | 46.2  |
-| swap rows  | 26.8  |
-| remove row  | 76.1  |
-| create many rows  | 471.1  |
-| append rows to large table  | 97.4  |
-| clear rows | 31.6  |
-| geometric mean | 1.55  |
+| Name                       | Cample.js |
+| -------------------------- | --------- |
+| create rows                | 40.6      |
+| replace all rows           | 18.8      |
+| partial update             | 105.9     |
+| select row                 | 39.2      |
+| swap rows                  | 23.7      |
+| remove row                 | 75.5      |
+| create many rows           | 465.7     |
+| append rows to large table | 95.3      |
+| clear rows                 | 29.8      |
+| geometric mean             | 1.50      |
 
 js-framework-benchmark/frameworks/non-keyed/cample
 
 ## About
 
-Cample.js - perspective javascript framework. 
-  
-This framework supports component approach and reactivity without Virtual DOM. 
-  
+Cample.js - perspective javascript framework.
+
+This framework supports component approach and reactivity without Virtual DOM.
+
 ## Why Cample.js?
- 
+
 Cample.js is a new, frequently updated framework that works through class instances. The component approach, as well as reactivity without a virtual DOM and data export and import, will make creating a site much faster than if a site was developed using just js. Also, the framework is new, and you can try it as something new in building a website.
 
 ## Features
@@ -57,48 +57,58 @@ Cample.js provides the following features:
 - **Working with data**
 - **No dependencies**
 - **Typed**
-  
+
 ## Installation
 
 Install via NPM:
+
 ```bash
-npm i -D cample 
+npm i -D cample
 ```
+
 Installing via npm is currently the default. The framework can work with most modern bundlers.
 
 ## Getting started
+
 An instance of the Cample class is created, which is the main handler for all components.
-  
+
 ### JavaScript
+
 ```javascript
 const newComponent = component("new-component", "<span>component</span>");
-            
+
 const newCample = cample("#page");
-newCample.render(`
+newCample.render(
+  `
     <div class="content">
         {{newComponent}}
     </div>
-`,{
+`,
+  {
     newComponent
-});
+  }
+);
 ```
+
 ### HTML
+
 ```html
 <div id="page"></div>
 ```
+
 Link article: <a href="https://camplejs.github.io/documentation/getting-started.html">Getting started</a>.<br>
 See <a href="https://camplejs.github.io/documentation/introduction.html">Cample.js docs</a> for more details.
 
 ## Repository
-  
+
 [Repository](https://github.com/Camplejs/Cample.js)
-  
+
 ## Changelog
 
 [Changelog](https://github.com/Camplejs/Cample.js/releases)
-  
+
 ## Contribution
-  
+
 If you would like to contribute to this framework, please see [Contributing Guide](https://github.com/Camplejs/Cample.js/blob/main/CONTRIBUTING.md). Thank you!
 
 ## Inspiration
@@ -106,4 +116,5 @@ If you would like to contribute to this framework, please see [Contributing Guid
 If you like the framework, it will be very cool if you rate the repository with a star ★
 
 ## License
+
 [Licensed under MIT](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)

@@ -43,7 +43,8 @@ import {
   AttributesValType,
   CampleImportType,
   NodeTextType,
-  ValueType
+  ValueType,
+  ClassType
 } from "../../../types/types";
 import {
   checkFunction,
@@ -70,6 +71,7 @@ import { renderValues } from "../../functions/render/render-values";
 import { renderKeyData } from "../../functions/render/render-key-data";
 import { updateText } from "../../functions/data/update-text";
 import { updateAttributes } from "../../functions/data/update-attributes";
+import { updateClass } from "../../functions/data/update-class";
 
 export class Component extends DataComponent {
   public data: DataComponentType;
@@ -219,6 +221,11 @@ export class Component extends DataComponent {
                     renderDynamic(key, data);
                   value.render(attrFunc);
                   break;
+                case "class":
+                  const classFunc = (key: CurrentKeyType) =>
+                    renderDynamic(key, data);
+                  value.render(classFunc);
+                  break;
               }
             });
           } else delete this._dynamic.dynamicNodes[i].isNew;
@@ -255,7 +262,7 @@ export class Component extends DataComponent {
         if (key.isValue) {
           const values = getValuesData(data);
           let newData: undefined | string = undefined;
-          if (values) newData = renderValues(key.key, values)[0];
+          if (values) newData = renderValues(key.key, values, key.isClass)[0];
           return newData;
         } else {
           const firstKeyData = data[key.originKey];
@@ -569,6 +576,7 @@ export class Component extends DataComponent {
             : undefined;
         return defaultData;
       };
+      const { push } = Array.prototype;
       const updateFunction = (
         name: string,
         key: string,
@@ -672,6 +680,7 @@ export class Component extends DataComponent {
         const importObj: ImportObjectArrayType = {};
         if (data.hasOwnProperty("data")) importObj.data = [];
         if (data.hasOwnProperty("functions")) importObj.functions = [];
+        if (data.data) importObj.data = [];
         Object.entries(data).forEach(([key, value]) => {
           if (key === "data" || key === "functions") {
             Object.entries(value).forEach(([newKey, newValue]) => {
@@ -1019,6 +1028,17 @@ export class Component extends DataComponent {
                 } else {
                   createError("Render export error");
                 }
+                break;
+              case "class":
+                const value5 = val.value as ClassType;
+                const fnClass = (fnNew: any) =>
+                  updateClass(node, value5, fnNew);
+                fnClass(attrFunc);
+                push.call(newValues, {
+                  render: fnClass,
+                  type: "class",
+                  value: value5
+                });
                 break;
             }
           });

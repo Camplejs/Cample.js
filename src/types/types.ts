@@ -157,15 +157,26 @@ export type CampleImportType = {
   value: string;
 };
 
+export type ClassListItemType = string | CurrentKeyType;
+
+export type ClassListType = Array<ClassListItemType>;
+export type ClassType = {
+  classList: ClassListType;
+  oldClassList: ArrayStringType;
+};
+
+export type RenderedKeyType = string | DynamicKeyObjectType | undefined;
+
 export type ValueValueType =
   | FunctionEventType
   | AttributesValType
   | DynamicTextType
-  | CampleImportType;
+  | CampleImportType
+  | ClassType;
 
 export type ValueType = {
   id?: IdType;
-  type: "event" | "dynamicText" | "attribute" | "import";
+  type: "event" | "dynamicText" | "attribute" | "import" | "class";
   value: ValueValueType;
 };
 export type ValuesTemplateType = Array<ValueType>;
@@ -300,6 +311,7 @@ export type CurrentKeyType = {
   isProperty?: boolean;
   isOrigin?: boolean;
   isValue?: boolean;
+  isClass?: boolean;
 };
 export type NodeTextType = {
   key: CurrentKeyType;
@@ -308,8 +320,8 @@ export type NodeTextType = {
 
 export type NodeValueType = {
   render: any;
-  type: "dynamicText" | "attribute";
-  value: AttributesValType | NodeTextType;
+  type: "dynamicText" | "attribute" | "class";
+  value: AttributesValType | NodeTextType | ClassType;
 };
 export type NodeValuesType = Array<NodeValueType>;
 export type NodeType = {

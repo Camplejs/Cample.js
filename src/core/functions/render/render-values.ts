@@ -3,19 +3,20 @@
 import { checkObject, createError } from "../../../shared/utils";
 import { ValuesValueType } from "../../../types/types";
 
+const { push } = Array.prototype;
+
 export const renderValues = (
   key: string,
-  valuesObject: ValuesValueType
+  valuesObject: ValuesValueType,
+  isClass?: boolean
 ): [any, boolean] => {
-  let resultData: any = "";
-  const regex = /\[+(.*?)\]+/g;
-  key = key.replace(regex, (str, d) => d);
+  let resultData: any = isClass ? [] : "";
   if (checkObject(valuesObject) && valuesObject.hasOwnProperty(key)) {
     const values = valuesObject[key];
     Object.entries(values).forEach(([valueKey, value]) => {
       if (value) {
         if (typeof valueKey === "string") {
-          resultData += valueKey;
+          isClass ? push.call(resultData, valueKey) : (resultData += valueKey);
         } else createError("Value name type is string");
       }
     });
