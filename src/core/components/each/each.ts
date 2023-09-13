@@ -119,7 +119,7 @@ export class Each extends DataComponent {
     if (typeof this.selector !== "undefined" && isDataEachFunction) {
       const isFunction = checkFunction(this.eachTemplate);
       if (isFunction || typeof this.eachTemplate === "string") {
-        let templateElement: any = null;
+        const templateElement: any = null;
         const trim = (trimHTML && this.trimHTML === undefined) || this.trimHTML;
         const getValues = (dataId: number, eachIndex?: number) => {
           const indexData = renderIndexData(getData(dataId), eachIndex);
@@ -660,7 +660,7 @@ export class Each extends DataComponent {
                   break;
                 }
                 if (oldLastIndex === oldFirstIndex) {
-                  let lastEl = newData[newLastIndex]?.el;
+                  const lastEl = newData[newLastIndex]?.el;
                   for (let i = 0; newFirstIndex < newLastIndex--; i++) {
                     const currentIndex = newFirstIndex + i;
                     const currentNewNode = newData[currentIndex];
@@ -692,9 +692,9 @@ export class Each extends DataComponent {
                     oldFirstIndex < oldLastIndex--;
                     i++
                   ) {
-                    let currentNode = oldNodes[i];
+                    const currentNode = oldNodes[i];
                     if (currentNode) {
-                      let { el } = currentNode;
+                      const { el } = currentNode;
                       removeChild.call(parentNode, el as Node);
                     }
                   }
@@ -1154,7 +1154,7 @@ export class Each extends DataComponent {
             true,
             getEventsFunction
           );
-          let currentComponent = setDynamicNodeComponentType(
+          const currentComponent = setDynamicNodeComponentType(
             dataId,
             [],
             parentNode,
@@ -1170,7 +1170,7 @@ export class Each extends DataComponent {
             index,
             currentComponent
           );
-          let elements: ScriptElementsType = {};
+          const elements: ScriptElementsType = {};
           try {
             renderNewData(
               oldData,

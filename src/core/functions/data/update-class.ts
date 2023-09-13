@@ -16,13 +16,13 @@ export const updateClass = (
   getValue?: (key: CurrentKeyType) => any
 ) => {
   if (el && getValue) {
-    let { oldClassList, classList } = value;
+    const { oldClassList, classList } = value;
     const list = el.classList;
-    let currentClass = {};
+    const currentClass = {};
     classList.forEach((e) => {
       const isObj = checkObject(e);
       if (isObj) {
-        let newClasses = getValue(e as CurrentKeyType) as ObjClassListType;
+        const newClasses = getValue(e as CurrentKeyType) as ObjClassListType;
         if ((e as CurrentKeyType).isValue) {
           for (const newClass in newClasses) {
             if (!(newClass in currentClass)) currentClass[newClass] = null;

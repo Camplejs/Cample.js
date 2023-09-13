@@ -11,7 +11,7 @@ import {
 } from "../../../types/types";
 
 export const renderScript = (
-  data:DataType|undefined,
+  data: DataType | undefined,
   script: ScriptType,
   functions: FunctionsType,
   exportData: DataType | undefined,
