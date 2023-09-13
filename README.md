@@ -40,8 +40,8 @@ Cample.js provides the following features:
 
 - Reactivity without Virtual DOM. The framework does not create large DOM trees for working with HTML.
 - Keyed implementation. Blocks in a loop will not be overwritten by new ones if their keys match.
-- Component approach. It allows you to repeat many UI blocks on the site, which makes development much easier.
-- Convenient approach to working with data inside a component. Transferring data between components allows you to work with components even if they are in different files
+- Component approach. It allows to repeat many UI blocks on the site, which makes development much easier.
+- Convenient approach to working with data inside a component. Transferring data between components allows to work with components even if they are in different files
 
 ## Getting started
 
