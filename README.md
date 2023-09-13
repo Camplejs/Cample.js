@@ -42,6 +42,8 @@ Cample.js provides the following features:
 - Keyed implementation. Blocks in a loop will not be overwritten by new ones if their keys match.
 - Component approach. It allows to repeat many UI blocks on the site, which makes development much easier.
 - Convenient approach to working with data inside a component. Transferring data between components allows to work with components even if they are in different files
+- The frameworks make it easy to work with HTML files. The syntax of the framework itself is built on objects with HTML templates. When using modern project builders, HTML files are imported through a variable that does not pass through any function.
+- He is moderately fast.
 
 ## Getting started
 
