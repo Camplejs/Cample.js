@@ -25,7 +25,7 @@
 Install via NPM:
 
 ```bash
-npm i -D cample
+npm i cample
 ```
 
 Installing via npm is currently the default. The framework can work with most modern bundlers.
