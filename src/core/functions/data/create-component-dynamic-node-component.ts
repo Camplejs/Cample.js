@@ -13,6 +13,7 @@ export const createComponentDynamicNodeComponentType = (
   const DynamicNodeComponentType: ComponentDynamicNodeComponentType = {
     id: dataId,
     functions: {},
+    nodes: [],
     exportData: undefined,
     import: currentImport,
     exportObject

@@ -4,12 +4,11 @@ import {
   DynamicEl,
   CurrentKeyType,
   ClassType,
-  ArrayStringType
+  ObjClassListType
 } from "../../../types/types";
 
 const addClass = DOMTokenList.prototype.add;
 const removeClass = DOMTokenList.prototype.remove;
-const { push } = Array.prototype;
 
 export const updateClass = (
   el: DynamicEl,
@@ -19,45 +18,41 @@ export const updateClass = (
   if (el && getValue) {
     const { oldClassList, classList } = value;
     const list = el.classList;
-    const currentClass: ArrayStringType = [];
+    const currentClass = {};
     classList.forEach((e) => {
       const isObj = checkObject(e);
       if (isObj) {
-        const newClasses = getValue(e as CurrentKeyType) as ArrayStringType;
+        const newClasses = getValue(e as CurrentKeyType) as ObjClassListType;
         if ((e as CurrentKeyType).isValue) {
-          newClasses.forEach((newClass) => {
-            if (!currentClass.includes(newClass))
-              push.call(currentClass, newClass);
-            if (!oldClassList.includes(newClass)) {
+          for (const newClass in newClasses) {
+            if (!(newClass in currentClass)) currentClass[newClass] = null;
+            if (!(newClass in oldClassList)) {
               addClass.call(list, newClass);
             }
-          });
+          }
         } else {
           const arr = (newClasses as unknown as string)
             .trim()
             .replace(/\s+/g, " ")
             .split(" ");
-          arr.forEach((newClass) => {
-            if (!currentClass.includes(newClass))
-              push.call(currentClass, newClass);
-            if (!oldClassList.includes(newClass)) {
-              addClass.call(list, newClass);
+          for (const i in arr) {
+            if (!(arr[i] in currentClass)) currentClass[arr[i]] = null;
+            if (!(arr[i] in oldClassList)) {
+              addClass.call(list, arr[i]);
             }
-          });
+          }
         }
       } else {
         const newClass = e as string;
-        if (!currentClass.includes(newClass)) push.call(currentClass, newClass);
-        if (!oldClassList.includes(newClass)) {
-          addClass.call(list, newClass);
-        }
+        if (!(newClass in currentClass)) currentClass[newClass] = null;
+        if (!(newClass in oldClassList)) addClass.call(list, newClass);
       }
     });
-    oldClassList.forEach((oldClass) => {
-      if (!currentClass.includes(oldClass)) {
+    for (const oldClass in oldClassList) {
+      if (!(oldClass in currentClass)) {
         removeClass.call(list, oldClass);
       }
-    });
-    value.oldClassList = currentClass as ArrayStringType;
+    }
+    value.oldClassList = currentClass as ObjClassListType;
   }
 };

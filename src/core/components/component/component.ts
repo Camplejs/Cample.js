@@ -100,7 +100,14 @@ export class Component extends DataComponent {
     const isObjectData = checkObject(this.data);
     if (typeof this.selector !== "undefined" && !isObjectData) {
       const setDynamicNodes = (key: string, isAllUpdate = false) => {
-        this._dynamic.data.nodes.forEach((node: NodeType) => {
+        const componentNodes = this._dynamic.data.data.components.map(
+          (component) => component.nodes
+        );
+        const nodes = ([] as NodeType[]).concat.apply(
+          [] as NodeType[],
+          componentNodes
+        );
+        nodes.forEach((node: NodeType) => {
           if (isAllUpdate) {
             this._dynamic.dynamicNodes.push(node);
           } else {
@@ -232,9 +239,16 @@ export class Component extends DataComponent {
         });
         this._dynamic.dynamicNodes = [];
       };
-      const setNode = (values: NodeValuesType, index: number, id: number) => {
-        const node = createNode(values, index, id, false, undefined, true);
-        this._dynamic.data.nodes.push(node);
+      const setNode = (
+        values: NodeValuesType,
+        index: number,
+        id: number,
+        currentComponent: ComponentDynamicNodeComponentType | undefined
+      ) => {
+        const node = createNode(values, index, id, true);
+        if (currentComponent) {
+          currentComponent.nodes.push(node);
+        }
       };
       const getValues = (dataId: number) => {
         if (this.values) {
@@ -670,6 +684,7 @@ export class Component extends DataComponent {
           importObject
         );
         this._dynamic.data.data.components.push(DynamicNodeComponent);
+        return DynamicNodeComponent;
       };
       const renderImportString = (
         data: ExportTemplateDataNewType | TemplateExportValueType,
@@ -1042,8 +1057,10 @@ export class Component extends DataComponent {
                 break;
             }
           });
+          let currentComponent: ComponentDynamicNodeComponentType | undefined =
+            undefined;
           if (el) {
-            setDynamicNodeComponentType(index, importObject);
+            currentComponent = setDynamicNodeComponentType(index, importObject);
             renderFunctionsData(
               updateFunction,
               true,
@@ -1063,7 +1080,7 @@ export class Component extends DataComponent {
               []
             );
           }
-          setNode(newValues, index, dataId);
+          setNode(newValues, index, dataId, currentComponent);
           return el as Element;
         }
         return null;

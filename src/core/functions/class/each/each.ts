@@ -10,10 +10,10 @@ import { Each } from "../../../components/each/each";
 const each = (
   selector: SelectorType,
   data: EachDataFunctionType,
-  templateFunction: string,
+  template: string,
   options: EachOptionsType | undefined
 ): Each => {
-  return new Each(selector, data, templateFunction, options);
+  return new Each(selector, data, template, options);
 };
 
 export { each };

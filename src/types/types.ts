@@ -157,12 +157,17 @@ export type CampleImportType = {
   value: string;
 };
 
-export type ClassListItemType = string | CurrentKeyType;
+export type ValueItemType = string | CurrentKeyType;
 
-export type ClassListType = Array<ClassListItemType>;
+export type ObjClassListType = {
+  [key: string]: any;
+};
+
+export type ValueItemsType = Array<ValueItemType>;
+
 export type ClassType = {
-  classList: ClassListType;
-  oldClassList: ArrayStringType;
+  classList: ValueItemsType;
+  oldClassList: ObjClassListType;
 };
 
 export type RenderedKeyType = string | DynamicKeyObjectType | undefined;
@@ -183,6 +188,7 @@ export type ValuesTemplateType = Array<ValueType>;
 export type EachTemplateNodesType = Array<number>;
 export type EachTemplateType = {
   el: Element | null;
+  key?: ValueItemsType;
   nodes: EachTemplateNodesType;
   values: ValuesTemplateType;
 };
@@ -190,10 +196,11 @@ export type ElementsType = Element[];
 export type DynamicNodeComponentNodeType = ChildNode | null | undefined;
 export type DynamicNodeComponentParentNodeType = ParentNode | null | undefined;
 export type EachDynamicNodeComponentType = {
-  elements: ElementsType;
   import?: ImportObjectType;
   parentNode: ParentNode;
   template?: EachTemplateType;
+  keys?: ArrayStringType;
+  nodes: Array<NodeType>;
   nodeNext: DynamicNodeComponentNodeType;
   nodePrevious: DynamicNodeComponentNodeType;
   nodeParentNode: DynamicNodeComponentParentNodeType;
@@ -231,6 +238,7 @@ export type ComponentDynamicNodeComponentType = {
   id: number;
   functions: FunctionsType;
   exportData?: ExportDataType;
+  nodes: Array<NodeType>;
   exportObject?: ExportObjectDataType;
   import?: ImportObjectType;
 };
@@ -257,7 +265,6 @@ export type ScriptArgumentsType = {
 };
 
 export type DynamicType = {
-  nodes: Array<NodeType>;
   data: {
     values: Array<DynamicDataType>;
     components: Array<DynamicNodeComponentType>;
@@ -284,8 +291,14 @@ export type EventGetDataType = (
 export type EventEachGetDataType = (
   key: string,
   dataId: number,
-  eachIndex: IdType,
+  keyEl: string | undefined,
   index: number
+) => any;
+
+export type EventEachGetFunctionType = (
+  key: string,
+  dataId: number,
+  keyEl: string | undefined
 ) => any;
 
 export type EventFunctionType = (...args: any[]) => any;
@@ -327,9 +340,10 @@ export type NodeValuesType = Array<NodeValueType>;
 export type NodeType = {
   isNew?: boolean;
   index: number;
+  key?: string;
+  el?: Node;
   values: NodeValuesType;
   dataId: number;
-  eachIndex?: number;
 };
 
 export type ArrayNodeType = Array<NodeType>;
@@ -459,6 +473,7 @@ export type EachOptionsType = DefaultDataOptionsType & {
   valueName?: string;
   importedDataName?: string;
   componentData?: boolean;
+  indexName?: string;
   iteration?: IterationFunctionType;
 };
 

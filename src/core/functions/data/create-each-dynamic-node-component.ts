@@ -21,8 +21,10 @@ export const createEachDynamicNodeComponentType = (
     import: currentImport,
     elements,
     nodePrevious,
+    nodes: [],
     nodeNext,
     template,
+    keys: [],
     nodeParentNode: parentNode,
     parentNode
   };

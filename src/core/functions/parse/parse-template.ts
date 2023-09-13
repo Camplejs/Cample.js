@@ -1,6 +1,10 @@
 "use-strict";
 import { createError, getElement, getTextKey } from "../../../shared/utils";
-import { DynamicTextType, EachTemplateType } from "../../../types/types";
+import {
+  DynamicTextType,
+  EachTemplateType,
+  EventEachGetFunctionType
+} from "../../../types/types";
 import { renderEl } from "../data/create-node";
 import { parseKey } from "./parse-key";
 import { parseText } from "./parse-text";
@@ -12,7 +16,10 @@ export const parseTemplate = (
   trim?: boolean,
   getEventsData?: any,
   valueName?: string,
-  importedDataName?: string
+  importedDataName?: string,
+  indexName?: string,
+  isEach?: boolean,
+  getEventsFunction?: EventEachGetFunctionType
 ): EachTemplateType => {
   const el = getElement(template, trim);
   const obj: EachTemplateType = {
@@ -20,6 +27,9 @@ export const parseTemplate = (
     nodes: [],
     values: []
   };
+  if (isEach) {
+    obj.key = [];
+  }
   let i = -1;
   const renderNode = (node: ChildNode) => {
     i++;
@@ -35,7 +45,11 @@ export const parseTemplate = (
         true,
         obj.values,
         valueName,
-        importedDataName
+        importedDataName,
+        indexName,
+        i === 0 && isEach,
+        obj.key,
+        getEventsFunction
       );
       for (
         let currentNode = node.firstChild;
@@ -63,7 +77,12 @@ export const parseTemplate = (
               obj.nodes.length
             );
           } else {
-            const renderedKey = parseKey(key, valueName, importedDataName);
+            const renderedKey = parseKey(
+              key,
+              valueName,
+              importedDataName,
+              indexName
+            );
             const dynamicText: DynamicTextType = {
               key: renderedKey,
               texts: [obj.nodes.length]

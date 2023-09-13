@@ -45,7 +45,9 @@ import {
   IterationFunctionType,
   ValueType,
   ScriptElementsType,
-  ClassType
+  ClassType,
+  ValueItemsType,
+  ArrayNodeType
 } from "../../../types/types";
 import { createEachDynamicNodeComponentType } from "../../functions/data/create-each-dynamic-node-component";
 import { createNode } from "../../functions/data/create-node";
@@ -75,6 +77,7 @@ export class Each extends DataComponent {
   public valueName: string;
   public importedDataName: string;
   public iteration: IterationFunctionType | undefined;
+  public indexName: string;
 
   constructor(
     selector: SelectorType,
@@ -92,6 +95,14 @@ export class Each extends DataComponent {
       ? options.importedDataName
       : "importedData";
     this.iteration = options.iteration;
+    this.indexName = options.indexName ? options.indexName : "index";
+    if (
+      this.indexName === this.valueName ||
+      this.indexName === this.importedDataName ||
+      this.valueName === this.importedDataName
+    ) {
+      createError("Name error");
+    }
   }
 
   _getExport(): ExportDataType | undefined {
@@ -142,22 +153,23 @@ export class Each extends DataComponent {
             name: string,
             dataId: number | undefined,
             index: number,
-            importData: ImportDataType | undefined
+            currentCompoent: EachDynamicNodeComponentType
           ) => void,
           dataId: number | undefined,
           data: EachDataValueType,
           index: number,
-          importData: ImportDataType | undefined
+          currentComponent: EachDynamicNodeComponentType
         ) => {
           if (data !== undefined) {
-            updateFunction(this.functionName, dataId, index, importData);
+            updateFunction(this.functionName, dataId, index, currentComponent);
           }
         };
         const renderDynamic = (
           key: CurrentKeyType,
           data: any,
           importData: any,
-          allData: any
+          allData: any,
+          eachIndex: number | undefined
         ) => {
           if (key.isValue) {
             const values = getValuesData(data, importData, allData);
@@ -166,37 +178,53 @@ export class Each extends DataComponent {
             return newData;
           } else {
             if (key.isOrigin) {
-              const firstKeyData =
-                key.originKey === this.valueName ? data : importData;
-              return key.isProperty
-                ? renderKeyData(firstKeyData, key.properties as Array<string>)
-                : firstKeyData;
+              if (key.originKey === this.indexName) {
+                if (key.isProperty) createError("Error properties");
+                return eachIndex;
+              } else {
+                const firstKeyData =
+                  key.originKey === this.valueName ? data : importData;
+                return key.isProperty
+                  ? renderKeyData(firstKeyData, key.properties as Array<string>)
+                  : firstKeyData;
+              }
             }
           }
           return undefined;
         };
-        const renderDynamicNodes = (importData: ImportDataType | undefined) => {
+        const renderDynamicNodes = (
+          importData: ImportDataType | undefined,
+          currentComponent: EachDynamicNodeComponentType
+        ) => {
           this._dynamic.dynamicNodes.forEach((e, i) => {
             if (this.iteration) {
+              const eachIndex = currentComponent.nodes.indexOf(e);
               const data = getData(e.dataId);
-              const val = renderIndexData(data, e.eachIndex);
+              const val = renderIndexData(data, eachIndex);
               const value = createArgumentsTemplateFunction(
                 val,
                 importData,
                 this.valueName,
                 this.importedDataName
               );
-              (this.iteration as IterationFunctionType)(value, e.eachIndex);
+              (this.iteration as IterationFunctionType)(value, eachIndex);
             }
             if (!e.isNew) {
+              const eachIndex = currentComponent.nodes.indexOf(e);
               const data = getData(e.dataId);
-              const val = renderIndexData(data, e.eachIndex);
+              const val = renderIndexData(data, eachIndex);
               e.values.forEach((value) => {
                 switch (value.type) {
                   case "dynamicText":
                     const value1 = value.value as NodeTextType;
                     const newData = String(
-                      renderDynamic(value1.key, val, importData, data)
+                      renderDynamic(
+                        value1.key,
+                        val,
+                        importData,
+                        data,
+                        eachIndex
+                      )
                     );
                     if (value1.value !== newData) {
                       (value.value as NodeTextType).value = newData;
@@ -205,12 +233,12 @@ export class Each extends DataComponent {
                     break;
                   case "attribute":
                     const attrFunc = (key: CurrentKeyType) =>
-                      renderDynamic(key, val, importData, data);
+                      renderDynamic(key, val, importData, data, eachIndex);
                     value.render(attrFunc);
                     break;
                   case "class":
                     const classFunc = (key: CurrentKeyType) =>
-                      renderDynamic(key, val, importData, data);
+                      renderDynamic(key, val, importData, data, eachIndex);
                     value.render(classFunc);
                     break;
                 }
@@ -224,15 +252,17 @@ export class Each extends DataComponent {
           "data"
         )?.set;
         const cloneNode = Node.prototype.cloneNode;
-        const { push, splice } = Array.prototype;
+        const { push } = Array.prototype;
         const createElement = (
+          indexData: any,
           index: number,
           data: DynamicDataValueType,
           dataId: number,
           templateEl: EachTemplateType | undefined,
           isFirst = false,
           eachIndex?: number,
-          importData?: ImportDataType
+          importData?: ImportDataType,
+          key?: string
         ) => {
           if (templateEl && templateEl.el) {
             const el = cloneNode.call(templateEl.el, true);
@@ -264,21 +294,26 @@ export class Each extends DataComponent {
               }
             }
             renderNode(el as ChildNode);
-            const indexData = renderIndexData(data, eachIndex);
             const attrFunc = (key: CurrentKeyType) =>
-              renderDynamic(key, indexData, importData, data);
+              renderDynamic(key, indexData, importData, data, eachIndex);
             const newValues: NodeValuesType = [];
             values.forEach((val) => {
               const node = nodes[val.id as number];
               switch (val.type) {
                 case "event":
                   const value1 = val.value as FunctionEventType;
-                  value1(node, eachIndex);
+                  value1(node, key);
                   break;
                 case "dynamicText":
                   const value2 = val.value as DynamicTextType;
                   const newData = String(
-                    renderDynamic(value2.key, indexData, importData, data)
+                    renderDynamic(
+                      value2.key,
+                      indexData,
+                      importData,
+                      data,
+                      eachIndex
+                    )
                   );
                   const texts = value2.texts.map((e, j) => {
                     const node = nodes[e as number] as Text;
@@ -319,39 +354,26 @@ export class Each extends DataComponent {
                   break;
               }
             });
-            setNode(
+            const currentNode = createNode(
               newValues,
               index,
               dataId,
-              eachIndex !== undefined ? eachIndex : 0,
-              isFirst
+              isFirst,
+              key,
+              el
             );
-            return el as Element;
+            return { el: el as Element, currentNode };
           }
-          return null;
+          return { el: null, currentNode: undefined };
         };
-        const { appendChild, insertBefore, removeChild } = Node.prototype;
+        const { appendChild, insertBefore, removeChild, replaceChild } =
+          Node.prototype;
         const setElement = (
-          currentDynamicNodeComponentType: EachDynamicNodeComponentType,
-          data: any,
+          el: Element | null,
           lastNode: LastNodeType,
           parentNode: ParentNode,
-          index: number,
-          dataId: number,
-          eachIndex: number,
-          isFirst = false,
-          isNext?: boolean,
-          importData?: ImportDataType
+          isNext?: boolean
         ) => {
-          const el = createElement(
-            index,
-            data,
-            dataId,
-            currentDynamicNodeComponentType?.template,
-            isFirst,
-            eachIndex,
-            importData
-          );
           if (el) {
             if (parentNode === lastNode.parentNode || parentNode === lastNode) {
               if (parentNode === lastNode) {
@@ -361,26 +383,83 @@ export class Each extends DataComponent {
               } else {
                 insertBefore.call(parentNode, el, lastNode.nextSibling);
               }
-              push.call(currentDynamicNodeComponentType?.elements, el);
             } else {
               createError("Element of Each error");
             }
           }
         };
-        const deleteElement = (
-          currentDynamicNodeComponentType: EachDynamicNodeComponentType,
-          element: Element,
-          parentNode: ParentNode,
-          dataId: number,
+        const getElKey = (
+          indexData: any,
+          value: ValueItemsType,
+          importData: ImportDataType | undefined,
+          data: any,
           eachIndex: number
+        ): string => {
+          return value
+            .map((e) => {
+              const isObj = checkObject(e);
+              if (isObj) {
+                return renderDynamic(
+                  e as CurrentKeyType,
+                  indexData,
+                  importData,
+                  data,
+                  eachIndex
+                );
+              }
+              return e;
+            })
+            .join("");
+        };
+        const getDynamicNode = (
+          currentComponent: EachDynamicNodeComponentType,
+          value: any,
+          isEachIndex: boolean
         ) => {
-          deleteDynamicArrayNodes(dataId, eachIndex);
-          splice.call(currentDynamicNodeComponentType.elements, eachIndex, 1);
-          removeChild.call(parentNode, element);
+          if (isEachIndex) {
+            return currentComponent.nodes[value];
+          } else {
+            const nodes = currentComponent.nodes.filter((e) => {
+              if (e) {
+                return e["key"] === value;
+              } else return false;
+            });
+            if (nodes.length > 1) createError("Nodes error");
+            return nodes[0];
+          }
+        };
+        const getEventsFunction = (
+          key: string,
+          dataId: number,
+          keyEl: string | undefined
+        ) => {
+          if (!keyEl) createError("key error");
+          const newKey = getKey(key);
+          if (newKey === this.valueName) createError("key error");
+          const importData = getImportData(dataId);
+          const dataArray = renderDynamicKey(
+            importData,
+            0,
+            key,
+            undefined,
+            true
+          );
+          return dataArray[0];
+        };
+        const getCurrentComponent = (dataId: number) => {
+          const currentComponentArray =
+            this._dynamic.data.data.components.filter((e) => e?.id === dataId);
+          if (currentComponentArray.length > 1) {
+            createError("id is unique");
+          }
+          const currentComponent =
+            currentComponentArray[0] as EachDynamicNodeComponentType;
+          return currentComponent;
         };
         const renderNewData = (
           oldData: any,
           newData: any,
+          currentComponent: EachDynamicNodeComponentType,
           dataId: number,
           index: number,
           importData: ImportDataType | undefined,
@@ -391,125 +470,63 @@ export class Each extends DataComponent {
             Array.isArray(newData) ||
             (isObjectData && (Array.isArray(oldData) || checkObject(oldData)))
           ) {
-            const currentDynamicNodeComponentTypeArray =
-              this._dynamic.data.data.components.filter(
-                (e) => e?.id === dataId
-              );
-            if (currentDynamicNodeComponentTypeArray.length > 1) {
-              createError("id is unique");
-            }
             const isOldDataArray = Array.isArray(oldData);
             const isNewDataArray = Array.isArray(newData);
-            const currentDynamicNodeComponentType =
-              currentDynamicNodeComponentTypeArray[0] as EachDynamicNodeComponentType;
             const {
-              elements,
               parentNode,
+              template,
               nodeNext,
               nodePrevious,
-              nodeParentNode
-            } = currentDynamicNodeComponentType;
+              nodeParentNode,
+              nodes: oldNodes
+            } = currentComponent;
+            const { key } = template as EachTemplateType;
             const oldDataLength = isOldDataArray
               ? oldData.length
               : Object.keys(oldData).length;
             const newDataLength = isNewDataArray
               ? newData.length
               : Object.keys(newData).length;
-            if (oldDataLength < newDataLength) {
-              const diffrenceLength = newDataLength - oldDataLength;
-              let newNodePrevious = nodePrevious;
-              for (let i = 0; i < diffrenceLength; i++) {
-                const newIndex = oldDataLength + i;
-                if (oldDataLength === 0) {
-                  if (newNodePrevious) {
-                    setElement(
-                      currentDynamicNodeComponentType,
-                      isObjectData ? Object.values(newData) : newData,
-                      newNodePrevious,
-                      parentNode,
-                      index,
-                      dataId,
-                      newIndex,
-                      isFirst,
-                      undefined,
-                      importData
-                    );
-                    newNodePrevious = newNodePrevious.nextSibling;
-                  } else if (nodeNext) {
-                    setElement(
-                      currentDynamicNodeComponentType,
-                      isObjectData ? Object.values(newData) : newData,
-                      nodeNext,
-                      parentNode,
-                      index,
-                      dataId,
-                      newIndex,
-                      isFirst,
-                      true,
-                      importData
-                    );
-                  } else if (nodeParentNode) {
-                    setElement(
-                      currentDynamicNodeComponentType,
-                      isObjectData ? Object.values(newData) : newData,
-                      nodeParentNode,
-                      parentNode,
-                      index,
-                      dataId,
-                      newIndex,
-                      isFirst,
-                      undefined,
-                      importData
-                    );
-                  } else {
-                    createError("Each render error");
-                  }
-                } else {
-                  if (elements.length === 0) createError("Elements error");
-                  let el: LastNodeType = elements[elements.length - 1];
-                  setElement(
-                    currentDynamicNodeComponentType,
-                    newData,
-                    el,
-                    parentNode,
-                    index,
-                    dataId,
-                    newIndex,
-                    isFirst,
-                    undefined,
-                    importData
-                  );
-                  if (el.nextSibling) {
-                    el = el.nextSibling;
-                  } else createError("Each render error");
-                }
-              }
-            } else if (oldDataLength > newDataLength) {
-              if (newDataLength === 0) {
+            const data = isObjectData ? Object.values(newData) : newData;
+            if (key && key.length > 0) {
+              const getCurrentKey = (indexData: any, eachIndex: number) => {
+                return getElKey(
+                  indexData,
+                  key as ValueItemsType,
+                  importData,
+                  data,
+                  eachIndex
+                );
+              };
+              const clear = () => {
+                const firstEl = getDynamicNode(currentComponent, 0, true)?.el;
+                const lastEl = getDynamicNode(
+                  currentComponent,
+                  oldDataLength - 1,
+                  true
+                )?.el;
                 const nextNode =
-                  elements[oldDataLength - 1].nextSibling !== null
-                    ? elements[oldDataLength - 1].nextSibling
+                  lastEl?.nextSibling !== null
+                    ? lastEl?.nextSibling
                     : undefined;
-                const previousNode = elements[0].previousSibling
-                  ? elements[0].previousSibling
+                const previousNode = firstEl?.previousSibling
+                  ? firstEl?.previousSibling
                   : undefined;
-                const currentParentNode = elements[0].parentNode
-                  ? elements[0].parentNode
+                const currentParentNode = firstEl?.parentNode
+                  ? firstEl?.parentNode
                   : undefined;
                 if (nextNode) {
-                  currentDynamicNodeComponentType.nodeNext = nextNode;
+                  currentComponent.nodeNext = nextNode;
                 }
                 if (previousNode) {
-                  currentDynamicNodeComponentType.nodePrevious = previousNode;
+                  currentComponent.nodePrevious = previousNode;
                 }
                 if (currentParentNode) {
-                  currentDynamicNodeComponentType.nodeParentNode =
-                    currentParentNode;
+                  currentComponent.nodeParentNode = currentParentNode;
                 }
-                this._dynamic.data.nodes = this._dynamic.data.nodes.filter(
+                currentComponent.nodes = currentComponent.nodes.filter(
                   (node) => node.index !== index
                 );
-                currentDynamicNodeComponentType.elements = [];
                 if (nextNode && previousNode) {
                   while (
                     previousNode.nextSibling &&
@@ -531,20 +548,319 @@ export class Each extends DataComponent {
                 if (!nextNode && !previousNode && currentParentNode) {
                   currentParentNode.replaceChildren();
                 }
-              } else {
-                const diffrenceLength = oldDataLength - newDataLength;
-                const lastIndex = oldDataLength ? oldDataLength - 1 : 0;
-                for (let i = 0; i < diffrenceLength; i++) {
-                  const oldIndex = lastIndex - i;
-                  deleteElement(
-                    currentDynamicNodeComponentType,
-                    elements[oldIndex],
-                    parentNode,
+                currentComponent.nodes = [];
+              };
+              const setNewData = () => {
+                let newNodePrevious = nodePrevious;
+                for (let i = 0; i < newDataLength; i++) {
+                  const indexData = renderIndexData(data, i);
+                  const newKey = getCurrentKey(indexData, i);
+                  const { el, currentNode } = createElement(
+                    indexData,
+                    index,
+                    data,
                     dataId,
-                    oldIndex
+                    template,
+                    isFirst,
+                    i,
+                    importData,
+                    newKey
                   );
+                  setNode(currentComponent.nodes, currentNode);
+                  if (nodePrevious) {
+                    setElement(el, nodePrevious, parentNode, undefined);
+                    newNodePrevious = newNodePrevious?.nextSibling;
+                  } else if (nodeNext) {
+                    setElement(el, nodeNext, parentNode, true);
+                  } else if (nodeParentNode) {
+                    setElement(el, nodeParentNode, parentNode, false);
+                  } else {
+                    createError("Each render error");
+                  }
                 }
+              };
+              if (newDataLength === 0 && oldDataLength) clear();
+              if (oldDataLength === 0 && newDataLength) setNewData();
+              if (!!oldDataLength && !!newDataLength) {
+                const swapElements = (
+                  el1: Element,
+                  el2: Element,
+                  parentNode: ParentNode
+                ) => {
+                  const nextEl1 = el1.nextElementSibling;
+                  if (nextEl1 === el2) {
+                    insertBefore.call(parentNode, el2, el1);
+                    return;
+                  }
+                  insertBefore.call(
+                    parentNode,
+                    replaceChild.call(parentNode, el1, el2),
+                    nextEl1
+                  );
+                };
+                newData = newData.slice();
+                let oldFirstIndex = 0;
+                let newFirstIndex = 0;
+                let oldLastIndex = oldDataLength;
+                let newLastIndex = newDataLength;
+                let newFirstDataKey: string | undefined = undefined;
+                let newLastDataKey: string | undefined = undefined;
+                let currentOldLastIndex: number;
+                let currentNewLastIndex: number;
+                while (
+                  oldFirstIndex < oldLastIndex ||
+                  newFirstIndex < newLastIndex
+                ) {
+                  currentOldLastIndex = oldLastIndex - 1;
+                  currentNewLastIndex = newLastIndex - 1;
+                  if (
+                    !oldNodes[oldFirstIndex] ||
+                    !oldNodes[currentOldLastIndex]
+                  ) {
+                    break;
+                  }
+                  if (
+                    oldNodes[oldFirstIndex].key ===
+                    (newFirstDataKey = getCurrentKey(
+                      newData[newFirstIndex],
+                      newFirstIndex
+                    ))
+                  ) {
+                    newData[newFirstIndex++] = oldNodes[oldFirstIndex++];
+                    continue;
+                  }
+                  if (
+                    oldNodes[currentOldLastIndex].key ===
+                    (newLastDataKey = getCurrentKey(
+                      newData[currentNewLastIndex],
+                      currentNewLastIndex
+                    ))
+                  ) {
+                    newData[newLastIndex-- - 1] = oldNodes[oldLastIndex-- - 1];
+                    continue;
+                  }
+                  if (
+                    oldNodes[oldFirstIndex].key === newLastDataKey &&
+                    oldNodes[currentOldLastIndex].key === newFirstDataKey
+                  ) {
+                    swapElements(
+                      (newData[newFirstIndex++] = oldNodes[oldLastIndex-- - 1])
+                        .el as Element,
+                      (newData[newLastIndex-- - 1] = oldNodes[oldFirstIndex++])
+                        .el as Element,
+                      parentNode
+                    );
+                    continue;
+                  }
+                  break;
+                }
+                if (oldLastIndex === oldFirstIndex) {
+                  const lastEl = newData[newLastIndex]?.el;
+                  for (let i = 0; newFirstIndex < newLastIndex--; i++) {
+                    const currentIndex = newFirstIndex + i;
+                    const currentNewNode = newData[currentIndex];
+                    const { el, currentNode } = createElement(
+                      currentNewNode,
+                      index,
+                      data,
+                      dataId,
+                      template,
+                      isFirst,
+                      currentIndex,
+                      importData,
+                      currentNewNode
+                    );
+                    if (currentNode) {
+                      setElement(
+                        el as Element,
+                        (lastEl ??
+                          newData[currentIndex - 1].el) as LastNodeType,
+                        parentNode,
+                        !!lastEl
+                      );
+                    }
+                    newData[currentIndex] = currentNode;
+                  }
+                } else if (newLastIndex === newFirstIndex) {
+                  for (
+                    let i = oldFirstIndex;
+                    oldFirstIndex < oldLastIndex--;
+                    i++
+                  ) {
+                    const currentNode = oldNodes[i];
+                    if (currentNode) {
+                      const { el } = currentNode;
+                      removeChild.call(parentNode, el as Node);
+                    }
+                  }
+                } else {
+                  let checkPointsMap: Map<NodeType, number> | undefined =
+                    undefined;
+                  const newCurrentNodes: string[] = newFirstDataKey
+                    ? [newFirstDataKey]
+                    : [];
+                  for (let i = 1; newFirstIndex + i < newLastIndex - 1; i++) {
+                    const index = newFirstIndex + i;
+                    newCurrentNodes.push(getCurrentKey(newData[index], index));
+                  }
+                  newCurrentNodes.push(
+                    newLastDataKey ?? getCurrentKey(newData[index], index)
+                  );
+                  for (let i = 0; oldFirstIndex + i < oldLastIndex; i++) {
+                    const currentOldNode = oldNodes[oldFirstIndex + i];
+                    const index = newCurrentNodes.indexOf(
+                      currentOldNode.key as string
+                    );
+                    if (index > -1) {
+                      if (!checkPointsMap) {
+                        checkPointsMap = new Map();
+                      }
+                      checkPointsMap.set(currentOldNode, index);
+                      newData[newFirstIndex + index] = currentOldNode;
+                    } else {
+                      removeChild.call(
+                        parentNode,
+                        currentOldNode.el as Element
+                      );
+                    }
+                  }
+                  if (checkPointsMap) {
+                    let isNodesSwitching = false;
+                    let switching = true;
+                    const list = Array.from(checkPointsMap.entries());
+                    const length = list.length;
+                    let i: number;
+                    while (switching) {
+                      switching = false;
+                      for (i = 0; i < length - 1; i++) {
+                        isNodesSwitching = false;
+                        if (list[i][1] > list[i + 1][1]) {
+                          isNodesSwitching = true;
+                          break;
+                        }
+                      }
+                      if (isNodesSwitching) {
+                        insertBefore.call(
+                          parentNode,
+                          list[i + 1][0].el as Element,
+                          list[i][0].el as Element
+                        );
+                        [list[i], list[i + 1]] = [list[i + 1], list[i]];
+                        switching = true;
+                      }
+                    }
+                    const newList = new Map(list);
+                    let checkPointIndex = 0;
+                    let checkPoint = list[checkPointIndex][0].el;
+                    let isBig = false;
+                    let lastEl: ChildNode | null | undefined = null;
+                    for (let i = 0; newFirstIndex + i < newLastIndex; i++) {
+                      const currentIndex = newFirstIndex + i;
+                      const currentNewNode = newData[currentIndex];
+                      if (newList.has(currentNewNode)) {
+                        if (list[checkPointIndex + 1]) {
+                          insertBefore.call(
+                            parentNode,
+                            currentNewNode.el,
+                            checkPoint as Element
+                          );
+                          checkPoint = list[++checkPointIndex][0].el;
+                        } else {
+                          lastEl = list[checkPointIndex][0].el?.nextSibling;
+                          if (lastEl) {
+                            setElement(
+                              currentNewNode.el,
+                              lastEl as LastNodeType,
+                              parentNode,
+                              true
+                            );
+                          } else if (nodeParentNode) {
+                            setElement(
+                              currentNewNode.el,
+                              nodeParentNode,
+                              parentNode,
+                              false
+                            );
+                          } else {
+                            createError("Each render error");
+                          }
+                          isBig = true;
+                        }
+                      } else {
+                        const { el, currentNode } = createElement(
+                          currentNewNode,
+                          index,
+                          data,
+                          dataId,
+                          template,
+                          isFirst,
+                          currentIndex,
+                          importData,
+                          newCurrentNodes[i]
+                        );
+                        if (isBig) {
+                          if (lastEl) {
+                            setElement(
+                              el as Element,
+                              lastEl as LastNodeType,
+                              parentNode,
+                              true
+                            );
+                          } else if (nodeParentNode) {
+                            setElement(
+                              el as Element,
+                              nodeParentNode,
+                              parentNode,
+                              false
+                            );
+                          } else {
+                            createError("Each render error");
+                          }
+                        } else {
+                          insertBefore.call(
+                            parentNode,
+                            el as Element,
+                            checkPoint as Element
+                          );
+                        }
+                        newData[currentIndex] = currentNode;
+                      }
+                    }
+                  } else {
+                    let newNodePrevious = nodePrevious;
+                    for (let i = 0; newFirstIndex + i < newLastIndex; i++) {
+                      const currentIndex = newFirstIndex + i;
+                      const currentNewNode = newData[currentIndex];
+                      const { el, currentNode } = createElement(
+                        currentNewNode,
+                        index,
+                        data,
+                        dataId,
+                        template,
+                        isFirst,
+                        currentIndex,
+                        importData,
+                        newCurrentNodes[i]
+                      );
+                      setNode(currentComponent.nodes, currentNode);
+                      if (nodePrevious) {
+                        setElement(el, nodePrevious, parentNode, undefined);
+                        newNodePrevious = newNodePrevious?.nextSibling;
+                      } else if (nodeNext) {
+                        setElement(el, nodeNext, parentNode, true);
+                      } else if (nodeParentNode) {
+                        setElement(el, nodeParentNode, parentNode, false);
+                      } else {
+                        createError("Each render error");
+                      }
+                      newData[currentIndex] = currentNode;
+                    }
+                  }
+                }
+                currentComponent.nodes = newData;
               }
+            } else {
+              createError("Key error");
             }
           } else {
             createError("Data type error");
@@ -554,18 +870,25 @@ export class Each extends DataComponent {
           attribute: any,
           dataId: number | undefined,
           index: number,
-          importData: ImportDataType | undefined
+          importData: ImportDataType | undefined,
+          currentComponent: EachDynamicNodeComponentType
         ) => {
           const renderNewFunction = (data: DynamicDataValueType) => {
             data = data as EachDataValueType;
             setDynamicNodes();
             try {
-              renderDynamicNodes(importData);
+              renderDynamicNodes(importData, currentComponent);
             } catch (err) {
               this._dynamic.dynamicNodes = [];
               createError("Render error");
             }
-            renderEachFunction(updateFunction, dataId, data, index, importData);
+            renderEachFunction(
+              updateFunction,
+              dataId,
+              data,
+              index,
+              currentComponent
+            );
           };
           if (
             attribute &&
@@ -607,6 +930,7 @@ export class Each extends DataComponent {
                   renderNewData(
                     this._dynamic.data.data.values[index]?.oldValue,
                     this._dynamic.data.data.values[index]?.value,
+                    currentComponent,
                     dataId,
                     index,
                     this._dynamic.data.data.values[index].importData
@@ -644,7 +968,7 @@ export class Each extends DataComponent {
           name: string,
           dataId: number | undefined,
           index: number,
-          importData: ImportDataType | undefined
+          currentComponent: EachDynamicNodeComponentType
         ) => {
           const updateData = (attr = getDefaultData(dataId)) => {
             return attr;
@@ -655,10 +979,17 @@ export class Each extends DataComponent {
                 attribute(getDefaultData(dataId)),
                 dataId,
                 index,
-                getImportData(dataId)
+                getImportData(dataId),
+                currentComponent
               );
             } else {
-              newFunction(attribute, dataId, index, getImportData(dataId));
+              newFunction(
+                attribute,
+                dataId,
+                index,
+                getImportData(dataId),
+                currentComponent
+              );
             }
           };
         };
@@ -707,9 +1038,18 @@ export class Each extends DataComponent {
         const getEventsData = (
           key: string,
           dataId: number,
-          eachIndex: number | undefined,
+          keyEl: string | undefined,
           index: number
         ) => {
+          if (!keyEl) createError("key error");
+          const currentComponent = getCurrentComponent(dataId);
+          const currentDynamicNode = getDynamicNode(
+            currentComponent,
+            keyEl as string,
+            false
+          );
+          const eachIndex = currentComponent.nodes.indexOf(currentDynamicNode);
+
           if (eachIndex === undefined) createError("EachIndex error");
           const indexData = renderIndexData(getData(dataId), eachIndex);
           const importData = getImportData(dataId);
@@ -726,15 +1066,9 @@ export class Each extends DataComponent {
           );
           return dataArray[0];
         };
-        const setNode = (
-          values: NodeValuesType,
-          index: number,
-          id: number,
-          eachIndex: number,
-          isFirst = false
-        ) => {
-          const node = createNode(values, index, id, true, eachIndex, isFirst);
-          push.call(this._dynamic.data.nodes, node);
+        const setNode = (nodes: ArrayNodeType, node?: NodeType) => {
+          push.call(nodes, node);
+          return node;
         };
 
         const setDynamicNodeComponentType = (
@@ -755,12 +1089,20 @@ export class Each extends DataComponent {
             importObject,
             template
           );
+
           push.call(this._dynamic.data.data.components, DynamicNodeComponent);
           return DynamicNodeComponent;
         };
 
         const setDynamicNodes = () => {
-          this._dynamic.data.nodes.forEach((node: NodeType) => {
+          const componentNodes = this._dynamic.data.data.components.map(
+            (component) => component.nodes
+          );
+          const nodes = ([] as NodeType[]).concat.apply(
+            [] as NodeType[],
+            componentNodes
+          );
+          nodes.forEach((node: NodeType) => {
             push.call(this._dynamic.dynamicNodes, node);
           });
         };
@@ -774,19 +1116,6 @@ export class Each extends DataComponent {
           if (data && data[0]) {
             return isValue ? data[0].value : data[0];
           } else return undefined;
-        };
-        const deleteDynamicArrayNodes = (
-          currentId: number,
-          eachIndex?: number
-        ) => {
-          const currentDynamicNodes = this._dynamic.data.nodes.filter(
-            (e) => e?.index === currentId && e?.eachIndex === eachIndex
-          );
-          const nodeIndex = this._dynamic.data.nodes.indexOf(
-            currentDynamicNodes[0]
-          );
-          if (nodeIndex > -1)
-            splice.call(this._dynamic.data.nodes, nodeIndex, 1);
         };
         const getKey = (key: string) => {
           const newKey = renderKey(key);
@@ -815,10 +1144,12 @@ export class Each extends DataComponent {
             trim,
             getEventsData,
             this.valueName,
-            this.importedDataName
+            this.importedDataName,
+            this.indexName,
+            true,
+            getEventsFunction
           );
-          renderEachFunction(updateFunction, dataId, data, index, importData);
-          const component = setDynamicNodeComponentType(
+          const currentComponent = setDynamicNodeComponentType(
             dataId,
             [],
             parentNode,
@@ -827,22 +1158,40 @@ export class Each extends DataComponent {
             importObject,
             newTemplateObj
           );
+          renderEachFunction(
+            updateFunction,
+            dataId,
+            data,
+            index,
+            currentComponent
+          );
           const elements: ScriptElementsType = {};
           try {
-            renderNewData(oldData, data, dataId, index, importData, true);
+            renderNewData(
+              oldData,
+              data,
+              currentComponent,
+              dataId,
+              index,
+              importData,
+              true
+            );
           } catch (e) {
             createError(`${e}`);
           }
           if (
-            component.elements.length > 0 &&
+            currentComponent.nodes.length &&
             Array.isArray(this.script) &&
             this.script[1].elements
           ) {
+            const elementsComponent = currentComponent.nodes.map((e) => e.el);
             const els = this.script[1].elements;
             Object.entries(els).forEach(([key, value]) => {
-              elements[key] = component.elements.map((el) =>
-                el.querySelector(value)
-              );
+              elements[key] = elementsComponent.map((el) => {
+                if (el) {
+                  return (el as Element).querySelector(value);
+                } else return null;
+              });
             });
           }
           renderScriptsAndStyles(data, null, "afterLoad", importData, elements);
@@ -937,19 +1286,21 @@ export class Each extends DataComponent {
         const renderComponentsDynamic = (
           index: number,
           importData: DataType | undefined,
-          isDataFunction: boolean | undefined
+          isDataFunction: boolean | undefined,
+          currentComponent: EachDynamicNodeComponentType
         ) => {
           updateData(index, importData, isDataFunction);
           renderNewData(
             this._dynamic.data.data.values[index]?.oldValue,
             this._dynamic.data.data.values[index]?.value,
+            currentComponent,
             index,
             index,
             importData
           );
           setDynamicNodes();
           try {
-            renderDynamicNodes(importData);
+            renderDynamicNodes(importData, currentComponent);
           } catch (err) {
             this._dynamic.dynamicNodes = [];
             createError("Render error");
@@ -973,7 +1324,12 @@ export class Each extends DataComponent {
                 importIndex
               );
               const isDataFunction = this.data && checkFunction(this.data);
-              renderComponentsDynamic(index, importData, isDataFunction);
+              renderComponentsDynamic(
+                index,
+                importData,
+                isDataFunction,
+                component as EachDynamicNodeComponentType
+              );
             });
           } else {
             document

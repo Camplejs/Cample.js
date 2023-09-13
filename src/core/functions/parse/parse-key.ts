@@ -29,6 +29,7 @@ export const parseKey = (
   key: string,
   valueName?: string,
   importedDataName?: string,
+  indexName?: string,
   isClass?: boolean
 ): CurrentKeyType => {
   const [renderedKey, isValue, isObj] = validateIsValue(renderKey(key), key);
@@ -38,11 +39,15 @@ export const parseKey = (
   const properties: Array<string> | undefined = isObj
     ? (renderedKey as DynamicKeyObjectType).properties
     : undefined;
+
   const keyObj: CurrentKeyType = {
     originKey,
     key: isValue ? (renderedKey as string) : key,
     isValue,
-    isOrigin: originKey === valueName || originKey === importedDataName,
+    isOrigin:
+      originKey === valueName ||
+      originKey === importedDataName ||
+      originKey === indexName,
     isProperty: !!(properties && properties.length),
     isClass
   };
