@@ -1,9 +1,9 @@
 <p align="center">
     <a href="https://www.npmjs.com/package/cample">
-        <img src="https://github.com/Camplejs/media/blob/main/logo_cample.png" alt="cample" >
+        <img width="400" height="400" src="https://github.com/Camplejs/media/blob/main/logo_cample.png" alt="cample" >
     </a>
 </p>
-<h1 align="center">Cample.js - perspective javascript framework.</h1>
+<h1 align="center">Cample.js - moderately fast reactive javascript framework.</h1>
 <h3 align="center">Reactivity without Virtual DOM!</h3>
 <div align="center">
 
