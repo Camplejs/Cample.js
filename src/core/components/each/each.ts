@@ -119,7 +119,7 @@ export class Each extends DataComponent {
     if (typeof this.selector !== "undefined" && isDataEachFunction) {
       const isFunction = checkFunction(this.eachTemplate);
       if (isFunction || typeof this.eachTemplate === "string") {
-        const templateElement: any = null;
+        let templateElement: any = null;
         const trim = (trimHTML && this.trimHTML === undefined) || this.trimHTML;
         const getValues = (dataId: number, eachIndex?: number) => {
           const indexData = renderIndexData(getData(dataId), eachIndex);
@@ -636,7 +636,10 @@ export class Each extends DataComponent {
                       currentNewLastIndex
                     ))
                   ) {
-                    newData[newLastIndex-- - 1] = oldNodes[oldLastIndex-- - 1];
+                    newData[currentNewLastIndex] =
+                      oldNodes[currentOldLastIndex];
+                    newLastIndex--;
+                    oldLastIndex--;
                     continue;
                   }
                   if (
@@ -644,18 +647,20 @@ export class Each extends DataComponent {
                     oldNodes[currentOldLastIndex].key === newFirstDataKey
                   ) {
                     swapElements(
-                      (newData[newFirstIndex++] = oldNodes[oldLastIndex-- - 1])
+                      (newData[newFirstIndex++] = oldNodes[currentOldLastIndex])
                         .el as Element,
-                      (newData[newLastIndex-- - 1] = oldNodes[oldFirstIndex++])
+                      (newData[currentNewLastIndex] = oldNodes[oldFirstIndex++])
                         .el as Element,
                       parentNode
                     );
+                    newLastIndex--;
+                    oldLastIndex--;
                     continue;
                   }
                   break;
                 }
                 if (oldLastIndex === oldFirstIndex) {
-                  const lastEl = newData[newLastIndex]?.el;
+                  let lastEl = newData[newLastIndex]?.el;
                   for (let i = 0; newFirstIndex < newLastIndex--; i++) {
                     const currentIndex = newFirstIndex + i;
                     const currentNewNode = newData[currentIndex];
@@ -687,9 +692,9 @@ export class Each extends DataComponent {
                     oldFirstIndex < oldLastIndex--;
                     i++
                   ) {
-                    const currentNode = oldNodes[i];
+                    let currentNode = oldNodes[i];
                     if (currentNode) {
-                      const { el } = currentNode;
+                      let { el } = currentNode;
                       removeChild.call(parentNode, el as Node);
                     }
                   }
@@ -1149,7 +1154,7 @@ export class Each extends DataComponent {
             true,
             getEventsFunction
           );
-          const currentComponent = setDynamicNodeComponentType(
+          let currentComponent = setDynamicNodeComponentType(
             dataId,
             [],
             parentNode,
@@ -1165,7 +1170,7 @@ export class Each extends DataComponent {
             index,
             currentComponent
           );
-          const elements: ScriptElementsType = {};
+          let elements: ScriptElementsType = {};
           try {
             renderNewData(
               oldData,
