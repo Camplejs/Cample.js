@@ -20,44 +20,6 @@
 <div align="center"><b>Links:<br> <a href="https://camplejs.github.io">Website</a> • <a href="https://camplejs.github.io/documentation/introduction.html">Documentation</a> • <a href="https://camplejs.github.io/examples.html"> Examples </a> • <a href="https://codepen.io/Camplejs">Examples source</a></div>
 <br>
 
-## :watch: Benchmark
-
-| Name                       | Cample.js |
-| -------------------------- | --------- |
-| create rows                | 41.9      |
-| replace all rows           | 19.4      |
-| partial update             | 110.7     |
-| select row                 | 35.7      |
-| swap rows                  | 25.1      |
-| remove row                 | 73.9      |
-| create many rows           | 469.8     |
-| append rows to large table | 96.4      |
-| clear rows                 | 31.3      |
-| geometric mean             | 1.46      |
-
-js-framework-benchmark/frameworks/non-keyed/cample
-
-## About
-
-Cample.js - perspective javascript framework.
-
-This framework supports component approach and reactivity without Virtual DOM.
-
-## Why Cample.js?
-
-Cample.js is a new, frequently updated framework that works through class instances. The component approach, as well as reactivity without a virtual DOM and data export and import, will make creating a site much faster than if a site was developed using just js. Also, the framework is new, and you can try it as something new in building a website.
-
-## Features
-
-Cample.js provides the following features:
-
-- **Reactivity without Virtual DOM**
-- **Supporting component approach**
-- **Each component**
-- **Working with data**
-- **No dependencies**
-- **Typed**
-
 ## Installation
 
 Install via NPM:
@@ -67,6 +29,19 @@ npm i -D cample
 ```
 
 Installing via npm is currently the default. The framework can work with most modern bundlers.
+
+## Why Cample.js?
+
+Cample.js is an actively developed and maintained framework that supports many modern technology solutions for creating a website. The component-based approach, as well as reactivity without a virtual DOM and data export and import, will make building a site much faster than if the site was developed using js alone. Moreover, the framework is new and you can try it as something new when creating a website.
+
+## Features
+
+Cample.js provides the following features:
+
+- Reactivity without Virtual DOM. The framework does not create large DOM trees for working with HTML.
+- Keyed implementation. Blocks in a loop will not be overwritten by new ones if their keys match.
+- Component approach. It allows you to repeat many UI blocks on the site, which makes development much easier.
+- Convenient approach to working with data inside a component. Transferring data between components allows you to work with components even if they are in different files
 
 ## Getting started
 
