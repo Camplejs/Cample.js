@@ -45,6 +45,8 @@ Cample.js provides the following features:
 - The frameworks make it easy to work with HTML files. The syntax of the framework itself is built on objects with HTML templates. When using modern project builders, HTML files are imported through a variable that does not pass through any function.
 - He is moderately fast.
 
+And much more.
+
 ## Getting started
 
 An instance of the Cample class is created, which is the main handler for all components.
