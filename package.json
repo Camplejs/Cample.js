@@ -1,7 +1,7 @@
 {
   "name": "cample",
   "version": "3.1.0",
-  "description": "Cample.js - perspective javascript framework. Reactivity without Virtual DOM!",
+  "description": "Cample.js - moderately fast reactive javascript framework. Reactivity without Virtual DOM!",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
