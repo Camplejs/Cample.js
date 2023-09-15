@@ -614,8 +614,8 @@ export class Each extends DataComponent {
                   currentOldLastIndex = oldLastIndex - 1;
                   currentNewLastIndex = newLastIndex - 1;
                   if (
-                    !oldNodes[oldFirstIndex] ||
-                    !oldNodes[currentOldLastIndex]
+                    oldLastIndex === oldFirstIndex ||
+                    newLastIndex === newFirstIndex
                   ) {
                     break;
                   }
