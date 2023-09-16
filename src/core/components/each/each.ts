@@ -89,7 +89,7 @@ export class Each extends DataComponent {
     this.data = data;
     this.eachTemplate = template;
     this.eachFunctions = {};
-    this.valueName = options.valueName ? options.valueName : "data";
+    this.valueName = options.valueName ? options.valueName : "value";
     this.functionName = options.functionName ? options.functionName : "setData";
     this.importedDataName = options.importedDataName
       ? options.importedDataName
