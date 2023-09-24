@@ -664,6 +664,7 @@ export class Each extends DataComponent {
                   for (let i = 0; newFirstIndex < newLastIndex--; i++) {
                     const currentIndex = newFirstIndex + i;
                     const currentNewNode = newData[currentIndex];
+                    const newKey = getCurrentKey(currentNewNode, currentIndex);
                     const { el, currentNode } = createElement(
                       currentNewNode,
                       index,
@@ -673,7 +674,7 @@ export class Each extends DataComponent {
                       isFirst,
                       currentIndex,
                       importData,
-                      currentNewNode
+                      newKey
                     );
                     if (currentNode) {
                       setElement(
