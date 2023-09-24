@@ -86,6 +86,10 @@ See <a href="https://camplejs.github.io/documentation/introduction.html">Cample.
 
 [Changelog](https://github.com/Camplejs/Cample.js/releases)
 
+## Benchmark
+
+js-framework-benchmark/tree/master/frameworks/keyed/cample
+
 ## Contribution
 
 If you would like to contribute to this framework, please see [Contributing Guide](https://github.com/Camplejs/Cample.js/blob/main/CONTRIBUTING.md). Thank you!
