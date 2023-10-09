@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://www.npmjs.com/package/cample">
-        <img width="400" height="400" src="https://github.com/Camplejs/media/blob/main/logo_cample.png" alt="cample" >
+        <img width="400" height="400" src="https://github.com/Camplejs/media/blob/main/logo_transparent.png" alt="cample" >
     </a>
 </p>
 <h1 align="center">Cample.js - moderately fast reactive javascript framework.</h1>
@@ -19,6 +19,8 @@
 
 <div align="center"><b>Links:<br> <a href="https://camplejs.github.io">Website</a> • <a href="https://camplejs.github.io/documentation/introduction.html">Documentation</a> • <a href="https://camplejs.github.io/examples.html"> Examples </a> • <a href="https://codepen.io/Camplejs">Examples source</a></div>
 <br>
+
+<div align="center"><b>Beta version</b></div>div>
 
 ## Installation
 
