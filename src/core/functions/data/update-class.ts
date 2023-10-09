@@ -1,58 +1,32 @@
 "use-strict";
-import { checkObject } from "../../../shared/utils";
-import {
-  DynamicEl,
-  CurrentKeyType,
-  ClassType,
-  ObjClassListType
-} from "../../../types/types";
+
+import { CurrentKeyType, ClassType } from "../../../types/types";
 
 const addClass = DOMTokenList.prototype.add;
 const removeClass = DOMTokenList.prototype.remove;
 
 export const updateClass = (
-  el: DynamicEl,
+  el: Element,
   value: ClassType,
-  getValue?: (key: CurrentKeyType) => any
+  getValue: (key: CurrentKeyType) => any
 ) => {
-  if (el && getValue) {
-    const { oldClassList, classList } = value;
+  const { oldClassList, classList, oldClassListString } = value;
+  const val = getValue(classList[0] as CurrentKeyType) as string;
+  const str = val;
+  if (!(str === oldClassListString)) {
+    const newClasses = str.split(" ").filter(Boolean);
     const list = el.classList;
-    const currentClass = {};
-    classList.forEach((e) => {
-      const isObj = checkObject(e);
-      if (isObj) {
-        const newClasses = getValue(e as CurrentKeyType) as ObjClassListType;
-        if ((e as CurrentKeyType).isValue) {
-          for (const newClass in newClasses) {
-            if (!(newClass in currentClass)) currentClass[newClass] = null;
-            if (!(newClass in oldClassList)) {
-              addClass.call(list, newClass);
-            }
-          }
-        } else {
-          const arr = (newClasses as unknown as string)
-            .trim()
-            .replace(/\s+/g, " ")
-            .split(" ");
-          for (const i in arr) {
-            if (!(arr[i] in currentClass)) currentClass[arr[i]] = null;
-            if (!(arr[i] in oldClassList)) {
-              addClass.call(list, arr[i]);
-            }
-          }
-        }
-      } else {
-        const newClass = e as string;
-        if (!(newClass in currentClass)) currentClass[newClass] = null;
-        if (!(newClass in oldClassList)) addClass.call(list, newClass);
+    for (const newClass of newClasses) {
+      if (!oldClassList.includes(newClass)) {
+        addClass.call(list, newClass);
       }
-    });
-    for (const oldClass in oldClassList) {
-      if (!(oldClass in currentClass)) {
+    }
+    for (const oldClass of oldClassList) {
+      if (!newClasses.includes(oldClass)) {
         removeClass.call(list, oldClass);
       }
     }
-    value.oldClassList = currentClass as ObjClassListType;
+    value.oldClassList = newClasses;
+    value.oldClassListString = str;
   }
 };

@@ -1,4 +1,5 @@
 "use-strict";
+import { SPACE_REGEX } from "../../../config/config";
 import { createError } from "../../../shared/utils";
 import {
   CycleValueType,
@@ -112,7 +113,7 @@ export const renderImportData = (
       let dataSet = el.getAttribute("data-cample-import");
       if (dataSet) {
         if (exportData) {
-          dataSet = dataSet.replace(/\s+/g, "");
+          dataSet = dataSet.replace(SPACE_REGEX, "");
           const obj = JSON.parse(dataSet);
           renderData(obj.exportId, obj.index ? obj.index : 0, obj.import);
         } else {

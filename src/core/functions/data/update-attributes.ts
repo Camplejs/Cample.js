@@ -1,4 +1,5 @@
 "use-strict";
+import { MAIN_REGEX } from "../../../config/config";
 import {
   AttributesValType,
   DynamicEl,
@@ -7,7 +8,6 @@ import {
 } from "../../../types/types";
 
 const setAttr = Element.prototype.setAttribute;
-const regex = /\{{(.*?)}}/g;
 export const updateAttributes = (
   el: DynamicEl,
   attr: AttributesValType,
@@ -17,11 +17,12 @@ export const updateAttributes = (
   if (el && getValue) {
     if (Array.isArray(attr.value)) {
       const newVal: [string, boolean] = [...attr.value];
-      const val = newVal[0].replace(regex, (str, d) => {
+      const val = newVal[0].replace(MAIN_REGEX, (str, d) => {
         const data = getValue({
           originKey: d,
           key: d,
-          isValue: newVal[1] as boolean
+          type: (newVal[1] as boolean) ? 1 : 0,
+          originType: 0
         });
         return String(data);
       });
@@ -30,7 +31,7 @@ export const updateAttributes = (
         setAttr.call(el, attr.name, val);
       }
     } else {
-      const newVal = attr.value.replace(regex, (str, d) => {
+      const newVal = attr.value.replace(MAIN_REGEX, (str, d) => {
         const renderedKey = attr.keys[d];
         const data = getValue(renderedKey);
         if (filtredKeys)

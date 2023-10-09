@@ -1,11 +1,15 @@
 "use-strict";
+import { VALUE_REGEX } from "../../../config/config";
 import { checkObject, createError, getIsValue } from "../../../shared/utils";
 import {
   CurrentKeyType,
   DynamicKeyObjectType,
-  RenderedKeyType
+  KeyValuesType,
+  RenderedKeyType,
+  ValuesType
 } from "../../../types/types";
 import { renderKey } from "../render/render-key";
+import { parseValues } from "./parse-values";
 
 const validateIsValue = (
   renderedKey: RenderedKeyType,
@@ -18,8 +22,7 @@ const validateIsValue = (
       createError("Value error");
   } else {
     if (isValue) {
-      const regex = /\[+(.*?)\]+/g;
-      renderedKey = (renderedKey as string).replace(regex, (str, d) => d);
+      renderedKey = (renderedKey as string).replace(VALUE_REGEX, (_, d) => d);
     }
   }
   return [renderedKey, isValue, isObj];
@@ -27,29 +30,52 @@ const validateIsValue = (
 
 export const parseKey = (
   key: string,
+  values?: ValuesType,
   valueName?: string,
   importedDataName?: string,
   indexName?: string,
-  isClass?: boolean
+  isClass?: boolean,
+  isCondition?: boolean
 ): CurrentKeyType => {
   const [renderedKey, isValue, isObj] = validateIsValue(renderKey(key), key);
   const originKey = (
     isObj ? (renderedKey as DynamicKeyObjectType).key : renderedKey
   ) as string;
+  let val: KeyValuesType | undefined = undefined;
+  if (isValue) {
+    if (isCondition) createError("The presence of value in the condition");
+    if (values) {
+      const currentObj = values[originKey];
+      val = parseValues(currentObj, valueName, importedDataName, indexName);
+    } else {
+      createError("Values error");
+    }
+  }
   const properties: Array<string> | undefined = isObj
     ? (renderedKey as DynamicKeyObjectType).properties
     : undefined;
-
+  let originType = 0;
+  const isProperty = !!(properties && properties.length);
+  switch (originKey) {
+    case valueName:
+      originType = 1;
+      break;
+    case importedDataName:
+      originType = 2;
+      break;
+    case indexName:
+      if (isProperty) createError("Error properties");
+      originType = 3;
+      break;
+  }
   const keyObj: CurrentKeyType = {
     originKey,
     key: isValue ? (renderedKey as string) : key,
-    isValue,
-    isOrigin:
-      originKey === valueName ||
-      originKey === importedDataName ||
-      originKey === indexName,
-    isProperty: !!(properties && properties.length),
-    isClass
+    originType,
+    isProperty,
+    isClass,
+    values: val,
+    type: isValue ? 1 : 0
   };
   if (properties && properties.length) {
     keyObj.properties = properties;

@@ -10,8 +10,12 @@ import {
 } from "./../types/types";
 
 import { ArrayStringType, ExportDataType } from "../types/types";
-
-const regex = /\{{(.*?)}}/g;
+import {
+  IMPORT_REGEX,
+  MAIN_REGEX,
+  SPACE_REGEX,
+  VALUE_REGEX
+} from "../config/config";
 
 export const createError = (text: string): Error => {
   throw new Error(text);
@@ -27,7 +31,7 @@ export const objectEmpty = (obj: object): boolean => {
 
 export const testRegex = (text: string): boolean => {
   let isKey = false;
-  text.replace(regex, (str, d) => {
+  text.replace(MAIN_REGEX, (str, d) => {
     const key = d.trim();
     if (key && !/^[0-9]+$/.test(key[0])) {
       isKey = true;
@@ -133,17 +137,6 @@ export const cloneElement = (node: Node) => {
   return elWrapper.children[0];
 };
 
-export const testKeyRegex = (text: string, equalKey: string): boolean => {
-  const values: ArrayStringType = [];
-  text.replace(regex, (str, d) => {
-    const key = d.trim();
-    if (equalKey === key) {
-      values.push(key);
-    }
-    return str;
-  });
-  return !!values.length;
-};
 export const getTextArray = (arr: Array<ChildNode>) => {
   return arr.filter(
     ({ nodeType, textContent }) =>
@@ -161,7 +154,7 @@ const getRegexKeys = (
   arr1: ArrayStringType,
   isFunction = true
 ) => {
-  text.replace(regex, (str, d) => {
+  text.replace(MAIN_REGEX, (str, d) => {
     const key = d.trim();
     if (key.includes("(") || key.includes(")")) {
       if (!isFunction) createError("Function key includes only in event attr");
@@ -198,7 +191,7 @@ export const getIsProperty = (txt?: string) => {
 };
 export const getTextKey = (text: string) => {
   let key: string | undefined = undefined;
-  text.replace(regex, (str, d) => {
+  text.replace(MAIN_REGEX, (str, d) => {
     const currentKey = d.trim();
     if (currentKey.includes("(") || currentKey.includes(")")) {
       createError("Function key includes only in event attr");
@@ -290,16 +283,15 @@ export const checkFunction = (val: any) => {
 };
 
 export const testValuesRegex = (key: string) => {
-  const newRegex = /\[+(.*?)\]+/g;
-  const newKey = key.replace(/\s+/g, "");
-  const isValues = newRegex.test(newKey);
+  const newKey = key.replace(SPACE_REGEX, "");
+  const isValues = VALUE_REGEX.test(newKey);
   return isValues;
 };
 
 export const testExportRegex = (text: string) => {
   let isExport = false;
-  const newText = text.replace(/\s+/g, "");
-  newText.replace(/\{{{(.*?)}}}/g, (str, d) => {
+  const newText = text.replace(SPACE_REGEX, "");
+  newText.replace(IMPORT_REGEX, (str, d) => {
     const key = d.trim();
     if (key) isExport = true;
     return str;
@@ -370,7 +362,7 @@ export const getArrImportString = (
   index: number
 ) => {
   if (obj && obj.value && Array.isArray(obj.value)) {
-    obj.value = obj.value.map((val) => val.replace(/\s+/g, ""));
+    obj.value = obj.value.map((val) => val.replace(SPACE_REGEX, ""));
     const importString = obj.value.join(";");
     const importObj: ImportObjectStringType = {
       import: importString,

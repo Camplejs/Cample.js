@@ -159,15 +159,12 @@ export type CampleImportType = {
 
 export type ValueItemType = string | CurrentKeyType;
 
-export type ObjClassListType = {
-  [key: string]: any;
-};
-
 export type ValueItemsType = Array<ValueItemType>;
 
 export type ClassType = {
   classList: ValueItemsType;
-  oldClassList: ObjClassListType;
+  oldClassList: string[];
+  oldClassListString: string;
 };
 
 export type RenderedKeyType = string | DynamicKeyObjectType | undefined;
@@ -181,7 +178,7 @@ export type ValueValueType =
 
 export type ValueType = {
   id?: IdType;
-  type: "event" | "dynamicText" | "attribute" | "import" | "class";
+  type: number; //"event" | "dynamicText" | "attribute" | "import" | "class"
   value: ValueValueType;
 };
 export type ValuesTemplateType = Array<ValueType>;
@@ -275,11 +272,11 @@ export type ValuesArguments = {
   [key: string]: any;
 };
 export type ValuesValueType = {
-  [key: string]: {
-    [key: string]: boolean;
-  };
+  [key: string]: string | [string, string];
 };
-export type ValuesType = (args: ValuesArguments) => ValuesValueType;
+export type ValuesType = {
+  [key: string]: ValuesValueType;
+};
 export type ArgumentsArrayType = Array<any>;
 
 export type EventGetDataType = (
@@ -317,14 +314,31 @@ export type DynamicTextsObj = {
 };
 export type DynamicTextsType = Array<DynamicTextsObj>;
 export type DynamicAttributesType = Array<AttributesValObjType>;
+export type KeyValuesValueConditionType = {
+  operands: Array<KeyValuesValueConditionType | CurrentKeyType>;
+  isNot?: boolean;
+  operation: number;
+};
+export type ValueKeyStringType = {
+  value: string | Array<CurrentKeyType | string>;
+  valueClass: Array<CurrentKeyType | string>;
+  isTestRegex: boolean;
+};
+export type KeyValuesValueType = {
+  condition: KeyValuesValueConditionType;
+  values: ValueKeyStringType | [ValueKeyStringType, ValueKeyStringType];
+  type: number; // isTernary
+};
+export type KeyValuesType = KeyValuesValueType[];
 export type CurrentKeyType = {
   originKey: string;
   key: string;
   properties?: Array<string>;
+  values?: KeyValuesType;
   isProperty?: boolean;
-  isOrigin?: boolean;
-  isValue?: boolean;
+  originType: number;
   isClass?: boolean;
+  type: number;
 };
 export type NodeTextType = {
   key: CurrentKeyType;
@@ -333,7 +347,7 @@ export type NodeTextType = {
 
 export type NodeValueType = {
   render: any;
-  type: "dynamicText" | "attribute" | "class";
+  type: number; // "dynamicText" | "attribute" | "class"
   value: AttributesValType | NodeTextType | ClassType;
 };
 export type NodeValuesType = Array<NodeValueType>;

@@ -34,7 +34,6 @@ import {
   ExportTemplateFunctionArrayType,
   FunctionsType,
   ExportTemplateFunctionsValueType,
-  ValuesArguments,
   ValuesTemplateType,
   EachTemplateType,
   DynamicDataValueType,
@@ -114,8 +113,8 @@ export class Component extends DataComponent {
             let nodeIsKey = false;
             for (let i = 0; i < node.values.length; i++) {
               const val = node.values[i];
-              if (val.type === "dynamicText" || val.type === "attribute") {
-                if (val.type === "dynamicText") {
+              if (val.type === 1 || val.type === 2) {
+                if (val.type === 1) {
                   const value = val.value as NodeTextType;
                   if (value.key.key === key) {
                     nodeIsKey = true;
@@ -215,7 +214,7 @@ export class Component extends DataComponent {
             const data = getData(e.dataId);
             e.values.forEach((value) => {
               switch (value.type) {
-                case "dynamicText":
+                case 1:
                   const value1 = value.value as NodeTextType;
                   const newData = String(renderDynamic(value1.key, data));
                   if (value1.value !== newData) {
@@ -223,12 +222,12 @@ export class Component extends DataComponent {
                     value.render(newData);
                   }
                   break;
-                case "attribute":
+                case 2:
                   const attrFunc = (key: CurrentKeyType) =>
                     renderDynamic(key, data);
                   value.render(attrFunc);
                   break;
-                case "class":
+                case 4:
                   const classFunc = (key: CurrentKeyType) =>
                     renderDynamic(key, data);
                   value.render(classFunc);
@@ -253,36 +252,39 @@ export class Component extends DataComponent {
       const getValues = (dataId: number) => {
         if (this.values) {
           if (checkFunction(this.values)) {
-            const valuesArguments: ValuesArguments = {
-              currentData: getData(dataId)
-            };
-            const values = this.values(valuesArguments);
-            return values;
+            // const valuesArguments: ValuesArguments = {
+            //   currentData: getData(dataId)
+            // };
+            // const values = this.values(valuesArguments);
+            return undefined;
           } else createError("Values error");
         } else return undefined;
       };
       const getValuesData = (data: any) => {
         if (this.values) {
           if (checkFunction(this.values)) {
-            const valuesArguments: ValuesArguments = {
-              currentData: data
-            };
-            const values = this.values(valuesArguments);
-            return values;
+            // const valuesArguments: ValuesArguments = {
+            //   currentData: data
+            // };
+            // const values = this.values(valuesArguments);
+            return undefined;
           } else createError("Values error");
         } else return undefined;
       };
       const renderDynamic = (key: CurrentKeyType, data: any) => {
-        if (key.isValue) {
-          const values = getValuesData(data);
-          let newData: undefined | string = undefined;
-          if (values) newData = renderValues(key.key, values, key.isClass)[0];
-          return newData;
-        } else {
-          const firstKeyData = data[key.originKey];
-          return key.isProperty
-            ? renderKeyData(firstKeyData, key.properties as Array<string>)
-            : firstKeyData;
+        switch (key.type) {
+          case 0:
+            const firstKeyData = data[key.originKey];
+            return key.isProperty
+              ? renderKeyData(firstKeyData, key.properties as Array<string>)
+              : firstKeyData;
+          case 1:
+            const values = getValuesData(data);
+            let newData: undefined | string = undefined;
+            if (values) newData = renderValues(key.key, values, key.isClass)[0];
+            return newData;
+          default:
+            return undefined;
         }
       };
       const newFunction = (
@@ -988,7 +990,7 @@ export class Component extends DataComponent {
           )?.set;
           const attrFunc = (key: CurrentKeyType) => renderDynamic(key, data);
           const newValues: NodeValuesType = [];
-          if (!values.some((e) => e.type === "import")) {
+          if (!values.some((e) => e.type === 3)) {
             if (this.export) {
               createExportObject(index);
             }
@@ -997,7 +999,7 @@ export class Component extends DataComponent {
           values.forEach((val) => {
             const node = nodes[val.id as number] as Element;
             switch (val.type) {
-              case "dynamicText":
+              case 1:
                 const value2 = val.value as DynamicTextType;
                 filtredKeys.push({
                   key: value2.key.originKey,
@@ -1011,25 +1013,25 @@ export class Component extends DataComponent {
                 });
                 newValues.push({
                   render: (value: any = undefined) => updateText(value, texts),
-                  type: "dynamicText",
+                  type: 1,
                   value: {
                     key: value2.key,
                     value: newData
                   }
                 });
                 break;
-              case "attribute":
+              case 2:
                 const value3 = val.value as AttributesValType;
                 const fn = (fnNew: any, keys?: DynamicKeyObjectArrayType) =>
                   updateAttributes(node, value3, fnNew, keys);
                 fn(attrFunc, filtredKeys);
                 newValues.push({
                   render: fn,
-                  type: "attribute",
+                  type: 2,
                   value: value3
                 });
                 break;
-              case "import":
+              case 3:
                 const value4 = val.value as CampleImportType;
                 const componentName = node.getAttribute("data-cample");
                 const keyImportString = value4.value;
@@ -1044,14 +1046,14 @@ export class Component extends DataComponent {
                   createError("Render export error");
                 }
                 break;
-              case "class":
+              case 4:
                 const value5 = val.value as ClassType;
                 const fnClass = (fnNew: any) =>
                   updateClass(node, value5, fnNew);
                 fnClass(attrFunc);
                 push.call(newValues, {
                   render: fnClass,
-                  type: "class",
+                  type: 4,
                   value: value5
                 });
                 break;
@@ -1164,6 +1166,7 @@ export class Component extends DataComponent {
               this.template as string,
               index,
               currentId,
+              this.values,
               trim
             );
             const el = createElement(

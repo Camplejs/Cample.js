@@ -3,9 +3,10 @@ import { createError, getElement, getTextKey } from "../../../shared/utils";
 import {
   DynamicTextType,
   EachTemplateType,
-  EventEachGetFunctionType
+  EventEachGetFunctionType,
+  ValuesType
 } from "../../../types/types";
-import { renderEl } from "../data/create-node";
+import { renderEl } from "../render/render-el";
 import { parseKey } from "./parse-key";
 import { parseText } from "./parse-text";
 
@@ -13,6 +14,7 @@ export const parseTemplate = (
   template: string,
   index: number,
   id: number,
+  values?: ValuesType,
   trim?: boolean,
   getEventsData?: any,
   valueName?: string,
@@ -44,6 +46,7 @@ export const parseTemplate = (
         id,
         true,
         obj.values,
+        values,
         valueName,
         importedDataName,
         indexName,
@@ -64,9 +67,7 @@ export const parseTemplate = (
         const key: string | undefined = getTextKey(text);
         if (key) {
           const data = obj.values.filter(
-            (e) =>
-              e.type === "dynamicText" &&
-              (e.value as DynamicTextType).key.key === key
+            (e) => e.type === 1 && (e.value as DynamicTextType).key.key === key
           );
           if (data.length > 1) {
             createError("id is unique");
@@ -79,6 +80,7 @@ export const parseTemplate = (
           } else {
             const renderedKey = parseKey(
               key,
+              values,
               valueName,
               importedDataName,
               indexName
@@ -88,7 +90,7 @@ export const parseTemplate = (
               texts: [obj.nodes.length]
             };
             obj.values.push({
-              type: "dynamicText",
+              type: 1,
               value: dynamicText
             });
           }

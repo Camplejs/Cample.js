@@ -1,4 +1,5 @@
 "use-strict";
+import { TEXT_REGEX } from "../../../config/config";
 import { getTextArray, testRegex } from "../../../shared/utils";
 
 export const parseText = (el: Element | null) => {
@@ -12,8 +13,7 @@ export const parseText = (el: Element | null) => {
       arrayText.forEach((t) => {
         if (t.textContent && t.nodeValue && testRegex(t.textContent)) {
           const text = t.textContent;
-          const regex = /\{\{\s*([^}]+)\s*\}\}|([^{}]+)/g;
-          const regexAttr = [...text.matchAll(regex)];
+          const regexAttr = [...text.matchAll(TEXT_REGEX)];
           regexAttr.map((txt, i) => {
             const val = txt[0];
             const newNode = document.createTextNode(val);

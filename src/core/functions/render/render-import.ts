@@ -1,4 +1,5 @@
 "use-strict";
+import { SPACE_REGEX } from "../../../config/config";
 import {
   concatArrays,
   createError,
@@ -19,7 +20,7 @@ export const renderImport = (
         if (el.hasAttribute("data-cample-import")) {
           let oldImport = el.getAttribute("data-cample-import");
           if (oldImport) {
-            oldImport = oldImport.replace(/\s+/g, "");
+            oldImport = oldImport.replace(SPACE_REGEX, "");
             const oldData = JSON.parse(oldImport);
             if (oldData.import) {
               if (!(oldData.exportId !== "undefined")) {
