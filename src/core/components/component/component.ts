@@ -91,6 +91,7 @@ export class Component extends DataComponent {
   }
 
   render(
+    setEventListener: () => void,
     trimHTML?: boolean,
     exportData?: ExportDataType,
     importId?: ExportIdType,
@@ -1163,6 +1164,7 @@ export class Component extends DataComponent {
             const currentId = this._dynamic.data.data.currentId;
             const data = setData(currentId, importData, isDataFunction)?.value;
             const newTemplateObj = parseTemplate(
+              setEventListener,
               this.template as string,
               index,
               currentId,

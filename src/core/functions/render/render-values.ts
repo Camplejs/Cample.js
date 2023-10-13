@@ -7,7 +7,6 @@ export const renderValues = (
   values: ValuesValueType,
   isClass?: boolean
 ): [any, boolean] => {
-  console.log(values);
   const result: [any, boolean] = [undefined, false];
   return result;
 };

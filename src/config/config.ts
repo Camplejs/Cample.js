@@ -5,3 +5,4 @@ export const IMPORT_REGEX = /\{{{(.*?)}}}/g;
 export const CONDITION_REGEX = /!/g;
 export const TEXT_REGEX = /\{\{\s*([^}]+)\s*\}\}|([^{}]+)/g;
 export const SPACE_REGEX = /\s+/g;
+export const CLICK_FUNCTION_NAME = "__click__";

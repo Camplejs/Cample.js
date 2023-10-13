@@ -26,6 +26,7 @@ import { renderEventKey } from "../render/render-event-key";
 const { setAttribute, removeAttribute } = Element.prototype;
 const { push } = Array.prototype;
 export const renderEl = (
+  setEventListener: () => void,
   el: Element,
   index: number,
   idElement: number,
@@ -111,21 +112,20 @@ export const renderEl = (
               if (!checkFunction(fn))
                 createError("Data key is of function type");
               removeAttribute.call(el, e.name);
+              const keyEvent = e.name.substring(1);
+              if (keyEvent === "click") {
+                setEventListener();
+              }
               const setEvent = (element: Element, keyEl?: string) => {
-                renderListeners(
-                  element,
-                  fn,
-                  args,
-                  e.name.substring(1),
-                  (key: string) =>
-                    isEach
-                      ? (getEventsData as EventEachGetDataType)(
-                          key,
-                          id,
-                          keyEl,
-                          index
-                        )
-                      : (getEventsData as EventGetDataType)(key, id, index)
+                renderListeners(element, fn, args, keyEvent, (key: string) =>
+                  isEach
+                    ? (getEventsData as EventEachGetDataType)(
+                        key,
+                        id,
+                        keyEl,
+                        index
+                      )
+                    : (getEventsData as EventGetDataType)(key, id, index)
                 );
               };
               const newVal: ValueType = {
@@ -155,7 +155,7 @@ export const renderEl = (
         } else {
           const classList = Array.from(el.classList).map((e) => {
             if (testRegex(e)) {
-              const key = e.replace(MAIN_REGEX, (str, d) => {
+              const key = e.replace(MAIN_REGEX, (_, d) => {
                 return d;
               });
               return parseKey(

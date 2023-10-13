@@ -109,6 +109,7 @@ export class Each extends DataComponent {
   }
 
   render(
+    setEventListener: () => void,
     trimHTML?: boolean,
     exportData?: ExportDataType,
     importId?: ExportIdType,
@@ -1254,6 +1255,7 @@ export class Each extends DataComponent {
           const oldData = isDataObject ? {} : [];
           const template = this.eachTemplate;
           const newTemplateObj = parseTemplate(
+            setEventListener,
             template as string,
             index,
             dataId,

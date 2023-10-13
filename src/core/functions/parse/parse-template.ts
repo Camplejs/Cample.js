@@ -11,6 +11,7 @@ import { parseKey } from "./parse-key";
 import { parseText } from "./parse-text";
 
 export const parseTemplate = (
+  setEventListener: () => void,
   template: string,
   index: number,
   id: number,
@@ -38,6 +39,7 @@ export const parseTemplate = (
     if (node.nodeType === Node.ELEMENT_NODE) {
       parseText(node as Element);
       renderEl(
+        setEventListener,
         node as Element,
         index,
         i,
