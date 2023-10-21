@@ -1,14 +1,17 @@
 "use-strict";
-import { IMPORT_REGEX, MAIN_REGEX, TEXT_REGEX } from "../../../config/config";
 import {
-  checkFunction,
-  createError,
-  testRegex,
-  testValuesRegex
-} from "../../../shared/utils";
+  IMPORT_REGEX,
+  MAIN_REGEX,
+  TEXT_REGEX,
+  push,
+  removeAttribute,
+  setAttribute
+} from "../../../config/config";
+import { createError, testRegex, testValuesRegex } from "../../../shared/utils";
 import {
   AttributesValType,
   CurrentKeyType,
+  DynamicKeyObjectArrayType,
   EachTemplateNodesType,
   EventEachGetDataType,
   EventEachGetFunctionType,
@@ -19,13 +22,12 @@ import {
   ValuesTemplateType,
   ValuesType
 } from "../../../types/types";
-import { renderListeners } from "../data/render-listeners";
 import { parseKey } from "../parse/parse-key";
 import { renderEventKey } from "../render/render-event-key";
 
-const { setAttribute, removeAttribute } = Element.prototype;
-const { push } = Array.prototype;
 export const renderEl = (
+  filtredKeys: DynamicKeyObjectArrayType,
+  eventArray: any[],
   setEventListener: () => void,
   el: Element,
   index: number,
@@ -33,7 +35,7 @@ export const renderEl = (
   getEventsData: EventGetDataType | EventEachGetDataType,
   nodes: EachTemplateNodesType,
   id: number,
-  isEach: boolean,
+  isEach: boolean | undefined,
   values: ValuesTemplateType,
   optionValues?: ValuesType,
   valueName?: string,
@@ -97,44 +99,24 @@ export const renderEl = (
                 return str;
               });
               const renderedKey = renderEventKey(key);
-              const args = [...renderedKey.arguments];
-              const fn = isEach
-                ? (getEventsFunction as EventEachGetFunctionType)?.(
-                    renderedKey.key,
-                    id,
-                    key
-                  )
-                : (getEventsData as EventGetDataType)(
-                    renderedKey.key,
-                    id,
-                    index
-                  );
-              if (!checkFunction(fn))
-                createError("Data key is of function type");
-              removeAttribute.call(el, e.name);
+              const args = [...renderedKey.arguments].filter(Boolean);
               const keyEvent = e.name.substring(1);
+              const event = {
+                elId: values.length,
+                args,
+                keyEvent,
+                getEventsData,
+                getEventsFunction,
+                renderedKey,
+                id,
+                key
+              };
+              removeAttribute.call(el, e.name);
               if (keyEvent === "click") {
                 setEventListener();
               }
-              const setEvent = (element: Element, keyEl?: string) => {
-                renderListeners(element, fn, args, keyEvent, (key: string) =>
-                  isEach
-                    ? (getEventsData as EventEachGetDataType)(
-                        key,
-                        id,
-                        keyEl,
-                        index
-                      )
-                    : (getEventsData as EventGetDataType)(key, id, index)
-                );
-              };
-              const newVal: ValueType = {
-                id: values.length,
-                type: 0,
-                value: (element: Element, keyEl: string) =>
-                  setEvent(element, keyEl)
-              };
-              values.push(newVal);
+              eventArray.push(event);
+              values.push(event as unknown as ValueType);
               nodes.push(idElement);
             }
           } else {
@@ -187,7 +169,7 @@ export const renderEl = (
           keyArr.forEach((txt) => {
             let val: ValueItemType = txt[0];
             if (testRegex(val)) {
-              const key = val.replace(MAIN_REGEX, (str, d) => {
+              const key = val.replace(MAIN_REGEX, (_, d) => {
                 return d;
               });
               val = parseKey(

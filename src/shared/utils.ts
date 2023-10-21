@@ -1,7 +1,11 @@
 "use strict";
 import {
   DataAttributesArrayType,
+  DynamicDataType,
   DynamicElement,
+  DynamicKeyObjectType,
+  DynamicNodeComponentType,
+  EachDynamicNodeComponentType,
   ExportCampleDataType,
   ExportDataValueType,
   ExportIdType,
@@ -16,6 +20,7 @@ import {
   SPACE_REGEX,
   VALUE_REGEX
 } from "../config/config";
+import { renderKey } from "../core/functions/render/render-key";
 
 export const createError = (text: string): Error => {
   throw new Error(text);
@@ -300,6 +305,35 @@ export const testExportRegex = (text: string) => {
 };
 export const testEventKey = (key: string) => {
   return key.includes(":") && key[0] === ":";
+};
+export const getCurrentComponent = (
+  components: DynamicNodeComponentType[],
+  dataId: number
+) => {
+  const currentComponentArray = components.filter((e) => e?.id === dataId);
+  if (currentComponentArray.length > 1) {
+    createError("id is unique");
+  }
+  const currentComponent =
+    currentComponentArray[0] as EachDynamicNodeComponentType;
+  return currentComponent;
+};
+export const getData = (
+  values: DynamicDataType[],
+  dataId: number,
+  isValue = true
+) => {
+  const data = values.filter((e) => e?.id === dataId);
+  if (data.length > 1) {
+    createError("id is unique");
+  }
+  if (data && data[0]) {
+    return isValue ? data[0].value : data[0];
+  } else return undefined;
+};
+export const getKey = (key: string) => {
+  const newKey = renderKey(key);
+  return checkObject(newKey) ? (newKey as DynamicKeyObjectType).key : newKey;
 };
 export const getEventAttrs = (el: Element) => {
   const eventAttrs: ArrayStringType = [];

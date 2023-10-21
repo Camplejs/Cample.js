@@ -7,7 +7,7 @@ export const renderKey = (key: string): RenderedKeyType => {
   if (key.includes(".")) {
     const attrKey = key.split(".");
     if (attrKey.length > 1) {
-      const properties = attrKey.filter((e: string, i: number) => {
+      const properties = attrKey.filter((_, i: number) => {
         return i !== 0;
       });
       const dynamicKey: DynamicKeyType = {

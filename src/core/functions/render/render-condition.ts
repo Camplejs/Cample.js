@@ -38,10 +38,9 @@ const renderOperation = (
   }
 };
 const renderOperand = (
-  operand: KeyValuesValueConditionType | CurrentKeyType | undefined,
+  operand: KeyValuesValueConditionType | CurrentKeyType,
   renderKey: (key: CurrentKeyType) => any
 ) => {
-  if (!operand) return undefined;
   if ("operation" in operand) {
     renderCondition(operand, renderKey);
   } else {

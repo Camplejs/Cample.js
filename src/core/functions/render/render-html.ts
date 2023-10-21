@@ -1,4 +1,5 @@
 "use-strict";
+import { appendChild } from "../../../config/config";
 import { createError } from "../../../shared/utils";
 import {
   ElementsOptionsType,
@@ -8,7 +9,6 @@ import {
 } from "../../../types/types";
 import { renderScriptElements } from "./render-script-elements";
 
-const appendChild = Node.prototype.appendChild;
 export const renderHTML = (
   e: Element,
   template: Element | null,

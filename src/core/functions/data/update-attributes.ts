@@ -1,5 +1,5 @@
 "use-strict";
-import { MAIN_REGEX } from "../../../config/config";
+import { MAIN_REGEX, setAttribute } from "../../../config/config";
 import {
   AttributesValType,
   DynamicEl,
@@ -7,7 +7,6 @@ import {
   DynamicKeyObjectArrayType
 } from "../../../types/types";
 
-const setAttr = Element.prototype.setAttribute;
 export const updateAttributes = (
   el: DynamicEl,
   attr: AttributesValType,
@@ -17,7 +16,7 @@ export const updateAttributes = (
   if (el && getValue) {
     if (Array.isArray(attr.value)) {
       const newVal: [string, boolean] = [...attr.value];
-      const val = newVal[0].replace(MAIN_REGEX, (str, d) => {
+      const val = newVal[0].replace(MAIN_REGEX, (_, d) => {
         const data = getValue({
           originKey: d,
           key: d,
@@ -28,10 +27,10 @@ export const updateAttributes = (
       });
       if (attr.oldValue !== val) {
         attr.oldValue = val;
-        setAttr.call(el, attr.name, val);
+        setAttribute.call(el, attr.name, val);
       }
     } else {
-      const newVal = attr.value.replace(MAIN_REGEX, (str, d) => {
+      const newVal = attr.value.replace(MAIN_REGEX, (_, d) => {
         const renderedKey = attr.keys[d];
         const data = getValue(renderedKey);
         if (filtredKeys)
@@ -43,7 +42,7 @@ export const updateAttributes = (
       });
       if (attr.oldValue !== newVal) {
         attr.oldValue = newVal;
-        setAttr.call(el, attr.name, newVal);
+        setAttribute.call(el, attr.name, newVal);
       }
     }
   }

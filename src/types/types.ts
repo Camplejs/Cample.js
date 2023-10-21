@@ -233,6 +233,7 @@ export type ExportObjectDataArrayType = Array<ExportObjectDataType>;
 
 export type ComponentDynamicNodeComponentType = {
   id: number;
+  dataFunctions: FunctionsType;
   functions: FunctionsType;
   exportData?: ExportDataType;
   nodes: Array<NodeType>;
@@ -282,7 +283,7 @@ export type ArgumentsArrayType = Array<any>;
 export type EventGetDataType = (
   key: string,
   dataId: number,
-  index: IndexType
+  index?: IndexType
 ) => any;
 
 export type EventEachGetDataType = (
@@ -295,7 +296,8 @@ export type EventEachGetDataType = (
 export type EventEachGetFunctionType = (
   key: string,
   dataId: number,
-  keyEl: string | undefined
+  keyEl: string | undefined,
+  functions?: FunctionsType
 ) => any;
 
 export type EventFunctionType = (...args: any[]) => any;
@@ -416,7 +418,8 @@ export type DefaultDataOptionsType = RootOptionsType & {
   import?: ImportObjectType;
   script?: ScriptType;
   values?: ValuesType;
-  functions?: FunctionsObjType;
+  dataFunctions?: FunctionsObjType;
+  functions?: FunctionsOptionType;
 };
 export type IndexValueDataType = {
   [key: string]: number;
@@ -454,18 +457,15 @@ export type ExportTemplateDataNewType = {
 };
 
 export type ExportTemplateFunctionArrayType = Array<
-  ExportTemplateFunctionsValueType | undefined
+  FunctionsOptionValueType | undefined
 >;
 
-export type ExportTemplateFunctionType = (...args: any[]) => void;
+export type FunctionsOptionFunctionType = (...args: any[]) => void;
 
-export type ExportTemplateFunctionsValueType = [
-  ExportTemplateFunctionType,
-  string
-];
+export type FunctionsOptionValueType = [FunctionsOptionFunctionType, string];
 
-export type ExportTemplateFunctionsType = {
-  [key: string]: ExportTemplateFunctionsValueType;
+export type FunctionsOptionType = {
+  [key: string]: FunctionsOptionValueType;
 };
 
 export type ExportTemplateValueDataType = {
@@ -473,7 +473,7 @@ export type ExportTemplateValueDataType = {
 };
 export type TemplateExportValueType = {
   data?: ExportTemplateValueDataType;
-  functions?: ExportTemplateFunctionsType;
+  functions?: FunctionsOptionType;
 };
 
 export type ExportDynamicType = {

@@ -9,6 +9,7 @@ import {
   ExportObjectDataArrayType,
   FunctionsObjType,
   ImportObjectType,
+  FunctionsOptionType,
   ScriptType,
   SelectorType,
   ValuesType
@@ -25,7 +26,8 @@ export class DataComponent extends ParentComponent {
   public export?: ExportDataType | ExportDynamicType;
   public exportObj?: DataExportObjectType;
   public values?: ValuesType;
-  public functions?: FunctionsObjType;
+  public dataFunctions?: FunctionsObjType;
+  public functions?: FunctionsOptionType;
   public setExportData?: (...args: any[]) => any;
 
   constructor(
@@ -41,6 +43,7 @@ export class DataComponent extends ParentComponent {
     this.setExportData = undefined;
     this.exportDataObjects = [];
     this.exportObj = undefined;
+    this.dataFunctions = options.dataFunctions;
     this.functions = options.functions;
     this.values = options.values !== undefined ? options.values : undefined;
   }

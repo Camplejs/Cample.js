@@ -8,7 +8,6 @@ import { renderDataValue } from "./render-data-value";
 
 export const renderComponentDynamicKeyData = (
   data: DynamicDataValueType,
-  index: number,
   key: string,
   isEach = false
 ): [any, boolean] => {

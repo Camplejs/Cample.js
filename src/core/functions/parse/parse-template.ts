@@ -1,11 +1,22 @@
 "use-strict";
-import { createError, getElement, getTextKey } from "../../../shared/utils";
 import {
+  checkFunction,
+  createError,
+  getElement,
+  getTextKey
+} from "../../../shared/utils";
+import {
+  DynamicKeyObjectArrayType,
   DynamicTextType,
   EachTemplateType,
+  EventEachGetDataType,
   EventEachGetFunctionType,
+  EventGetDataType,
+  FunctionsType,
+  ValueType,
   ValuesType
 } from "../../../types/types";
+import { renderListeners } from "../data/render-listeners";
 import { renderEl } from "../render/render-el";
 import { parseKey } from "./parse-key";
 import { parseText } from "./parse-text";
@@ -18,13 +29,20 @@ export const parseTemplate = (
   values?: ValuesType,
   trim?: boolean,
   getEventsData?: any,
+  getEventsFunction?: EventEachGetFunctionType,
+  setDataFunctions?: (filtredKeys: DynamicKeyObjectArrayType) => void,
+  renderFunctions?: () => void,
+  functions?: FunctionsType,
   valueName?: string,
   importedDataName?: string,
   indexName?: string,
-  isEach?: boolean,
-  getEventsFunction?: EventEachGetFunctionType
-): EachTemplateType => {
+  isEach?: boolean
+): {
+  filtredKeys: DynamicKeyObjectArrayType;
+  obj: EachTemplateType;
+} => {
   const el = getElement(template, trim);
+  const filtredKeys: DynamicKeyObjectArrayType = [];
   const obj: EachTemplateType = {
     el,
     nodes: [],
@@ -34,11 +52,14 @@ export const parseTemplate = (
     obj.key = [];
   }
   let i = -1;
+  const eventArray: any[] = [];
   const renderNode = (node: ChildNode) => {
     i++;
     if (node.nodeType === Node.ELEMENT_NODE) {
       parseText(node as Element);
       renderEl(
+        filtredKeys,
+        eventArray,
         setEventListener,
         node as Element,
         index,
@@ -46,13 +67,13 @@ export const parseTemplate = (
         getEventsData,
         obj.nodes,
         id,
-        true,
+        isEach,
         obj.values,
         values,
         valueName,
         importedDataName,
         indexName,
-        i === 0 && isEach,
+        id === 0 && isEach,
         obj.key,
         getEventsFunction
       );
@@ -91,6 +112,10 @@ export const parseTemplate = (
               key: renderedKey,
               texts: [obj.nodes.length]
             };
+            filtredKeys.push({
+              key: renderedKey.originKey,
+              properties: renderedKey.properties ?? []
+            });
             obj.values.push({
               type: 1,
               value: dynamicText
@@ -102,5 +127,44 @@ export const parseTemplate = (
     }
   };
   renderNode(el as ChildNode);
-  return obj;
+  setDataFunctions?.(filtredKeys);
+  renderFunctions?.();
+  for (const {
+    elId,
+    args,
+    keyEvent,
+    getEventsData,
+    getEventsFunction,
+    renderedKey,
+    id,
+    key
+  } of eventArray) {
+    const fn = isEach
+      ? (getEventsFunction as EventEachGetFunctionType)?.(
+          renderedKey.key,
+          id,
+          key
+        )
+      : (getEventsFunction as EventEachGetFunctionType)?.(
+          renderedKey.key,
+          id,
+          key,
+          functions
+        );
+    if (!checkFunction(fn)) createError("Data key is of function type");
+    const setEvent = (element: Element, keyEl?: string) => {
+      renderListeners(element, fn, args, keyEvent, (key: string) =>
+        isEach
+          ? (getEventsData as EventEachGetDataType)(key, id, keyEl, index)
+          : (getEventsData as EventGetDataType)(key, id)
+      );
+    };
+    const newVal: ValueType = {
+      id: elId,
+      type: 0,
+      value: (element: Element, keyEl: string) => setEvent(element, keyEl)
+    };
+    obj.values[elId] = newVal;
+  }
+  return { filtredKeys, obj };
 };
