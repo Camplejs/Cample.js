@@ -45,7 +45,7 @@ export class Cample {
       }
     };
     const eventListener = (current: any) => {
-      let currentNode = current?.composedPath()[0] || current.target;
+      const currentNode = current?.composedPath()[0] || current.target;
       if (current.target !== currentNode) {
         Object.defineProperty(current, "target", {
           configurable: true,

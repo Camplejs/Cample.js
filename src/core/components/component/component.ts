@@ -1179,7 +1179,7 @@ export class Component extends DataComponent {
                 index,
                 filterDuplicateArrObj(filtredKeys)
               );
-            let currentComponent: ComponentDynamicNodeComponentType =
+            const currentComponent: ComponentDynamicNodeComponentType =
               setDynamicNodeComponentType(index, importObject);
             const runRenderFunction = () =>
               renderFunctions(
