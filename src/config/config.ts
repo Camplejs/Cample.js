@@ -16,4 +16,5 @@ export const addClass = DOMTokenList.prototype.add;
 export const removeClass = DOMTokenList.prototype.remove;
 export const cloneNode = Node.prototype.cloneNode;
 export const { push } = Array.prototype;
-export const { setAttribute, removeAttribute } = Element.prototype;
+export const { setAttribute, removeAttribute, replaceChildren, remove } =
+  Element.prototype;
