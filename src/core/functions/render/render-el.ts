@@ -19,6 +19,7 @@ import {
   ValueItemType,
   ValueItemsType,
   ValueType,
+  ValueValueType,
   ValuesTemplateType,
   ValuesType
 } from "../../../types/types";
@@ -47,8 +48,34 @@ export const renderEl = (
 ) => {
   const arrayAttr = Array.from(el.attributes);
   const regexAttr = arrayAttr.filter((a) => testRegex(a.value));
+  const addValue = (
+    currentValue: ValueType | undefined = undefined,
+    value: ValueValueType | undefined = undefined,
+    type = 0
+  ) => {
+    let indexNode: number;
+    if (!nodes.includes(idElement)) {
+      indexNode = nodes.length;
+      push.call(nodes, idElement);
+    } else {
+      indexNode = nodes.indexOf(idElement);
+    }
+    let val: ValueType;
+    if (currentValue) {
+      val = currentValue;
+      (val as any).elId = indexNode;
+    } else {
+      val = {
+        id: indexNode,
+        type,
+        value: value as ValueValueType
+      };
+    }
+    push.call(values, val);
+    return val;
+  };
   if (regexAttr.length) {
-    regexAttr.forEach((e) => {
+    for (const e of regexAttr) {
       const value = e.value;
       if (e.name !== "key") {
         if (e.name !== "class") {
@@ -83,13 +110,7 @@ export const renderEl = (
                 value: isValue ? [value, isValue] : value,
                 keys
               };
-              const newVal: ValueType = {
-                id: values.length,
-                type: 2,
-                value: attr
-              };
-              values.push(newVal);
-              nodes.push(idElement);
+              addValue(undefined, attr, 2);
             } else {
               if (e.name[0] !== ":") createError("Event error");
               let key = "";
@@ -102,7 +123,7 @@ export const renderEl = (
               const args = [...renderedKey.arguments].filter(Boolean);
               const keyEvent = e.name.substring(1);
               const event = {
-                elId: values.length,
+                elId: 0,
                 args,
                 keyEvent,
                 getEventsData,
@@ -115,24 +136,17 @@ export const renderEl = (
               if (keyEvent === "click") {
                 setEventListener();
               }
-              eventArray.push(event);
-              values.push(event as unknown as ValueType);
-              nodes.push(idElement);
+              eventArray.push(addValue(event as unknown as ValueType));
             }
           } else {
-            const newVal: ValueType = {
-              id: values.length,
-              type: 3,
-              value: {
-                value: value.replace(IMPORT_REGEX, (str, d) => {
-                  const key: string = d;
-                  if (key) return key;
-                  return str;
-                })
-              }
+            const newVal: ValueValueType = {
+              value: value.replace(IMPORT_REGEX, (str, d) => {
+                const key: string = d;
+                if (key) return key;
+                return str;
+              })
             };
-            values.push(newVal);
-            nodes.push(idElement);
+            addValue(undefined, newVal, 3);
           }
         } else {
           const classList = Array.from(el.classList).map((e) => {
@@ -150,23 +164,18 @@ export const renderEl = (
               ) as CurrentKeyType;
             } else return e as string;
           });
-          const newVal: ValueType = {
-            id: values.length,
-            type: 4,
-            value: {
-              classList,
-              oldClassList: [],
-              oldClassListString: ""
-            }
+          const newVal: ValueValueType = {
+            classList,
+            oldClassList: {},
+            oldClassListString: ""
           };
-          values.push(newVal);
-          nodes.push(idElement);
+          addValue(undefined, newVal, 4);
           setAttribute.call(el, "class", "");
         }
       } else {
         if (isKeyed && keyTemplate) {
           const keyArr = [...e.value.matchAll(TEXT_REGEX)];
-          keyArr.forEach((txt) => {
+          for (const txt of keyArr) {
             let val: ValueItemType = txt[0];
             if (testRegex(val)) {
               const key = val.replace(MAIN_REGEX, (_, d) => {
@@ -182,12 +191,12 @@ export const renderEl = (
               ) as CurrentKeyType;
             }
             push.call(keyTemplate, val);
-          });
+          }
           removeAttribute.call(el, e.name);
         } else {
           createError("key error");
         }
       }
-    });
+    }
   }
 };

@@ -160,10 +160,12 @@ export type CampleImportType = {
 export type ValueItemType = string | CurrentKeyType;
 
 export type ValueItemsType = Array<ValueItemType>;
-
+export type OldClassListType = {
+  [key: string]: any;
+};
 export type ClassType = {
   classList: ValueItemsType;
-  oldClassList: string[];
+  oldClassList: OldClassListType;
   oldClassListString: string;
 };
 

@@ -26,27 +26,31 @@ export const renderValues = (
       switch (currentVal.type) {
         case 0:
           if (condition) {
-            for (const e of vals.valueClass) {
-              if (typeof e !== "string") {
-                const prop = renderConditionKey(e);
-                str = str.concat(prop);
-              } else {
-                str = str.concat(e);
-              }
-            }
+            str = vals.valueClass
+              .map((e) => {
+                if (typeof e !== "string") {
+                  const prop = renderConditionKey(e);
+                  return prop;
+                } else {
+                  return e;
+                }
+              })
+              .join(" ");
           }
           break;
         case 1:
           const currentValue2 = condition ? vals[0] : vals[1];
           if (condition) {
-            for (const e of currentValue2.valueClass) {
-              if (typeof e !== "string") {
-                const prop = renderConditionKey(e);
-                str = str.concat(prop);
-              } else {
-                str = str.concat(e);
-              }
-            }
+            str = currentValue2.valueClass
+              .map((e: string | CurrentKeyType) => {
+                if (typeof e !== "string") {
+                  const prop = renderConditionKey(e);
+                  return prop;
+                } else {
+                  return e;
+                }
+              })
+              .join(" ");
           }
           break;
         default:

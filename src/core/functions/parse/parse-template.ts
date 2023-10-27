@@ -1,4 +1,5 @@
 "use-strict";
+import { push } from "../../../config/config";
 import {
   checkFunction,
   createError,
@@ -121,7 +122,9 @@ export const parseTemplate = (
               value: dynamicText
             });
           }
-          obj.nodes.push(i);
+          if (!obj.nodes.includes(i)) {
+            push.call(obj.nodes, i);
+          }
         }
       }
     }

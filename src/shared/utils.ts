@@ -18,7 +18,8 @@ import {
   IMPORT_REGEX,
   MAIN_REGEX,
   SPACE_REGEX,
-  VALUE_REGEX
+  VALUE_REGEX,
+  split
 } from "../config/config";
 import { renderKey } from "../core/functions/render/render-key";
 
@@ -64,6 +65,12 @@ export const equalArrayCondition = (arr1: any, arr2: any) => {
 };
 export const cloneJSON = (obj1: object) => {
   return JSON.parse(JSON.stringify(obj1));
+};
+export const convertStringToObject = (string: string) => {
+  if (!string) return {};
+  const result = {};
+  for (const strEl of split.call(string, SPACE_REGEX)) result[strEl] = null;
+  return result;
 };
 export const getIsValue = (key: string) => {
   if (key.includes("[")) {

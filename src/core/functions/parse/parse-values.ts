@@ -1,9 +1,11 @@
 "use-strict";
 
 import {
+  EXCLAMATION_POINT,
   MAIN_KEEP_DOUBLE_QUOTES_REGEX,
   MAIN_REGEX,
-  SPACE_REGEX
+  SPACE_REGEX,
+  split
 } from "../../../config/config";
 import { checkObject, createError, testRegex } from "../../../shared/utils";
 import {
@@ -53,11 +55,11 @@ const parseCondition = (
   let string = condition;
   const CONDITION_REGEX = /(\(|\)|\|\||&&|>=|<=|!==|===)/g;
   string = string.replace(SPACE_REGEX, "");
-  let filtredString = string.split(CONDITION_REGEX).filter(Boolean);
+  let filtredString = split.call(string, CONDITION_REGEX).filter(Boolean);
   const splitExclamationPoint = (arr: string[], text: string) => {
     if (text.includes("!") && !text.includes("!=") && !text.includes("!==")) {
       text
-        .split(/(\!)/g)
+        .split(EXCLAMATION_POINT)
         .filter(Boolean)
         .forEach((txt1) => {
           arr.push(txt1);
@@ -89,7 +91,7 @@ const parseCondition = (
       !txt.includes("!==")
     ) {
       txt
-        .split(/(\!)/g)
+        .split(EXCLAMATION_POINT)
         .filter(Boolean)
         .forEach((txt1) => {
           arr.push(txt1);
@@ -281,8 +283,8 @@ const parseValue = (
           if (currentVal) valueClass.push(currentVal);
           return currentVal;
         } else {
-          val
-            .split(" ")
+          split
+            .call(val, SPACE_REGEX)
             .filter(Boolean)
             .forEach((currentVal) => {
               if (currentVal) valueClass.push(currentVal);
@@ -291,7 +293,7 @@ const parseValue = (
         }
       });
   } else {
-    valueClass = value.split(" ").filter(Boolean);
+    valueClass = split.call(value, SPACE_REGEX).filter(Boolean);
   }
   return {
     value: currentValue,

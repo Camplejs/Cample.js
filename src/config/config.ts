@@ -6,6 +6,7 @@ export const CONDITION_REGEX = /!/g;
 export const TEXT_REGEX = /\{\{\s*([^}]+)\s*\}\}|([^{}]+)/g;
 export const SPACE_REGEX = /\s+/g;
 export const CLICK_FUNCTION_NAME = "__click__";
+export const EXCLAMATION_POINT = /(\!)/g;
 export const { appendChild, insertBefore, removeChild, replaceChild } =
   Node.prototype;
 export const updText = Object.getOwnPropertyDescriptor(
@@ -16,5 +17,8 @@ export const addClass = DOMTokenList.prototype.add;
 export const removeClass = DOMTokenList.prototype.remove;
 export const cloneNode = Node.prototype.cloneNode;
 export const { push } = Array.prototype;
+export const { split } = String.prototype;
 export const { setAttribute, removeAttribute, replaceChildren, remove } =
   Element.prototype;
+export const { has: setHas, add } = Set.prototype;
+export const { set, has, get } = Map.prototype;
