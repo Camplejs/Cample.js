@@ -71,14 +71,12 @@ import {
   addClass,
   appendChild,
   cloneNode,
-  has,
   insertBefore,
   push,
   remove,
   removeChild,
   replaceChild,
   replaceChildren,
-  set,
   updText
 } from "../../../config/config";
 
@@ -753,187 +751,172 @@ export class Each extends DataComponent {
                     removeChild.call(parentNode, el as Node);
                   }
                 } else {
-                  let checkPointsMap: Map<NodeType, number> | undefined =
-                    undefined;
-                  const newCurrentNodes: string[] = newFirstDataKey
-                    ? [newFirstDataKey]
-                    : [];
-                  for (let i = 1; newFirstIndex + i < newLastIndex - 1; i++) {
-                    const index = newFirstIndex + i;
-                    push.call(
-                      newCurrentNodes,
-                      getCurrentKey(newData[index], index)
-                    );
+                  const indexesOldArr = {};
+                  const oldLength = oldLastIndex - oldFirstIndex;
+                  for (let i = 0; i < oldLength; i++) {
+                    const currentIndex = oldFirstIndex + i;
+                    indexesOldArr[oldNodes[currentIndex].key as string] =
+                      currentIndex;
                   }
-                  push.call(
-                    newCurrentNodes,
-                    newLastDataKey ?? getCurrentKey(newData[index], index)
-                  );
-                  for (let i = 0; oldFirstIndex + i < oldLastIndex; i++) {
-                    const currentOldNode = oldNodes[oldFirstIndex + i];
-                    const index = newCurrentNodes.indexOf(
-                      currentOldNode.key as string
-                    );
-                    if (index > -1) {
-                      if (!checkPointsMap) {
-                        checkPointsMap = new Map();
-                      }
-                      set.call(checkPointsMap, currentOldNode, index);
-                      newData[newFirstIndex + index] = currentOldNode;
+                  const oldСontainedKeys = {};
+                  let checkpoint: Element = oldNodes[oldFirstIndex]
+                    .el as Element;
+                  while (
+                    oldFirstIndex < oldLastIndex ||
+                    newFirstIndex < newLastIndex
+                  ) {
+                    currentOldLastIndex = oldLastIndex - 1;
+                    currentNewLastIndex = newLastIndex - 1;
+                    if (
+                      oldLastIndex === oldFirstIndex ||
+                      newLastIndex === newFirstIndex
+                    ) {
+                      break;
+                    }
+                    if (
+                      (oldNodes[oldFirstIndex].key as string) in
+                      oldСontainedKeys
+                    ) {
+                      checkpoint = oldNodes[++oldFirstIndex].el as Element;
+                    }
+                    if (
+                      (oldNodes[currentOldLastIndex].key as string) in
+                      oldСontainedKeys
+                    ) {
+                      oldLastIndex--;
+                    }
+                    if (
+                      oldNodes[oldFirstIndex].key ===
+                      (newFirstDataKey = getCurrentKey(
+                        newData[newFirstIndex],
+                        newFirstIndex
+                      ))
+                    ) {
                       renderValuesNode(
-                        currentOldNode,
-                        data[newFirstIndex + index],
-                        newFirstIndex + index,
+                        oldNodes[oldFirstIndex],
+                        data[newFirstIndex],
+                        newFirstIndex,
                         importData
                       );
-                    } else {
-                      removeChild.call(
-                        parentNode,
-                        currentOldNode.el as Element
+                      newData[newFirstIndex++] = oldNodes[oldFirstIndex++];
+                      checkpoint = oldNodes[oldFirstIndex].el as Element;
+                      continue;
+                    }
+                    if (
+                      oldNodes[currentOldLastIndex].key ===
+                      (newLastDataKey = getCurrentKey(
+                        newData[currentNewLastIndex],
+                        currentNewLastIndex
+                      ))
+                    ) {
+                      renderValuesNode(
+                        oldNodes[currentOldLastIndex],
+                        data[currentNewLastIndex],
+                        currentNewLastIndex,
+                        importData
                       );
+                      newData[currentNewLastIndex] =
+                        oldNodes[currentOldLastIndex];
+                      newLastIndex--;
+                      oldLastIndex--;
+                      continue;
                     }
+                    if (
+                      oldNodes[oldFirstIndex].key === newLastDataKey &&
+                      oldNodes[currentOldLastIndex].key === newFirstDataKey
+                    ) {
+                      renderValuesNode(
+                        oldNodes[currentOldLastIndex],
+                        data[newFirstIndex],
+                        newFirstIndex,
+                        importData
+                      );
+                      renderValuesNode(
+                        oldNodes[oldFirstIndex],
+                        data[currentNewLastIndex],
+                        currentNewLastIndex,
+                        importData
+                      );
+                      swapElements(
+                        (newData[newFirstIndex++] =
+                          oldNodes[currentOldLastIndex]).el as Element,
+                        (newData[currentNewLastIndex] =
+                          oldNodes[oldFirstIndex++]).el as Element,
+                        parentNode
+                      );
+                      checkpoint = oldNodes[oldFirstIndex].el as Element;
+                      newLastIndex--;
+                      oldLastIndex--;
+                      continue;
+                    }
+                    if (newFirstDataKey in indexesOldArr) {
+                      const currentIndex = indexesOldArr[newFirstDataKey];
+                      const currentNode = oldNodes[currentIndex];
+                      const { el } = currentNode;
+                      oldСontainedKeys[newFirstDataKey] = null;
+                      newData[newFirstIndex] = currentNode;
+                      insertBefore.call(parentNode, el as Element, checkpoint);
+                      renderValuesNode(
+                        newData[newFirstIndex],
+                        data[newFirstIndex],
+                        newFirstIndex++,
+                        importData
+                      );
+                      continue;
+                    }
+                    const { el, currentNode } = createElement(
+                      newData[newFirstIndex],
+                      index,
+                      dataId,
+                      template,
+                      isFirst,
+                      newFirstIndex,
+                      importData,
+                      newFirstDataKey
+                    );
+                    newData[newFirstIndex++] = currentNode;
+                    insertBefore.call(parentNode, el, checkpoint);
+                    continue;
                   }
-                  if (checkPointsMap) {
-                    let isNodesSwitching = false;
-                    let switching = true;
-                    const list = Array.from(checkPointsMap.entries());
-                    const length = list.length;
-                    let i: number;
-                    while (switching) {
-                      switching = false;
-                      for (i = 0; i < length - 1; i++) {
-                        isNodesSwitching = false;
-                        if (list[i][1] > list[i + 1][1]) {
-                          isNodesSwitching = true;
-                          break;
-                        }
-                      }
-                      if (isNodesSwitching) {
-                        insertBefore.call(
-                          parentNode,
-                          list[i + 1][0].el as Element,
-                          list[i][0].el as Element
-                        );
-                        [list[i], list[i + 1]] = [list[i + 1], list[i]];
-                        switching = true;
-                      }
-                    }
-                    const newList = new Map(list);
-                    let checkPointIndex = 0;
-                    let checkPoint = list[checkPointIndex][0].el;
-                    let isBig = false;
-                    let lastEl: ChildNode | null | undefined = null;
-                    for (let i = 0; newFirstIndex + i < newLastIndex; i++) {
+                  if (oldLastIndex === oldFirstIndex) {
+                    const lastEl = newData[newLastIndex]?.el;
+                    for (let i = 0; newFirstIndex < newLastIndex--; i++) {
                       const currentIndex = newFirstIndex + i;
-                      const currentNewNode = newData[currentIndex];
-                      if (has.call(newList, currentNewNode)) {
-                        if (list[checkPointIndex + 1]) {
-                          insertBefore.call(
-                            parentNode,
-                            currentNewNode.el,
-                            checkPoint as Element
-                          );
-                          checkPoint = list[++checkPointIndex][0].el;
-                        } else {
-                          lastEl = list[checkPointIndex][0].el?.nextSibling;
-                          if (lastEl) {
-                            setElement(
-                              currentNewNode.el,
-                              lastEl as LastNodeType,
-                              parentNode,
-                              true
-                            );
-                          } else if (nodeParentNode) {
-                            setElement(
-                              currentNewNode.el,
-                              nodeParentNode,
-                              parentNode,
-                              false,
-                              true
-                            );
-                          } else {
-                            createError("Each render error");
-                          }
-                          isBig = true;
-                        }
-                      } else {
-                        const { el, currentNode } = createElement(
-                          currentNewNode,
-                          index,
-                          dataId,
-                          template,
-                          isFirst,
-                          currentIndex,
-                          importData,
-                          newCurrentNodes[i]
-                        );
-                        if (isBig) {
-                          if (lastEl) {
-                            setElement(
-                              el as Element,
-                              lastEl as LastNodeType,
-                              parentNode,
-                              true
-                            );
-                          } else if (nodeParentNode) {
-                            setElement(
-                              el as Element,
-                              nodeParentNode,
-                              parentNode,
-                              false,
-                              true
-                            );
-                          } else {
-                            createError("Each render error");
-                          }
-                        } else {
-                          insertBefore.call(
-                            parentNode,
-                            el as Element,
-                            checkPoint as Element
-                          );
-                        }
-                        newData[currentIndex] = currentNode;
-                      }
-                    }
-                  } else {
-                    let newNodePrevious = nodePrevious;
-                    for (let i = 0; newFirstIndex + i < newLastIndex; i++) {
-                      const currentIndex = newFirstIndex + i;
-                      const currentNewNode = newData[currentIndex];
+                      const currentIndexData = newData[currentIndex];
+                      const newKey = getCurrentKey(
+                        currentIndexData,
+                        currentIndex
+                      );
                       const { el, currentNode } = createElement(
-                        currentNewNode,
+                        currentIndexData,
                         index,
                         dataId,
                         template,
                         isFirst,
                         currentIndex,
                         importData,
-                        newCurrentNodes[i]
+                        newKey
                       );
-                      setNode(currentComponent.nodes, currentNode);
-                      if (nodeParentNode) {
-                        setElement(
-                          el as Element,
-                          nodeParentNode,
-                          parentNode,
-                          false,
-                          true
-                        );
-                      } else if (nodeNext) {
-                        setElement(el as Element, nodeNext, parentNode, true);
-                      } else if (nodePrevious) {
-                        setElement(
-                          el as Element,
-                          newNodePrevious as LastNodeType,
-                          parentNode,
-                          undefined
-                        );
-                        newNodePrevious = newNodePrevious?.nextSibling;
-                      } else {
-                        createError("Each render error");
-                      }
+                      setElement(
+                        el as Element,
+                        (lastEl ??
+                          newData[currentIndex - 1].el) as LastNodeType,
+                        parentNode,
+                        !!lastEl
+                      );
                       newData[currentIndex] = currentNode;
+                    }
+                  } else {
+                    for (
+                      let i = oldFirstIndex;
+                      oldFirstIndex < oldLastIndex--;
+                      i++
+                    ) {
+                      const currentNode = oldNodes[i];
+                      if (!((currentNode.key as string) in oldСontainedKeys)) {
+                        const { el } = currentNode;
+                        removeChild.call(parentNode, el as Node);
+                      }
                     }
                   }
                 }
