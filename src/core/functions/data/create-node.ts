@@ -24,6 +24,5 @@ export const createNode = (
   if (key !== undefined) {
     node.key = key;
   }
-
   return node;
 };

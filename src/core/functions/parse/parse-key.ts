@@ -30,6 +30,15 @@ const validateIsValue = (
 
 export const parseKey = (
   key: string,
+  valueFunctions: [
+    (...args: any[]) => string,
+    (...args: any[]) => void,
+    (...args: any[]) => string,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void
+  ],
   values?: ValuesType,
   valueName?: string,
   importedDataName?: string,
@@ -46,7 +55,13 @@ export const parseKey = (
     if (isCondition) createError("The presence of value in the condition");
     if (values) {
       const currentObj = values[originKey];
-      val = parseValues(currentObj, valueName, importedDataName, indexName);
+      val = parseValues(
+        valueFunctions,
+        currentObj,
+        valueName,
+        importedDataName,
+        indexName
+      );
     } else {
       createError("Values error");
     }
@@ -75,7 +90,7 @@ export const parseKey = (
     isProperty,
     isClass,
     values: val,
-    type: isValue ? 1 : 0
+    isValue
   };
   if (properties && properties.length) {
     keyObj.properties = properties;

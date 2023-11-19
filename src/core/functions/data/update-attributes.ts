@@ -20,18 +20,18 @@ export const updateAttributes = (
         const data = getValue({
           originKey: d,
           key: d,
-          type: (newVal[1] as boolean) ? 1 : 0,
+          isValue: newVal[1] as boolean,
           originType: 0
         });
         return String(data);
       });
       if (attr.oldValue !== val) {
         attr.oldValue = val;
-        setAttribute.call(el, attr.name, val);
+        setAttribute.call(el, attr.name as string, val);
       }
     } else {
-      const newVal = attr.value.replace(MAIN_REGEX, (_, d) => {
-        const renderedKey = attr.keys[d];
+      const newVal = (attr.value as string).replace(MAIN_REGEX, (_, d) => {
+        const renderedKey = (attr.keys as AttributesValType)[d];
         const data = getValue(renderedKey);
         if (filtredKeys)
           filtredKeys.push({
@@ -42,7 +42,7 @@ export const updateAttributes = (
       });
       if (attr.oldValue !== newVal) {
         attr.oldValue = newVal;
-        setAttribute.call(el, attr.name, newVal);
+        setAttribute.call(el, attr.name as string, newVal);
       }
     }
   }

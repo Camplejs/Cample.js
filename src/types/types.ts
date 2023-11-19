@@ -98,9 +98,9 @@ export type AttrValueType = {
 };
 
 export type AttributesValType = {
-  name: string;
-  value: string | [string, boolean];
-  keys: {
+  name?: string;
+  value?: string | [string, boolean];
+  keys?: {
     [key: string]: CurrentKeyType;
   };
   oldValue?: string;
@@ -117,9 +117,9 @@ export type DynamicElement = {
 };
 
 export type DynamicTextType = {
-  key: CurrentKeyType;
+  key?: CurrentKeyType;
   isProperty?: boolean;
-  texts: Array<Text | number>;
+  texts?: Array<Text | number>;
 };
 
 export type DynamicTextArrayType = Array<DynamicTextType>;
@@ -144,6 +144,16 @@ export type ElementIndexType = {
   id: number;
   path: Array<number>;
 };
+export type FunctionEventObjType = {
+  render?: FunctionEventType;
+};
+
+export type ValueValueType =
+  | FunctionEventObjType
+  | AttributesValType
+  | DynamicTextType
+  | CampleImportType
+  | ClassType;
 export type FunctionEventType = (...args: any[]) => any;
 export type FunctionsEventsType = Array<FunctionEventType>;
 export type EventType = {
@@ -154,43 +164,59 @@ export type EventType = {
 export type EventsType = Array<EventType>;
 
 export type CampleImportType = {
-  value: string;
+  value?: string;
 };
 
-export type ValueItemType = string | CurrentKeyType;
+export type ValueItemType = {
+  value: string | CurrentKeyType;
+  render: (...args: any[]) => string;
+};
 
-export type ValueItemsType = Array<ValueItemType>;
+export type ValueItemsType = {
+  value: ValueItemType | Array<ValueItemType>;
+  render: (...args: any[]) => string;
+};
 export type OldClassListType = {
   [key: string]: any;
 };
 export type ClassType = {
-  classList: ValueItemsType;
-  oldClassList: OldClassListType;
-  oldClassListString: string;
+  classes?: ValueItemsType;
+  old?: string;
 };
 
 export type RenderedKeyType = string | DynamicKeyObjectType | undefined;
 
-export type ValueValueType =
-  | FunctionEventType
-  | AttributesValType
-  | DynamicTextType
-  | CampleImportType
-  | ClassType;
-
 export type ValueType = {
   id?: IdType;
   type: number; //"event" | "dynamicText" | "attribute" | "import" | "class"
-  value: ValueValueType;
-};
+} & FunctionEventObjType &
+  AttributesValType &
+  DynamicTextType &
+  CampleImportType &
+  ClassType;
 export type ValuesTemplateType = Array<ValueType>;
-export type EachTemplateNodesType = Array<number>;
+export type NodeDOMType = {
+  id: number;
+  parentNode: NodeDOMType | null;
+  path: Array<number>;
+  nextNode: NodeDOMType | null;
+  siblings: Array<NodeDOMType>;
+};
+export type RenderNodeFunctionType = (...args: any[]) => ChildNode | null;
+export type IndexObjNode = {
+  id?: number;
+  node?: NodeDOMType;
+  rootId: number;
+  render?: RenderNodeFunctionType;
+};
+export type EachTemplateNodesType = Array<IndexObjNode>;
 export type EachTemplateType = {
   el: Element | null;
   key?: ValueItemsType;
   nodes: EachTemplateNodesType;
   values: ValuesTemplateType;
 };
+
 export type ElementsType = Element[];
 export type DynamicNodeComponentNodeType = ChildNode | null | undefined;
 export type DynamicNodeComponentParentNodeType = ParentNode | null | undefined;
@@ -318,20 +344,27 @@ export type DynamicTextsObj = {
 };
 export type DynamicTextsType = Array<DynamicTextsObj>;
 export type DynamicAttributesType = Array<AttributesValObjType>;
+
+export type OperandType = {
+  value: KeyValuesValueConditionType | CurrentKeyType;
+  render: (...args: any[]) => any;
+};
 export type KeyValuesValueConditionType = {
-  operands: Array<KeyValuesValueConditionType | CurrentKeyType>;
-  isNot?: boolean;
-  operation: number;
+  operands: Array<OperandType>;
+  render: (...args: any[]) => boolean;
 };
+export type RenderConditionType = (operand1: any, operand2?: any) => boolean;
 export type ValueKeyStringType = {
-  value: string | Array<CurrentKeyType | string>;
-  valueClass: Array<CurrentKeyType | string>;
-  isTestRegex: boolean;
+  valueClass: {
+    value: ValueItemType | Array<ValueItemType>;
+    render: (...args: any[]) => void;
+  };
 };
+
 export type KeyValuesValueType = {
   condition: KeyValuesValueConditionType;
   values: ValueKeyStringType | [ValueKeyStringType, ValueKeyStringType];
-  type: number; // isTernary
+  render: (...args: any[]) => void;
 };
 export type KeyValuesType = KeyValuesValueType[];
 export type CurrentKeyType = {
@@ -342,7 +375,7 @@ export type CurrentKeyType = {
   isProperty?: boolean;
   originType: number;
   isClass?: boolean;
-  type: number;
+  isValue: boolean;
 };
 export type NodeTextType = {
   key: CurrentKeyType;
@@ -352,8 +385,9 @@ export type NodeTextType = {
 export type NodeValueType = {
   render: any;
   type: number; // "dynamicText" | "attribute" | "class"
-  value: AttributesValType | NodeTextType | ClassType;
-};
+} & AttributesValType &
+  NodeTextType &
+  ClassType;
 export type NodeValuesType = Array<NodeValueType>;
 export type NodeType = {
   isNew?: boolean;

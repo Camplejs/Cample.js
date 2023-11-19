@@ -8,7 +8,6 @@ import {
 } from "../types/types";
 import { renderTemplate } from "./functions/render/render-template";
 import { checkFunction, getExportData } from "../shared/utils";
-import { CLICK_FUNCTION_NAME } from "../config/config";
 
 export class Cample {
   public selector: SelectorType;
@@ -16,7 +15,6 @@ export class Cample {
   public style: string;
   public trimHTML?: boolean;
   public exportData: ExportCampleDataType;
-  private _isListener: boolean;
 
   constructor(
     selector: SelectorType,
@@ -29,44 +27,10 @@ export class Cample {
     this.trimHTML = options.trimHTML !== undefined ? options.trimHTML : false;
     this.exportData = {};
     this.style = "";
-    this._isListener = false;
   }
   render(template = "", options: OptionsType = {}): void {
     this.template = renderTemplate(template, options);
 
-    const renderNode = (node: any, current: { cancelBubble: any }) => {
-      while (node) {
-        const eventListener = node[CLICK_FUNCTION_NAME];
-        if (eventListener && !node.disabled) {
-          eventListener.call(node);
-          if (current.cancelBubble) return;
-        }
-        node = node.parentNode || node.host;
-      }
-    };
-    const eventListener = (current: any) => {
-      const currentNode = current?.composedPath()[0] || current.target;
-      if (current.target !== currentNode) {
-        Object.defineProperty(current, "target", {
-          configurable: true,
-          value: currentNode
-        });
-      }
-      Object.defineProperty(current, "currentTarget", {
-        configurable: true,
-        get() {
-          return currentNode || document;
-        }
-      });
-      renderNode(currentNode, current);
-    };
-
-    const setEventListener = () => {
-      if (!this._isListener) {
-        document.addEventListener("click", eventListener);
-        this._isListener = true;
-      }
-    };
     if (typeof this.selector === "string") {
       const el: Element | null = document.querySelector(this.selector);
       if (el) el.innerHTML = this.template;
@@ -90,7 +54,6 @@ export class Cample {
           this.exportData[selector].value[exportId][index] = data;
           this.exportData[selector].components.forEach((e) => {
             e.render(
-              setEventListener,
               this.trimHTML,
               selector && this.exportData.hasOwnProperty(selector)
                 ? this.exportData[selector].value
@@ -107,7 +70,6 @@ export class Cample {
       Object.keys(options).forEach((e, i) => {
         const selector = options[e]._getSelector;
         options[e].render(
-          setEventListener,
           this.trimHTML,
           selector && this.exportData.hasOwnProperty(selector)
             ? this.exportData[selector].value

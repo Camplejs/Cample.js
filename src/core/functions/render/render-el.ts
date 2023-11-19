@@ -7,7 +7,13 @@ import {
   removeAttribute,
   setAttribute
 } from "../../../config/config";
-import { createError, testRegex, testValuesRegex } from "../../../shared/utils";
+import {
+  createError,
+  getIndexOf,
+  isIncludes,
+  testRegex,
+  testValuesRegex
+} from "../../../shared/utils";
 import {
   AttributesValType,
   CurrentKeyType,
@@ -16,7 +22,8 @@ import {
   EventEachGetDataType,
   EventEachGetFunctionType,
   EventGetDataType,
-  ValueItemType,
+  IndexObjNode,
+  NodeDOMType,
   ValueItemsType,
   ValueType,
   ValueValueType,
@@ -27,11 +34,21 @@ import { parseKey } from "../parse/parse-key";
 import { renderEventKey } from "../render/render-event-key";
 
 export const renderEl = (
+  nodeDom: NodeDOMType,
+  valueFunctions: [
+    (...args: any[]) => string,
+    (...args: any[]) => string,
+    (...args: any[]) => string,
+    (...args: any[]) => string,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void
+  ],
   filtredKeys: DynamicKeyObjectArrayType,
   eventArray: any[],
-  setEventListener: () => void,
   el: Element,
-  index: number,
   idElement: number,
   getEventsData: EventGetDataType | EventEachGetDataType,
   nodes: EachTemplateNodesType,
@@ -54,11 +71,16 @@ export const renderEl = (
     type = 0
   ) => {
     let indexNode: number;
-    if (!nodes.includes(idElement)) {
+    if (!isIncludes(nodes, idElement)) {
       indexNode = nodes.length;
-      push.call(nodes, idElement);
+      const node: IndexObjNode = {
+        rootId: indexNode - 1,
+        id: idElement,
+        node: nodeDom
+      };
+      push.call(nodes, node);
     } else {
-      indexNode = nodes.indexOf(idElement);
+      indexNode = getIndexOf(nodes, idElement);
     }
     let val: ValueType;
     if (currentValue) {
@@ -68,11 +90,17 @@ export const renderEl = (
       val = {
         id: indexNode,
         type,
-        value: value as ValueValueType
-      };
+        ...value
+      } as ValueType;
     }
     push.call(values, val);
     return val;
+  };
+  const createValItem = (value: string | CurrentKeyType) => {
+    return {
+      value,
+      render: typeof value === "string" ? valueFunctions[2] : valueFunctions[3]
+    };
   };
   if (regexAttr.length) {
     for (const e of regexAttr) {
@@ -96,6 +124,15 @@ export const renderEl = (
                   if (!keys.hasOwnProperty(d)) {
                     const renderedKey = parseKey(
                       d,
+                      [
+                        valueFunctions[3],
+                        valueFunctions[4],
+                        valueFunctions[2],
+                        valueFunctions[5],
+                        valueFunctions[6],
+                        valueFunctions[7],
+                        valueFunctions[8]
+                      ],
                       optionValues,
                       valueName,
                       importedDataName,
@@ -124,6 +161,7 @@ export const renderEl = (
               const keyEvent = e.name.substring(1);
               const event = {
                 elId: 0,
+                indexValue: values.length,
                 args,
                 keyEvent,
                 getEventsData,
@@ -133,9 +171,6 @@ export const renderEl = (
                 key
               };
               removeAttribute.call(el, e.name);
-              if (keyEvent === "click") {
-                setEventListener();
-              }
               eventArray.push(addValue(event as unknown as ValueType));
             }
           } else {
@@ -149,13 +184,27 @@ export const renderEl = (
             addValue(undefined, newVal, 3);
           }
         } else {
-          const classList = Array.from(el.classList).map((e) => {
+          const arrList = Array.from(el.classList);
+          const classList: ValueItemsType = {
+            value: [],
+            render: valueFunctions[0]
+          };
+          const getVal = (e: string) => {
             if (testRegex(e)) {
               const key = e.replace(MAIN_REGEX, (_, d) => {
                 return d;
               });
               return parseKey(
                 key,
+                [
+                  valueFunctions[3],
+                  valueFunctions[4],
+                  valueFunctions[2],
+                  valueFunctions[5],
+                  valueFunctions[6],
+                  valueFunctions[7],
+                  valueFunctions[8]
+                ],
                 optionValues,
                 valueName,
                 importedDataName,
@@ -163,26 +212,42 @@ export const renderEl = (
                 true
               ) as CurrentKeyType;
             } else return e as string;
-          });
+          };
+          if (arrList.length === 1) {
+            const val1 = getVal(arrList[0]);
+            classList.value = createValItem(val1);
+            classList.render = valueFunctions[1];
+          } else {
+            classList.value = arrList.map((e) => {
+              return createValItem(getVal(e));
+            });
+          }
           const newVal: ValueValueType = {
-            classList,
-            oldClassList: {},
-            oldClassListString: ""
+            classes: classList,
+            old: ""
           };
           addValue(undefined, newVal, 4);
           setAttribute.call(el, "class", "");
         }
       } else {
         if (isKeyed && keyTemplate) {
-          const keyArr = [...e.value.matchAll(TEXT_REGEX)];
-          for (const txt of keyArr) {
-            let val: ValueItemType = txt[0];
+          const getVal = (txt: RegExpMatchArray) => {
+            let val: string | CurrentKeyType = txt[0];
             if (testRegex(val)) {
               const key = val.replace(MAIN_REGEX, (_, d) => {
                 return d;
               });
               val = parseKey(
                 key,
+                [
+                  valueFunctions[3],
+                  valueFunctions[4],
+                  valueFunctions[2],
+                  valueFunctions[5],
+                  valueFunctions[6],
+                  valueFunctions[7],
+                  valueFunctions[8]
+                ],
                 optionValues,
                 valueName,
                 importedDataName,
@@ -190,7 +255,17 @@ export const renderEl = (
                 false
               ) as CurrentKeyType;
             }
-            push.call(keyTemplate, val);
+            return val;
+          };
+          const keyArr = [...e.value.matchAll(TEXT_REGEX)];
+          if (keyArr.length === 1) {
+            keyTemplate.value = createValItem(getVal(keyArr[0]));
+            keyTemplate.render = valueFunctions[1];
+          } else {
+            for (const txt of keyArr) {
+              const val = createValItem(getVal(txt));
+              push.call(keyTemplate, val);
+            }
           }
           removeAttribute.call(el, e.name);
         } else {

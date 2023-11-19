@@ -13,6 +13,8 @@ import {
   KeyValuesType,
   KeyValuesValueConditionType,
   KeyValuesValueType,
+  RenderConditionType,
+  ValueItemType,
   ValueKeyStringType,
   ValuesValueType
 } from "../../../types/types";
@@ -46,7 +48,44 @@ const renderOperation = (operator: string): number => {
       return 0;
   }
 };
+const setRender = (operation: number, isNot?: boolean): RenderConditionType => {
+  switch (operation) {
+    case 1:
+      return (operand1: any) => (isNot ? !operand1 : !!operand1);
+    case 2:
+      return (operand1: any, operand2?: any) => operand1 == operand2;
+    case 3:
+      return (operand1: any, operand2?: any) => operand1 != operand2;
+    case 4:
+      return (operand1: any, operand2?: any) => operand1 === operand2;
+    case 5:
+      return (operand1: any, operand2?: any) => operand1 !== operand2;
+    case 6:
+      return (operand1: any, operand2?: any) => operand1 > operand2;
+    case 7:
+      return (operand1: any, operand2?: any) => operand1 >= operand2;
+    case 8:
+      return (operand1: any, operand2?: any) => operand1 < operand2;
+    case 9:
+      return (operand1: any, operand2?: any) => operand1 <= operand2;
+    case 10:
+      return (operand1: any, operand2?: any) => operand1 && operand2;
+    case 11:
+      return (operand1: any, operand2?: any) => operand1 || operand2;
+    default:
+      return (operand1: any) => !!operand1;
+  }
+};
 const parseCondition = (
+  valueFunctions: [
+    (...args: any[]) => string,
+    (...args: any[]) => void,
+    (...args: any[]) => string,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void
+  ],
   condition: string,
   valueName?: string,
   importedDataName?: string,
@@ -101,18 +140,17 @@ const parseCondition = (
     }
     return arr;
   }, []);
-  filtredString.forEach((text, i) => {
+  for (const text of filtredString) {
     const isOpen = text === "(";
     if (isOpen || text === ")") {
       createError("Brackets are not yet supported");
-      // brackets.push({ id: i, isOpen });
     }
-  });
+  }
   const length: number = filtredString.length;
   if (!filtredString.length) createError("Condition error");
   const defaultCurrentVal: KeyValuesValueConditionType = {
     operands: [],
-    operation: 0
+    render: (operand1: any) => !!operand1
   };
   let currentVal = {
     ...defaultCurrentVal,
@@ -122,20 +160,23 @@ const parseCondition = (
     ...defaultCurrentVal,
     operands: [...defaultCurrentVal.operands]
   };
+  let currentIsNot = false;
+  let currentOperation = 0;
+  const mainOperation = 0;
   for (let i = 0; i < length; ) {
     const txt = filtredString[i];
     const operation = renderOperation(txt);
     switch (operation) {
       case 1:
         let isAdd = false;
-        currentVal.isNot = true;
+        currentIsNot = true;
         while (i < length) {
           const nextOperation = renderOperation(filtredString[i + 1]);
           if (nextOperation > 1) {
             createError("Condition error");
             break;
           } else if (nextOperation === 1) {
-            currentVal.isNot = !currentVal.isNot;
+            currentIsNot = !currentIsNot;
             i++;
           } else {
             isAdd = true;
@@ -145,11 +186,13 @@ const parseCondition = (
         if (isAdd) {
           i++;
         }
-        currentVal.operation = 1;
+        currentVal.render = setRender(operation, currentIsNot);
+        currentOperation = 1;
         break;
       case 0:
         const key = parseKey(
           txt,
+          valueFunctions,
           undefined,
           valueName,
           importedDataName,
@@ -157,17 +200,26 @@ const parseCondition = (
           false,
           true
         );
-        if (currentVal.operation === 1) {
+        const createValItem = (
+          value: KeyValuesValueConditionType | CurrentKeyType,
+          isOperation = false
+        ) => {
+          return {
+            value,
+            render: !isOperation ? valueFunctions[0] : valueFunctions[1]
+          };
+        };
+        if (currentOperation === 1) {
           if (currentVal.operands.length) createError("Condition error");
-          currentVal.operands.push(key);
-          mainCurrentVal.operands.push(currentVal);
+          currentVal.operands.push(createValItem(key));
+          mainCurrentVal.operands.push(createValItem(currentVal, true));
         } else {
-          mainCurrentVal.operands.push(key);
+          mainCurrentVal.operands.push(createValItem(key));
         }
         if (i + 1 < length) {
           currentVal = { ...defaultCurrentVal, operands: [] };
         } else {
-          if (!mainCurrentVal.operation && currentVal.operation === 1) {
+          if (!mainOperation && currentOperation === 1) {
             mainCurrentVal = {
               ...currentVal,
               operands: [...currentVal.operands]
@@ -177,93 +229,33 @@ const parseCondition = (
         i++;
         break;
       default:
-        if (mainCurrentVal.operation)
-          createError("Big condition are not yet supported");
-        mainCurrentVal.operation = operation;
+        if (mainOperation) createError("Big condition are not yet supported");
+        mainCurrentVal.render = setRender(operation);
         i++;
         break;
     }
   }
   return mainCurrentVal;
 };
-// Functionality in development
-// const brackets: { id: number; isOpen: boolean }[] = [];
-// let currentBracketId: number = 0;
-// let nextBracketId = 0;
-// let bracketOpenId = 0;
-// let currentOpenBracket: any = undefined;
-// type BracketsType = {
-//   id: number;
-//   siblingBrackets: BracketsType[];
-//   range: number[];
-// };
-// let currentPath: number[] = [];
-// const bracketArray: BracketsType[] = [];
-// brackets.forEach(({ id, isOpen }) => {
-//   let currentBracket = bracketArray[nextBracketId];
-//   if (isOpen) {
-//     let bracket = {
-//       id: currentBracketId++,
-//       siblingBrackets: [],
-//       range: [id],
-//       parent: undefined as any,
-//       path: [...currentPath]
-//     };
-//     if (currentBracket) {
-//       let curBracket: any = undefined;
-//       bracket.path.forEach((position) => {
-//         if (curBracket) {
-//           curBracket = curBracket.siblingBrackets[position];
-//         } else {
-//           curBracket = currentBracket.siblingBrackets[position];
-//         }
-//       });
-//       if (curBracket) {
-//         bracket.parent = curBracket;
-//         currentPath.push(curBracket.siblingBrackets.length);
-//         bracket.path.push(curBracket.siblingBrackets.length);
-//         curBracket.siblingBrackets.push(bracket);
-//       } else {
-//         bracket.parent = currentBracket;
-//         currentPath.push(currentBracket.siblingBrackets.length);
-//         bracket.path.push(currentBracket.siblingBrackets.length);
-//         currentBracket.siblingBrackets.push(bracket);
-//       }
-//       currentOpenBracket = bracket;
-//       bracketOpenId++;
-//     } else {
-//       bracketArray.push(bracket);
-//     }
-//   } else {
-//     if (bracketOpenId) {
-//       if (!currentOpenBracket) createError("Bracket error");
-//       currentOpenBracket.range.push(id);
-//       currentOpenBracket = currentOpenBracket.parent;
-//       bracketOpenId--;
-//       currentPath.pop();
-//     } else {
-//       currentOpenBracket = undefined;
-//       if (!currentBracket) createError("Bracket error");
-//       currentBracket.range.push(id);
-//       nextBracketId++;
-//       currentPath = [];
-//     }
-//   }
-// });
-// const bracketIndexes = bracketArray.map((e) => {
-//   return e.range;
-// });
 const parseValue = (
+  valueFunctions: [
+    (...args: any[]) => string,
+    (...args: any[]) => void,
+    (...args: any[]) => string,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void
+  ],
   value: string,
   valueName?: string,
   importedDataName?: string,
   indexName?: string
 ): ValueKeyStringType => {
-  let currentValue: string | Array<CurrentKeyType | string> = value;
   const isTestRegex = testRegex(value);
-  let valueClass: Array<CurrentKeyType | string> = [];
+  let valueClass: Array<ValueItemType> = [];
   if (isTestRegex) {
-    currentValue = value
+    value
       .split(MAIN_KEEP_DOUBLE_QUOTES_REGEX)
       .filter(Boolean)
       .map((val) => {
@@ -273,6 +265,7 @@ const parseValue = (
           });
           const currentVal = parseKey(
             key,
+            valueFunctions,
             undefined,
             valueName,
             importedDataName,
@@ -280,28 +273,55 @@ const parseValue = (
             false,
             true
           );
-          if (currentVal) valueClass.push(currentVal);
+          if (currentVal)
+            valueClass.push({
+              value: currentVal,
+              render: valueFunctions[0]
+            });
           return currentVal;
         } else {
           split
             .call(val, SPACE_REGEX)
             .filter(Boolean)
             .forEach((currentVal) => {
-              if (currentVal) valueClass.push(currentVal);
+              if (currentVal)
+                valueClass.push({
+                  value: currentVal,
+                  render: valueFunctions[2]
+                });
             });
           return val;
         }
       });
   } else {
-    valueClass = split.call(value, SPACE_REGEX).filter(Boolean);
+    valueClass = split
+      .call(value, SPACE_REGEX)
+      .filter(Boolean)
+      .map((e) => {
+        return {
+          value: e,
+          render: valueFunctions[2]
+        };
+      });
   }
+  const isObject = valueClass.length === 1;
   return {
-    value: currentValue,
-    valueClass,
-    isTestRegex
+    valueClass: {
+      value: isObject ? valueClass[0] : valueClass,
+      render: isObject ? valueFunctions[5] : valueFunctions[6]
+    }
   };
 };
 export const parseValues = (
+  valueFunctions: [
+    (...args: any[]) => string,
+    (...args: any[]) => void,
+    (...args: any[]) => string,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void
+  ],
   val: ValuesValueType,
   valueName?: string,
   importedDataName?: string,
@@ -310,9 +330,10 @@ export const parseValues = (
   let keyValues: KeyValuesType | undefined = undefined;
   if (checkObject(val)) {
     keyValues = [];
-    Object.entries(val).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(val)) {
       const isArray = Array.isArray(value);
       const condition = parseCondition(
+        valueFunctions,
         key,
         valueName,
         importedDataName,
@@ -320,16 +341,28 @@ export const parseValues = (
       );
       const valueKeyValue = isArray
         ? (value.map((valueVal) =>
-            parseValue(valueVal, valueName, importedDataName, indexName)
+            parseValue(
+              valueFunctions,
+              valueVal,
+              valueName,
+              importedDataName,
+              indexName
+            )
           ) as [ValueKeyStringType, ValueKeyStringType])
-        : parseValue(value, valueName, importedDataName, indexName);
+        : parseValue(
+            valueFunctions,
+            value,
+            valueName,
+            importedDataName,
+            indexName
+          );
       const keyValue: KeyValuesValueType = {
         condition,
         values: valueKeyValue,
-        type: isArray ? 1 : 0
+        render: !isArray ? valueFunctions[3] : valueFunctions[4]
       };
       (keyValues as KeyValuesType).push(keyValue);
-    });
+    }
   } else createError("Value render error");
   return keyValues;
 };

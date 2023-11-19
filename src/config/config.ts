@@ -9,16 +9,38 @@ export const CLICK_FUNCTION_NAME = "__click__";
 export const EXCLAMATION_POINT = /(\!)/g;
 export const { appendChild, insertBefore, removeChild, replaceChild } =
   Node.prototype;
-export const updText = Object.getOwnPropertyDescriptor(
-  CharacterData.prototype,
-  "data"
-)?.set as (v: any) => void;
+export const updText = (
+  Object.getOwnPropertyDescriptor(CharacterData.prototype, "data") as any
+).set as (v: any) => void;
+export const updClass = (
+  Object.getOwnPropertyDescriptor(Element.prototype, "className") as any
+).set as (v: any) => void;
+export const firstChild = (
+  Object.getOwnPropertyDescriptor(Node.prototype, "firstChild") as any
+).get as (this: Element) => any;
+export const nextSibling = (
+  Object.getOwnPropertyDescriptor(Node.prototype, "nextSibling") as any
+).get as (this: Element) => any;
+export const previousSibling = (
+  Object.getOwnPropertyDescriptor(Node.prototype, "previousSibling") as any
+).get as (this: Element) => any;
+export const getParentNode = (
+  Object.getOwnPropertyDescriptor(Node.prototype, "parentNode") as any
+).get as (this: Element) => any;
+
 export const addClass = DOMTokenList.prototype.add;
 export const removeClass = DOMTokenList.prototype.remove;
 export const cloneNode = Node.prototype.cloneNode;
-export const { push } = Array.prototype;
+export const { push, indexOf, map: mapArray, unshift } = Array.prototype;
 export const { split } = String.prototype;
-export const { setAttribute, removeAttribute, replaceChildren, remove } =
-  Element.prototype;
+export const {
+  setAttribute,
+  removeAttribute,
+  replaceChildren,
+  remove,
+  hasAttribute,
+  getAttribute
+} = Element.prototype;
 export const { has: setHas, add } = Set.prototype;
 export const { set, has, get } = Map.prototype;
+export const { concat } = String.prototype;

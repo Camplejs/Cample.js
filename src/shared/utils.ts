@@ -10,7 +10,8 @@ import {
   ExportDataValueType,
   ExportIdType,
   ImportObjectStringType,
-  ImportObjectType
+  ImportObjectType,
+  IndexObjNode
 } from "./../types/types";
 
 import { ArrayStringType, ExportDataType } from "../types/types";
@@ -19,7 +20,7 @@ import {
   MAIN_REGEX,
   SPACE_REGEX,
   VALUE_REGEX,
-  split
+  push
 } from "../config/config";
 import { renderKey } from "../core/functions/render/render-key";
 
@@ -66,12 +67,7 @@ export const equalArrayCondition = (arr1: any, arr2: any) => {
 export const cloneJSON = (obj1: object) => {
   return JSON.parse(JSON.stringify(obj1));
 };
-export const convertStringToObject = (string: string) => {
-  if (!string) return {};
-  const result = {};
-  for (const strEl of split.call(string, SPACE_REGEX)) result[strEl] = null;
-  return result;
-};
+
 export const getIsValue = (key: string) => {
   if (key.includes("[")) {
     if (!key.includes("]")) createError("Syntax value error");
@@ -277,13 +273,13 @@ export const getExportData = (
 export const concatObjects = (obj1: object, obj2: object) => {
   const result = obj1;
   if (checkObjectCondition(result, obj2)) {
-    Object.entries(obj2).forEach(([key, value]) => {
-      if (result.hasOwnProperty(key)) {
+    for (const [key, value] of Object.entries(obj2)) {
+      if (result[key] !== undefined) {
         result[key] = value;
       } else {
         result[key] = value;
       }
-    });
+    }
   } else {
     createError("Export data is object");
   }
@@ -317,25 +313,32 @@ export const getCurrentComponent = (
   components: DynamicNodeComponentType[],
   dataId: number
 ) => {
-  const currentComponentArray = components.filter((e) => e?.id === dataId);
-  if (currentComponentArray.length > 1) {
-    createError("id is unique");
+  let currentComponent: any = undefined;
+  const array = components;
+  for (let i = 0; i < array.length; i++) {
+    const item = array[i];
+    if (item?.id === dataId) {
+      currentComponent = item;
+      break;
+    }
   }
-  const currentComponent =
-    currentComponentArray[0] as EachDynamicNodeComponentType;
-  return currentComponent;
+  return currentComponent as EachDynamicNodeComponentType;
 };
 export const getData = (
   values: DynamicDataType[],
   dataId: number,
   isValue = true
 ) => {
-  const data = values.filter((e) => e?.id === dataId);
-  if (data.length > 1) {
-    createError("id is unique");
+  let data: any = undefined;
+  for (let i = 0; i < values.length; i++) {
+    const item = values[i];
+    if (item?.id === dataId) {
+      data = item;
+      break;
+    }
   }
-  if (data && data[0]) {
-    return isValue ? data[0].value : data[0];
+  if (data) {
+    return isValue ? data.value : data;
   } else return undefined;
 };
 export const getKey = (key: string) => {
@@ -445,4 +448,37 @@ export const cloneValue = (value: any): any => {
   } else {
     return value;
   }
+};
+
+export const isIncludes = (nodes: Array<IndexObjNode>, id: number) => {
+  let isIncludes = false;
+  for (let i = 0; i < nodes.length; i++) {
+    const item = nodes[i];
+    if (item.id === id) {
+      isIncludes = true;
+      break;
+    }
+  }
+  return isIncludes;
+};
+export const getIndexOf = (nodes: Array<IndexObjNode>, id: number) => {
+  let index = -1;
+  for (let i = 0; i < nodes.length; i++) {
+    const item = nodes[i];
+    if (item.id === id) {
+      index = item.id as number;
+      break;
+    }
+  }
+  return index;
+};
+export const getSameElements = (a: Array<any>, b: Array<any>) => {
+  const result: any[] = [];
+  for (let i = 0; i < a.length; i++) {
+    const item = a[i];
+    if (b.includes(item)) {
+      push.call(result, item);
+    }
+  }
+  return result;
 };

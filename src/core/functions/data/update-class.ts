@@ -1,29 +1,17 @@
 "use-strict";
 
-import { addClass, removeClass } from "../../../config/config";
-import { convertStringToObject } from "../../../shared/utils";
-import { CurrentKeyType, ClassType } from "../../../types/types";
+import { setAttribute, updClass } from "../../../config/config";
+import { ClassType } from "../../../types/types";
 
-export const updateClass = (
-  list: DOMTokenList,
-  value: ClassType,
-  getValue: (key: CurrentKeyType) => any
-) => {
-  const { oldClassList, classList, oldClassListString } = value;
-  const val = getValue(classList[0] as CurrentKeyType) as string;
-  if (oldClassListString !== val) {
-    const newClasses = convertStringToObject(val);
-    for (const oldClass in oldClassList) {
-      if (!(oldClass in newClasses)) {
-        removeClass.call(list, oldClass);
-      }
+export const updateClass = (el: Element, value: ClassType, val: string) => {
+  const { old } = value;
+  if (old !== val) {
+    if (val !== "") {
+      updClass.call(el, val);
+    } else {
+      setAttribute.call(el, "class", "");
     }
-    for (const newClass in newClasses) {
-      if (!(newClass in oldClassList)) {
-        addClass.call(list, newClass);
-      }
-    }
-    value.oldClassList = newClasses;
-    value.oldClassListString = val;
+
+    value.old = val;
   }
 };

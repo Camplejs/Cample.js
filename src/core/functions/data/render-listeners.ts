@@ -1,6 +1,5 @@
 "use-strict";
 
-import { CLICK_FUNCTION_NAME } from "../../../config/config";
 import {
   ArgumentsArrayType,
   EventEachGetDataType,
@@ -20,10 +19,6 @@ export const renderListeners = (
       const newArgs = args.map((e) => getEventsData(e));
       fn().apply(this, newArgs);
     };
-    if (key === "click") {
-      el[CLICK_FUNCTION_NAME] = eventFn;
-    } else {
-      el.addEventListener(key, eventFn);
-    }
+    el.addEventListener(key, eventFn);
   }
 };

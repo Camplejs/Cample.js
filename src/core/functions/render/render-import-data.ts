@@ -1,8 +1,11 @@
 "use-strict";
-import { SPACE_REGEX } from "../../../config/config";
+import {
+  SPACE_REGEX,
+  getAttribute,
+  hasAttribute
+} from "../../../config/config";
 import { createError } from "../../../shared/utils";
 import {
-  CycleValueType,
   DataType,
   ExportDataType,
   ExportIdType,
@@ -52,7 +55,7 @@ export const renderImportData = (
             return dataValueArr;
           } else return e;
         });
-        dataSetArr.forEach((e: Array<string> | CycleValueType | string) => {
+        for (let e of dataSetArr) {
           if (exportData.hasOwnProperty(exportId)) {
             if (Array.isArray(e)) {
               if (e.length === 2) {
@@ -60,10 +63,10 @@ export const renderImportData = (
                 const indexKey = e[1];
                 const currentData = exportData[exportId][currentIndex];
                 if (currentData) {
-                  if (currentData.data.hasOwnProperty(key)) {
+                  if (currentData.data[key] !== undefined) {
                     if (!result) result = {};
                     result[key] = currentData.data[key][indexKey];
-                  } else if (currentData.functions.hasOwnProperty(key)) {
+                  } else if (currentData.functions[key] !== undefined) {
                     if (!result) result = {};
                     result[key] = currentData.functions[key][indexKey];
                   } else {
@@ -88,9 +91,9 @@ export const renderImportData = (
                 }
               };
               if (currentData) {
-                if (currentData.data.hasOwnProperty(e)) {
+                if (currentData.data[e] !== undefined) {
                   setData(currentData.data, e);
-                } else if (currentData.functions.hasOwnProperty(e)) {
+                } else if (currentData.functions[e] !== undefined) {
                   setData(currentData.functions, e);
                 } else {
                   createError(`Property value "${e}" not found`);
@@ -102,15 +105,15 @@ export const renderImportData = (
           } else {
             createError(`ExportId not found`);
           }
-        });
+        }
       }
     } else {
       createError("Nothing to import");
     }
   };
   if (el) {
-    if (el.hasAttribute("data-cample-import")) {
-      let dataSet = el.getAttribute("data-cample-import");
+    if (hasAttribute.call(el, "data-cample-import")) {
+      let dataSet = getAttribute.call(el, "data-cample-import");
       if (dataSet) {
         if (exportData) {
           dataSet = dataSet.replace(SPACE_REGEX, "");
