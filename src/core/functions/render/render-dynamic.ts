@@ -1,3 +1,5 @@
+"use-strict";
+
 import { CurrentKeyType } from "../../../types/types";
 import { renderKeyData } from "./render-key-data";
 import { renderValues } from "./render-values";
