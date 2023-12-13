@@ -3,7 +3,7 @@
         <img width="400" height="400" src="https://github.com/Camplejs/media/blob/main/logo_transparent.png" alt="cample" >
     </a>
 </p>
-<h1 align="center">Cample.js - moderately fast reactive javascript framework.</h1>
+<h1 align="center">Cample.js - just a fast javascript framework.</h1>
 <h3 align="center">Reactivity without Virtual DOM!</h3>
 <div align="center">
 
@@ -45,7 +45,7 @@ Cample.js provides the following features:
 - Component approach. It allows to repeat many UI blocks on the site, which makes development much easier.
 - Convenient approach to working with data inside a component. Transferring data between components allows to work with components even if they are in different files
 - The frameworks make it easy to work with HTML files. The syntax of the framework itself is built on objects with HTML templates. When using modern project builders, HTML files are imported through a variable that does not pass through any function.
-- Moderately fast.
+- Fast.
 
 And a few others :)
 
