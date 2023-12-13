@@ -248,7 +248,11 @@ export class Component extends DataComponent {
             ? renderKeyData(firstKeyData, key.properties as Array<string>)
             : firstKeyData;
         } else {
-          return renderValues(key, data, importData, undefined);
+          const str = {
+            value: ""
+          };
+          renderValues(str, key, data, importData, undefined);
+          return str.value;
         }
       };
       const newFunction = (
@@ -906,10 +910,9 @@ export class Component extends DataComponent {
             el: templateElemenet
           } = templateEl;
           const el = cloneNode.call(templateElemenet, true);
-          const length = templateNodes.length;
           const nodes: Array<IndexObjNode | ChildNode | null> = [];
           push.call(nodes, el as ChildNode);
-          for (let i = 0; i < length; i++) {
+          for (let i = 0; i < templateNodes.length; i++) {
             const templateNode = templateNodes[i];
             const { render, rootId } = templateNode;
             push.call(
@@ -928,11 +931,6 @@ export class Component extends DataComponent {
           const attrFunc = (key: CurrentKeyType) =>
             renderDynamic(key, data, undefined);
           const newValues: NodeValuesType = [];
-          if (!values.some((e) => e.type === 3)) {
-            if (this.export) {
-              createExportObject(index);
-            }
-          }
           for (const val of values) {
             const node = nodes[val.id as number] as Element;
             switch (val.type) {
@@ -966,9 +964,8 @@ export class Component extends DataComponent {
                 } as NodeValueType);
                 break;
               case 3:
-                const value4 = val;
                 const componentName = node.getAttribute("data-cample");
-                const keyImportString = value4.value;
+                const keyImportString = val.value;
                 if (keyImportString && componentName) {
                   const newImportString = renderComponentTemplate(
                     keyImportString,
@@ -981,14 +978,12 @@ export class Component extends DataComponent {
                 }
                 break;
               case 4:
-                const value5 = val;
-                const fnClass = (fnNew: any) =>
-                  updateClass(node, value5, fnNew);
+                const fnClass = (fnNew: any) => updateClass(node, val, fnNew);
                 fnClass(attrFunc);
                 push.call(newValues, {
                   render: fnClass,
                   type: 4,
-                  value: value5
+                  value: val
                 });
                 break;
             }
@@ -1153,6 +1148,11 @@ export class Component extends DataComponent {
               runRenderFunction,
               currentComponent.functions
             );
+            if (!newTemplateObj.values.some((e) => e.type === 3)) {
+              if (this.export) {
+                createExportObject(index);
+              }
+            }
             const el = createElement(
               index,
               data,

@@ -2,21 +2,21 @@
 import {
   firstChild,
   nextSibling,
-  getParentNode,
   push,
-  indexOf
+  indexOf,
+  pop,
+  unshift
 } from "../../../config/config";
 import {
   checkFunction,
   createError,
   getElement,
-  getSameElements,
-  getTextKey,
-  isIncludes
+  getTextKey
 } from "../../../shared/utils";
 import {
   CurrentKeyType,
   DynamicKeyObjectArrayType,
+  DynamicNodesObjectType,
   DynamicTextType,
   EachTemplateType,
   EventEachGetDataType,
@@ -44,6 +44,9 @@ export const parseTemplate = (
     (...args: any[]) => void,
     (...args: any[]) => void,
     (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
     (...args: any[]) => void
   ],
   template: string,
@@ -66,10 +69,12 @@ export const parseTemplate = (
 } => {
   const el = getElement(template, trim);
   const filtredKeys: DynamicKeyObjectArrayType = [];
-
+  const firstNode: IndexObjNode = { rootId: 0, id: 0 };
+  const stackNodes = [firstNode];
+  const dynamicNodesObj: DynamicNodesObjectType = {};
   const obj: EachTemplateType = {
     el,
-    nodes: [{ rootId: 0, id: 0 }],
+    nodes: [firstNode],
     values: []
   };
   if (isEach) {
@@ -81,22 +86,54 @@ export const parseTemplate = (
   let i = -1;
   const eventArray: any[] = [];
   const createNodeDOM = (
+    newNode: IndexObjNode,
     id: number,
     parentNode: NodeDOMType | null = null,
-    path: Array<number> = []
-  ) => {
+    path: Array<IndexObjNode> = [],
+    previousNodePath?: Array<IndexObjNode>
+  ): NodeDOMType => {
+    const newPath = previousNodePath
+      ? [...previousNodePath, newNode]
+      : [...path, newNode];
     return {
       id,
       parentNode,
       nextNode: null,
       siblings: [],
-      path: [...path, id]
+      path: newPath
     };
   };
+  const createNodeObj = (
+    newNode: IndexObjNode,
+    rootId: number,
+    id: number,
+    node: NodeDOMType,
+    isNext: boolean
+  ): void => {
+    newNode.rootId = rootId;
+    newNode.id = id;
+    newNode.node = node;
+    newNode.isNext = isNext;
+  };
   let DOM: NodeDOMType | undefined = undefined;
-  const renderNode = (node: ChildNode, parentDOMNode?: NodeDOMType) => {
+  const renderNode = (
+    node: ChildNode,
+    parentDOMNode?: NodeDOMType,
+    previousNode?: NodeDOMType,
+    isNext?: boolean
+  ) => {
     i++;
-    const domSiblingNode = createNodeDOM(i, parentDOMNode, parentDOMNode?.path);
+    const isUndefined = isNext !== undefined;
+    const newNode: IndexObjNode = isUndefined
+      ? ({} as unknown as IndexObjNode)
+      : firstNode;
+    const domSiblingNode = createNodeDOM(
+      newNode as IndexObjNode,
+      i,
+      parentDOMNode,
+      parentDOMNode?.path,
+      previousNode?.path
+    );
     if (parentDOMNode) {
       const { siblings } = parentDOMNode;
       const beforeNodeIndex = siblings.length - 1;
@@ -105,6 +142,11 @@ export const parseTemplate = (
       }
       push.call(siblings, domSiblingNode);
     } else DOM = domSiblingNode;
+    if (isUndefined) {
+      const rootId = isNext ? previousNode?.id ?? 0 : parentDOMNode?.id ?? 0;
+      createNodeObj(newNode, rootId, i, domSiblingNode, isNext);
+      push.call(stackNodes, newNode);
+    }
     if (node.nodeType === Node.ELEMENT_NODE) {
       parseText(node as Element);
       renderEl(
@@ -115,7 +157,8 @@ export const parseTemplate = (
         node as Element,
         i,
         getEventsData,
-        obj.nodes,
+        newNode,
+        dynamicNodesObj,
         id,
         isEach,
         obj.values,
@@ -127,12 +170,19 @@ export const parseTemplate = (
         obj.key,
         getEventsFunction
       );
+      let j = 0;
       for (
         let currentNode = firstChild.call(node as Element);
         currentNode;
         currentNode = nextSibling.call(currentNode)
       ) {
-        renderNode(currentNode, domSiblingNode);
+        const previousId = j - 1;
+        renderNode(
+          currentNode,
+          domSiblingNode,
+          domSiblingNode?.siblings[previousId],
+          !!j++
+        );
       }
     } else if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent;
@@ -145,11 +195,11 @@ export const parseTemplate = (
           if (data.length > 1) {
             createError("id is unique");
           }
-          const index = obj.values.indexOf(data[0]);
-          if (index > -1) {
-            (obj.values[index].texts as (number | Text)[]).push(
-              obj.nodes.length
-            );
+          const searchedNodeObj = data[0];
+          newNode.isText = true;
+          dynamicNodesObj[domSiblingNode.id] = domSiblingNode.path;
+          if (searchedNodeObj) {
+            push.call(searchedNodeObj.texts, i);
           } else {
             const renderedKey = parseKey(
               key,
@@ -160,7 +210,10 @@ export const parseTemplate = (
                 valueFunctions[5],
                 valueFunctions[6],
                 valueFunctions[7],
-                valueFunctions[8]
+                valueFunctions[8],
+                valueFunctions[9],
+                valueFunctions[10],
+                valueFunctions[11]
               ],
               values,
               valueName,
@@ -169,155 +222,144 @@ export const parseTemplate = (
             );
             const dynamicText: DynamicTextType = {
               key: renderedKey,
-              texts: [obj.nodes.length]
+              texts: [i]
             };
             filtredKeys.push({
               key: renderedKey.originKey,
               properties: renderedKey.properties ?? []
             });
-            obj.values.push({
+            const nodeObj = {
               type: 1,
               ...dynamicText
-            });
-          }
-          if (!isIncludes(obj.nodes, i)) {
-            const id = obj.nodes.length;
-            const nodeObj: IndexObjNode = {
-              rootId: id - 1,
-              id: i,
-              node: domSiblingNode
             };
-            push.call(obj.nodes, nodeObj);
+            obj.values.push(nodeObj);
           }
         }
       }
     }
   };
   renderNode(el as ChildNode, DOM);
-  const createRender = (
-    node: NodeDOMType,
-    rootNode: NodeDOMType,
-    rootPath: Array<number>
-  ) => {
-    if (rootNode.siblings[0]?.id === node.id) return firstChild;
-    if (rootNode.nextNode?.id === node.id) return nextSibling;
-    const { path } = node;
-    const fnAlgorithm: Array<RenderNodeFunctionType> = [];
-    const maxSameNode = Math.max(...getSameElements(path, rootPath));
-    let sameNode: NodeDOMType | undefined = undefined;
-    const setSameEl = (newNode: NodeDOMType) => {
-      const { parentNode } = newNode;
-      if (rootNode.id !== 0 && parentNode) {
-        if (newNode.id !== maxSameNode) {
-          push.call(fnAlgorithm, getParentNode);
-          setSameEl(parentNode);
-        } else sameNode = newNode;
-      } else {
-        sameNode = DOM as NodeDOMType;
-      }
-    };
-    setSameEl(rootNode);
-    const sameIndex = indexOf.call(
-      path,
-      (sameNode as unknown as NodeDOMType).id
-    );
-    let currentDOMNode = sameNode as unknown as NodeDOMType;
-    for (let i = sameIndex + 1; i < path.length; i++) {
-      const pathItem = path[i];
-      const currentFnAlgorithm: Array<RenderNodeFunctionType> = [];
-      const { siblings, nextNode } = currentDOMNode;
-      if (nextNode?.id === pathItem) {
-        push.call(currentFnAlgorithm, nextSibling);
-        currentDOMNode = nextNode;
-      } else {
-        for (let j = 0; j < siblings.length; j++) {
-          const sibling = siblings[j];
-          currentDOMNode = sibling;
-          if (j === 0) {
-            push.call(currentFnAlgorithm, firstChild);
-          } else {
-            push.call(currentFnAlgorithm, nextSibling);
-          }
-          if (sibling.id === pathItem) break;
-        }
-      }
-      for (let j = 0; j < currentFnAlgorithm.length; j++) {
-        push.call(fnAlgorithm, currentFnAlgorithm[j]);
-      }
-    }
-    function fn(this: Element) {
-      let currentEl = this;
-      for (let i = 0; i < fnAlgorithm.length; i++) {
-        const currentFn: RenderNodeFunctionType = fnAlgorithm[i];
-        currentEl = currentFn.call(currentEl) as Element;
-      }
-      return currentEl;
-    }
-    return fn;
-  };
-  for (let i = 1; i < obj.nodes.length; i++) {
-    const currentNode = obj.nodes[i];
-    let { rootId } = currentNode;
-    const { node } = currentNode;
-    let rootNode = (obj.nodes[rootId].node ?? DOM) as NodeDOMType;
-    const { path: rootPath } = rootNode;
-    const parentNodeRepeatNodes: number[] = [];
-    obj.nodes[0].node = DOM;
-    (obj.nodes[0].node as any).parentNode = { id: 0 };
-    const maxSameNodes: number[] = [];
-    for (let j = 0; j < i; j++) {
-      let k = 0;
-      const currentRootMaxNode = obj.nodes[j].node as NodeDOMType;
-      const { path: newNodePath } = currentRootMaxNode;
-      const maxSameNode = Math.max(
-        ...getSameElements((node as NodeDOMType).path, newNodePath)
-      );
-      push.call(maxSameNodes, maxSameNode);
-      if (maxSameNode !== 0) {
-        const setSameEl = (newNode: NodeDOMType) => {
-          const { parentNode } = newNode;
-          if (parentNode) {
-            if (newNode.id !== maxSameNode) {
-              k++;
-              setSameEl(parentNode);
-            } else {
-              push.call(parentNodeRepeatNodes, k);
+  const stackLineNodes: Array<IndexObjNode> = [];
+  for (let i = 0; i < stackNodes.length; i++) {
+    const stackNode = stackNodes[i];
+    if (stackNode.id !== undefined && stackNode.id in dynamicNodesObj) {
+      const path = dynamicNodesObj[stackNode.id];
+      if (stackLineNodes.length) {
+        let indexPathItem = 0;
+        const length = path.length;
+        for (let j = length - 1; -1 < j; j--) {
+          const pathItem = path[j];
+          if (stackLineNodes.includes(pathItem)) {
+            indexPathItem = indexOf.call(stackLineNodes, pathItem);
+            if (indexPathItem + 1) {
+              const dynamicNodes = [];
+              for (let k = stackLineNodes.length - 1; k > indexPathItem; k--) {
+                const currentPathNode = pop.call(stackLineNodes);
+                const currentDynamicNodes = currentPathNode.dynamicNodes;
+                if (currentDynamicNodes) {
+                  for (let l = 0; l < currentDynamicNodes.length; l++) {
+                    push.call(dynamicNodes, currentDynamicNodes[l]);
+                  }
+                }
+              }
+              if (dynamicNodes.length) {
+                if ("dynamicNodes" in pathItem) {
+                  pathItem.dynamicNodes = [
+                    ...(pathItem.dynamicNodes as IndexObjNode[]),
+                    ...dynamicNodes
+                  ];
+                } else {
+                  pathItem.dynamicNodes = dynamicNodes;
+                }
+              }
+              for (let j = indexPathItem + 1; j < length; j++) {
+                const pathItem = path[j];
+                push.call(stackLineNodes, pathItem);
+              }
             }
-          } else createError("Error");
-        };
-        setSameEl(currentRootMaxNode);
+            break;
+          }
+        }
+        const dynamicNode = stackLineNodes[stackLineNodes.length - 1];
+        if (dynamicNode.dynamicNodes) {
+          push.call(dynamicNode.dynamicNodes, dynamicNode);
+        } else {
+          dynamicNode.dynamicNodes = [dynamicNode];
+        }
       } else {
-        push.call(parentNodeRepeatNodes, Infinity);
+        for (let j = 0; j < path.length; j++) {
+          push.call(stackLineNodes, path[j]);
+        }
+        stackNode.dynamicNodes = [stackNode];
       }
     }
-    if (parentNodeRepeatNodes.length) {
-      const maxMaxSameNode = Math.max(...maxSameNodes);
-      if (maxMaxSameNode === 0) {
-        delete (obj.nodes[0].node as any).parentNode;
-        const newRootNode = DOM as unknown as NodeDOMType;
-        rootId = 0;
-        rootNode = newRootNode;
-        currentNode.rootId = rootId;
-        delete obj.nodes[0].node;
-      } else {
-        const minNode = Math.min(...parentNodeRepeatNodes);
-        const indexMinNode = indexOf.call(parentNodeRepeatNodes, minNode);
-        delete (obj.nodes[0].node as any).parentNode;
-        const newRootNode = !indexMinNode ? DOM : obj.nodes[indexMinNode].node;
-        rootId = indexMinNode;
-        rootNode = newRootNode as NodeDOMType;
-        currentNode.rootId = rootId;
-        delete obj.nodes[0].node;
+  }
+  let fnAlgorithm: Array<RenderNodeFunctionType> = [];
+  let rootId = 0;
+  let dynamicLength = 0;
+  for (let i = 1; i < stackLineNodes.length; i++) {
+    const currentNode = stackLineNodes[i];
+    const render = currentNode.isNext ? nextSibling : firstChild;
+    const { dynamicNodes } = currentNode;
+    if (dynamicNodes) {
+      const currentNodeId = currentNode.id;
+      const newObj: IndexObjNode = {
+        rootId,
+        id: currentNodeId
+      };
+      if (fnAlgorithm.length) {
+        push.call(fnAlgorithm, render);
+        const arr = [...fnAlgorithm];
+        function fn(this: Element) {
+          let currentEl = this;
+          for (let j = 0; j < arr.length; j++) {
+            const currentFn: RenderNodeFunctionType = arr[j];
+            currentEl = currentFn.call(currentEl) as Element;
+          }
+          return currentEl;
+        }
+        newObj.render = fn;
+        fnAlgorithm = [];
+      } else newObj.render = render;
+      push.call(obj.nodes, newObj);
+      rootId = rootId + dynamicLength + 1;
+      dynamicLength = dynamicNodes.length;
+      for (let j = 0; j < dynamicNodes.length; j++) {
+        const dynamicNode = dynamicNodes[j];
+        const dynamicNodeId = dynamicNode.id;
+        if (dynamicNodeId !== currentNodeId) {
+          const newObj: IndexObjNode = {
+            rootId,
+            id: dynamicNodeId
+          };
+          const fnDynamicNodeAlgorithm = [];
+          const { path } = dynamicNode.node as NodeDOMType;
+          for (let k = path.length - 1; k >= 0; k--) {
+            const pathItem = path[k];
+            if (pathItem.id === currentNodeId) {
+              if (fnDynamicNodeAlgorithm.length !== 1) {
+                function fn(this: Element) {
+                  let currentEl = this;
+                  for (let l = 0; l < fnDynamicNodeAlgorithm.length; l++) {
+                    const currentFn: RenderNodeFunctionType =
+                      fnDynamicNodeAlgorithm[l];
+                    currentEl = currentFn.call(currentEl) as Element;
+                  }
+                  return currentEl;
+                }
+                newObj.render = fn;
+              } else newObj.render = fnDynamicNodeAlgorithm[0];
+              break;
+            } else {
+              const pathRender = pathItem.isNext ? nextSibling : firstChild;
+              unshift.call(fnDynamicNodeAlgorithm, pathRender);
+            }
+          }
+          push.call(obj.nodes, newObj);
+        } else dynamicLength--;
       }
-    }
-    currentNode.render = createRender(node as NodeDOMType, rootNode, rootPath);
+    } else fnAlgorithm.push(render);
   }
-  for (let i = 1; i < obj.nodes.length; i++) {
-    const currentNode = obj.nodes[i];
-    delete currentNode.node;
-    delete currentNode.id;
-  }
-  obj.nodes.shift();
   setDataFunctions?.(filtredKeys);
   renderFunctions?.();
   for (const {
@@ -358,5 +400,29 @@ export const parseTemplate = (
     };
     obj.values[indexValue] = newVal;
   }
+  for (let i = 0; i < obj.values.length; i++) {
+    const value = obj.values[i];
+    if (value.type === 1) {
+      if (value.texts)
+        value.texts = value.texts.map((e) => {
+          for (let j = 0; j < obj.nodes.length; j++) {
+            const currentNode = obj.nodes[j];
+            if (currentNode.id === e) {
+              return j as number;
+            }
+          }
+          return -1;
+        });
+    } else {
+      for (let j = 0; j < obj.nodes.length; j++) {
+        const currentNode = obj.nodes[j];
+        if (currentNode.id === value.id) {
+          value.id = j;
+          break;
+        }
+      }
+    }
+  }
+  obj.nodes.shift();
   return { filtredKeys, obj };
 };

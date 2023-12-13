@@ -11,7 +11,11 @@ export const renderDynamic = (
   eachIndex: number | undefined
 ) => {
   if (key.isValue) {
-    return renderValues(key, data, importData, eachIndex);
+    const str = {
+      value: ""
+    };
+    renderValues(str, key, data, importData, eachIndex);
+    return str.value;
   } else {
     switch (key.originType) {
       case 1:

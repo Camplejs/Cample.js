@@ -187,7 +187,7 @@ export type ClassType = {
 export type RenderedKeyType = string | DynamicKeyObjectType | undefined;
 
 export type ValueType = {
-  id?: IdType;
+  id?: IdType | IndexObjNode;
   type: number; //"event" | "dynamicText" | "attribute" | "import" | "class"
 } & FunctionEventObjType &
   AttributesValType &
@@ -198,9 +198,12 @@ export type ValuesTemplateType = Array<ValueType>;
 export type NodeDOMType = {
   id: number;
   parentNode: NodeDOMType | null;
-  path: Array<number>;
+  path: Array<IndexObjNode>;
   nextNode: NodeDOMType | null;
   siblings: Array<NodeDOMType>;
+};
+export type DynamicNodesObjectType = {
+  [key: string]: Array<IndexObjNode>;
 };
 export type RenderNodeFunctionType = (...args: any[]) => ChildNode | null;
 export type IndexObjNode = {
@@ -208,6 +211,9 @@ export type IndexObjNode = {
   node?: NodeDOMType;
   rootId: number;
   render?: RenderNodeFunctionType;
+  dynamicNodes?: Array<IndexObjNode>;
+  isNext?: boolean;
+  isText?: boolean;
 };
 export type EachTemplateNodesType = Array<IndexObjNode>;
 export type EachTemplateType = {
@@ -371,7 +377,8 @@ export type CurrentKeyType = {
   originKey: string;
   key: string;
   properties?: Array<string>;
-  values?: KeyValuesType;
+  values?: KeyValuesType | KeyValuesValueType;
+  render?: (...args: any[]) => void;
   isProperty?: boolean;
   originType: number;
   isClass?: boolean;

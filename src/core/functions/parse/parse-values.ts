@@ -84,6 +84,9 @@ const parseCondition = (
     (...args: any[]) => void,
     (...args: any[]) => void,
     (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
     (...args: any[]) => void
   ],
   condition: string,
@@ -245,6 +248,9 @@ const parseValue = (
     (...args: any[]) => void,
     (...args: any[]) => void,
     (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
     (...args: any[]) => void
   ],
   value: string,
@@ -305,6 +311,7 @@ const parseValue = (
       });
   }
   const isObject = valueClass.length === 1;
+
   return {
     valueClass: {
       value: isObject ? valueClass[0] : valueClass,
@@ -317,6 +324,9 @@ export const parseValues = (
     (...args: any[]) => string,
     (...args: any[]) => void,
     (...args: any[]) => string,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
     (...args: any[]) => void,
     (...args: any[]) => void,
     (...args: any[]) => void,

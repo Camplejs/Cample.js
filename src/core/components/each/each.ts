@@ -51,7 +51,9 @@ import {
   ValuesTemplateType,
   IndexObjNode,
   RenderNodeFunctionType,
-  ValueType
+  ValueType,
+  KeyValuesType,
+  KeyValuesValueType
 } from "../../../types/types";
 import { createEachDynamicNodeComponentType } from "../../functions/data/create-each-dynamic-node-component";
 import { renderAttributes } from "../../functions/render/render-attributes";
@@ -230,6 +232,7 @@ export class Each extends DataComponent {
           const valuesLength = values.length;
           for (let i = 0; i < valuesLength; i++) {
             const val = values[i];
+            const valKey = val.key as CurrentKeyType;
             const node = nodes[val.id as number];
             switch (val.type) {
               case 0:
@@ -238,7 +241,7 @@ export class Each extends DataComponent {
                 break;
               case 1:
                 const newData = renderDynamic(
-                  val.key as CurrentKeyType,
+                  valKey,
                   indexData,
                   importData,
                   eachIndex
@@ -255,7 +258,7 @@ export class Each extends DataComponent {
                   val: NodeTextType
                 ) => {
                   const newData = renderDynamic(
-                    val.key as CurrentKeyType,
+                    valKey,
                     currentIndexData,
                     currentImportData,
                     currentEachIndex
@@ -268,7 +271,7 @@ export class Each extends DataComponent {
                 push.call(newValues, {
                   render: fnText,
                   type: 1,
-                  key: val.key,
+                  key: valKey,
                   value: newData
                 } as NodeValueType);
                 break;
@@ -380,8 +383,7 @@ export class Each extends DataComponent {
           currentComponent: EachDynamicNodeComponentType,
           dataId: number,
           index: number,
-          importData: ImportDataType | undefined,
-          isFirst = false
+          importData: ImportDataType | undefined
         ) => {
           const {
             parentNode,
@@ -610,8 +612,11 @@ export class Each extends DataComponent {
                 const lastEl = newData[newLastIndex]?.el;
                 const isLastEl = !!lastEl;
                 if (isLastEl) {
-                  for (let i = 0; newFirstIndex < newLastIndex--; i++) {
-                    const currentIndex = newFirstIndex + i;
+                  for (
+                    let currentIndex = newFirstIndex;
+                    newFirstIndex < newLastIndex--;
+                    currentIndex++
+                  ) {
                     const currentIndexData = newData[currentIndex];
                     const newKey = renderKey(
                       currentIndexData,
@@ -632,8 +637,11 @@ export class Each extends DataComponent {
                     newData[currentIndex] = currentNode;
                   }
                 } else {
-                  for (let i = 0; newFirstIndex < newLastIndex--; i++) {
-                    const currentIndex = newFirstIndex + i;
+                  for (
+                    let currentIndex = newFirstIndex;
+                    newFirstIndex < newLastIndex--;
+                    currentIndex++
+                  ) {
                     const currentIndexData = newData[currentIndex];
                     const newKey = renderKey(
                       currentIndexData,
@@ -671,8 +679,11 @@ export class Each extends DataComponent {
               } else {
                 const indexesOldArr = {};
                 const oldLength = oldLastIndex - oldFirstIndex;
-                for (let i = 0; i < oldLength; i++) {
-                  const currentIndex = oldFirstIndex + i;
+                for (
+                  let currentIndex = oldFirstIndex;
+                  currentIndex < oldLength;
+                  currentIndex++
+                ) {
                   indexesOldArr[oldNodes[currentIndex].key as string] =
                     currentIndex;
                 }
@@ -806,8 +817,11 @@ export class Each extends DataComponent {
                   const lastEl = newData[newLastIndex]?.el;
                   const isLastEl = !!lastEl;
                   if (isLastEl) {
-                    for (let i = 0; newFirstIndex < newLastIndex--; i++) {
-                      const currentIndex = newFirstIndex + i;
+                    for (
+                      let currentIndex = newFirstIndex;
+                      newFirstIndex < newLastIndex--;
+                      currentIndex++
+                    ) {
                       const currentIndexData = newData[currentIndex];
                       const newKey = renderKey(
                         currentIndexData,
@@ -828,8 +842,11 @@ export class Each extends DataComponent {
                       newData[currentIndex] = currentNode;
                     }
                   } else {
-                    for (let i = 0; newFirstIndex < newLastIndex--; i++) {
-                      const currentIndex = newFirstIndex + i;
+                    for (
+                      let currentIndex = newFirstIndex;
+                      newFirstIndex < newLastIndex--;
+                      currentIndex++
+                    ) {
                       const currentIndexData = newData[currentIndex];
                       const newKey = renderKey(
                         currentIndexData,
@@ -1232,6 +1249,53 @@ export class Each extends DataComponent {
                   : concat.call(str.value, prop);
             }
           };
+          const renderFn10 = (
+            str: { value: string },
+            currentValue: ValueItemType,
+            data: any,
+            importData: ImportDataType | undefined,
+            eachIndex: number
+          ) => {
+            const { value, render } = currentValue;
+            const prop = render(value, data, importData, eachIndex);
+            str.value = prop;
+          };
+          const renderFn11 = (
+            str: { value: string },
+            currentVal: KeyValuesValueType,
+            data: any,
+            importData: any,
+            eachIndex: number | undefined
+          ) => {
+            const condition = renderCondition(
+              currentVal.condition,
+              data,
+              importData,
+              eachIndex
+            );
+            const { values, render } = currentVal;
+            render(str, condition, values, data, importData, eachIndex);
+          };
+          const renderFn12 = (
+            str: { value: string },
+            vals: KeyValuesType,
+            data: any,
+            importData: any,
+            eachIndex: number | undefined
+          ) => {
+            for (let i = 0; i < vals.length; i++) {
+              const currentVal = vals[i];
+              const condition = renderCondition(
+                currentVal.condition,
+                data,
+                importData,
+                eachIndex
+              );
+              const { values, render } = currentVal;
+              render(str, condition, values, data, importData, eachIndex);
+            }
+          };
+
           data = data as EachDataValueType;
           const oldData = isDataObject ? {} : [];
           const template = this.eachTemplate;
@@ -1245,7 +1309,10 @@ export class Each extends DataComponent {
               renderFn6,
               renderFn7,
               renderFn8,
-              renderFn9
+              renderFn9,
+              renderFn10,
+              renderFn11,
+              renderFn12
             ],
             template as string,
             index,
@@ -1279,19 +1346,14 @@ export class Each extends DataComponent {
             currentComponent
           );
           const elements: ScriptElementsType = {};
-          try {
-            renderNewData(
-              oldData,
-              data,
-              currentComponent,
-              dataId,
-              index,
-              importData,
-              true
-            );
-          } catch (e) {
-            createError(`${e}`);
-          }
+          renderNewData(
+            oldData,
+            data,
+            currentComponent,
+            dataId,
+            index,
+            importData
+          );
           if (
             currentComponent.nodes.length &&
             Array.isArray(this.script) &&

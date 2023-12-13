@@ -11,7 +11,6 @@ export const updateClass = (el: Element, value: ClassType, val: string) => {
     } else {
       setAttribute.call(el, "class", "");
     }
-
     value.old = val;
   }
 };

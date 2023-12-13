@@ -5,7 +5,6 @@ export const IMPORT_REGEX = /\{{{(.*?)}}}/g;
 export const CONDITION_REGEX = /!/g;
 export const TEXT_REGEX = /\{\{\s*([^}]+)\s*\}\}|([^{}]+)/g;
 export const SPACE_REGEX = /\s+/g;
-export const CLICK_FUNCTION_NAME = "__click__";
 export const EXCLAMATION_POINT = /(\!)/g;
 export const { appendChild, insertBefore, removeChild, replaceChild } =
   Node.prototype;
@@ -31,7 +30,7 @@ export const getParentNode = (
 export const addClass = DOMTokenList.prototype.add;
 export const removeClass = DOMTokenList.prototype.remove;
 export const cloneNode = Node.prototype.cloneNode;
-export const { push, indexOf, map: mapArray, unshift } = Array.prototype;
+export const { push, indexOf, map: mapArray, unshift, pop } = Array.prototype;
 export const { split } = String.prototype;
 export const {
   setAttribute,

@@ -7,18 +7,12 @@ import {
   removeAttribute,
   setAttribute
 } from "../../../config/config";
-import {
-  createError,
-  getIndexOf,
-  isIncludes,
-  testRegex,
-  testValuesRegex
-} from "../../../shared/utils";
+import { createError, testRegex, testValuesRegex } from "../../../shared/utils";
 import {
   AttributesValType,
   CurrentKeyType,
   DynamicKeyObjectArrayType,
-  EachTemplateNodesType,
+  DynamicNodesObjectType,
   EventEachGetDataType,
   EventEachGetFunctionType,
   EventGetDataType,
@@ -44,6 +38,9 @@ export const renderEl = (
     (...args: any[]) => void,
     (...args: any[]) => void,
     (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
     (...args: any[]) => void
   ],
   filtredKeys: DynamicKeyObjectArrayType,
@@ -51,7 +48,8 @@ export const renderEl = (
   el: Element,
   idElement: number,
   getEventsData: EventGetDataType | EventEachGetDataType,
-  nodes: EachTemplateNodesType,
+  newNode: IndexObjNode,
+  dynamicNodesObj: DynamicNodesObjectType,
   id: number,
   isEach: boolean | undefined,
   values: ValuesTemplateType,
@@ -70,29 +68,19 @@ export const renderEl = (
     value: ValueValueType | undefined = undefined,
     type = 0
   ) => {
-    let indexNode: number;
-    if (!isIncludes(nodes, idElement)) {
-      indexNode = nodes.length;
-      const node: IndexObjNode = {
-        rootId: indexNode - 1,
-        id: idElement,
-        node: nodeDom
-      };
-      push.call(nodes, node);
-    } else {
-      indexNode = getIndexOf(nodes, idElement);
-    }
     let val: ValueType;
     if (currentValue) {
       val = currentValue;
-      (val as any).elId = indexNode;
+      (val as any).elId = newNode.id;
     } else {
       val = {
-        id: indexNode,
+        id: newNode.id,
         type,
         ...value
       } as ValueType;
     }
+    if (newNode?.node)
+      dynamicNodesObj[newNode.id as number] = newNode.node.path;
     push.call(values, val);
     return val;
   };
@@ -131,7 +119,10 @@ export const renderEl = (
                         valueFunctions[5],
                         valueFunctions[6],
                         valueFunctions[7],
-                        valueFunctions[8]
+                        valueFunctions[8],
+                        valueFunctions[9],
+                        valueFunctions[10],
+                        valueFunctions[11]
                       ],
                       optionValues,
                       valueName,
@@ -203,7 +194,10 @@ export const renderEl = (
                   valueFunctions[5],
                   valueFunctions[6],
                   valueFunctions[7],
-                  valueFunctions[8]
+                  valueFunctions[8],
+                  valueFunctions[9],
+                  valueFunctions[10],
+                  valueFunctions[11]
                 ],
                 optionValues,
                 valueName,
@@ -246,7 +240,10 @@ export const renderEl = (
                   valueFunctions[5],
                   valueFunctions[6],
                   valueFunctions[7],
-                  valueFunctions[8]
+                  valueFunctions[8],
+                  valueFunctions[9],
+                  valueFunctions[10],
+                  valueFunctions[11]
                 ],
                 optionValues,
                 valueName,

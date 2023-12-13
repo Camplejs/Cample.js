@@ -6,6 +6,7 @@ import {
   DynamicKeyObjectType,
   KeyValuesType,
   RenderedKeyType,
+  ValueKeyStringType,
   ValuesType
 } from "../../../types/types";
 import { renderKey } from "../render/render-key";
@@ -34,6 +35,9 @@ export const parseKey = (
     (...args: any[]) => string,
     (...args: any[]) => void,
     (...args: any[]) => string,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
+    (...args: any[]) => void,
     (...args: any[]) => void,
     (...args: any[]) => void,
     (...args: any[]) => void,
@@ -83,15 +87,38 @@ export const parseKey = (
       originType = 3;
       break;
   }
+  const isValSingle = val?.length === 1;
   const keyObj: CurrentKeyType = {
     originKey,
     key: isValue ? (renderedKey as string) : key,
     originType,
     isProperty,
     isClass,
-    values: val,
     isValue
   };
+  if (isValue) {
+    if (isValSingle) {
+      const keyObjValuesValue = (val as KeyValuesType)[0];
+      keyObj.values = keyObjValuesValue;
+      keyObj.render = valueFunctions[8];
+      const setRender = (val: ValueKeyStringType) => {
+        const { valueClass } = val;
+        if (checkObject(valueClass.value)) {
+          valueClass.render = valueFunctions[7];
+        }
+      };
+      const currentValues = keyObjValuesValue.values;
+      if (Array.isArray(currentValues)) {
+        for (let i = 0; i < currentValues.length; i++) {
+          const currentVal = currentValues[i];
+          setRender(currentVal);
+        }
+      } else setRender(currentValues);
+    } else {
+      keyObj.values = val;
+      keyObj.render = valueFunctions[9];
+    }
+  }
   if (properties && properties.length) {
     keyObj.properties = properties;
   }
