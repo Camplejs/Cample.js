@@ -10,6 +10,7 @@ import {
   ValuesType
 } from "../../../types/types";
 import { renderKey } from "../render/render-key";
+import { renderKeyData } from "../render/render-key-data";
 import { parseValues } from "./parse-values";
 
 const validateIsValue = (
@@ -96,6 +97,17 @@ export const parseKey = (
     isClass,
     isValue
   };
+  if (properties && properties.length) {
+    keyObj.properties = properties;
+    if (properties.length === 1) {
+      const prop = properties[0];
+      keyObj.render = (data: any) => data[prop];
+    } else {
+      keyObj.render = (data: any) => renderKeyData(data, properties);
+    }
+  } else {
+    keyObj.render = valueFunctions[2];
+  }
   if (isValue) {
     if (isValSingle) {
       const keyObjValuesValue = (val as KeyValuesType)[0];
@@ -118,9 +130,6 @@ export const parseKey = (
       keyObj.values = val;
       keyObj.render = valueFunctions[9];
     }
-  }
-  if (properties && properties.length) {
-    keyObj.properties = properties;
   }
   return keyObj;
 };

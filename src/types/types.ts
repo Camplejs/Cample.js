@@ -234,7 +234,6 @@ export type EachDynamicNodeComponentType = {
   nodes: Array<NodeType>;
   nodeNext: DynamicNodeComponentNodeType;
   nodePrevious: DynamicNodeComponentNodeType;
-  nodeParentNode: DynamicNodeComponentParentNodeType;
   id: number;
 };
 export type ImportDataType = {
@@ -378,7 +377,7 @@ export type CurrentKeyType = {
   key: string;
   properties?: Array<string>;
   values?: KeyValuesType | KeyValuesValueType;
-  render?: (...args: any[]) => void;
+  render?: (...args: any[]) => any;
   isProperty?: boolean;
   originType: number;
   isClass?: boolean;

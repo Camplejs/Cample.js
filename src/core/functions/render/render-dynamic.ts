@@ -1,7 +1,6 @@
 "use-strict";
 
 import { CurrentKeyType } from "../../../types/types";
-import { renderKeyData } from "./render-key-data";
 import { renderValues } from "./render-values";
 
 export const renderDynamic = (
@@ -10,7 +9,7 @@ export const renderDynamic = (
   importData: any,
   eachIndex: number | undefined
 ) => {
-  if (key.isValue) {
+  if (key.isValue === true) {
     const str = {
       value: ""
     };
@@ -19,9 +18,9 @@ export const renderDynamic = (
   } else {
     switch (key.originType) {
       case 1:
-        return renderKeyData(data, key.properties);
+        return (key.render as any)(data);
       case 2:
-        return renderKeyData(importData, key.properties);
+        return (key.render as any)(importData);
       case 3:
         return eachIndex;
       default:
