@@ -11,13 +11,11 @@ import { createError, testRegex, testValuesRegex } from "../../../shared/utils";
 import {
   AttributesValType,
   CurrentKeyType,
-  DynamicKeyObjectArrayType,
   DynamicNodesObjectType,
   EventEachGetDataType,
   EventEachGetFunctionType,
   EventGetDataType,
   IndexObjNode,
-  NodeDOMType,
   ValueItemsType,
   ValueType,
   ValueValueType,
@@ -28,7 +26,6 @@ import { parseKey } from "../parse/parse-key";
 import { renderEventKey } from "../render/render-event-key";
 
 export const renderEl = (
-  nodeDom: NodeDOMType,
   valueFunctions: [
     (...args: any[]) => string,
     (...args: any[]) => string,
@@ -43,15 +40,12 @@ export const renderEl = (
     (...args: any[]) => void,
     (...args: any[]) => void
   ],
-  filtredKeys: DynamicKeyObjectArrayType,
   eventArray: any[],
   el: Element,
-  idElement: number,
   getEventsData: EventGetDataType | EventEachGetDataType,
   newNode: IndexObjNode,
   dynamicNodesObj: DynamicNodesObjectType,
   id: number,
-  isEach: boolean | undefined,
   values: ValuesTemplateType,
   optionValues?: ValuesType,
   valueName?: string,

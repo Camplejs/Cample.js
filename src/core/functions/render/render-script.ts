@@ -4,28 +4,23 @@ import {
   ScriptType,
   FunctionsType,
   ScriptFunctionType,
-  ScriptOptionsType,
   DataType,
-  ScriptArgumentsType,
-  ScriptElementsType
+  ScriptArgumentsType
 } from "../../../types/types";
 
 export const renderScript = (
+  element: Element | null,
   data: DataType | undefined,
   script: ScriptType,
-  functions: FunctionsType,
-  exportData: DataType | undefined,
-  currentElements?: ScriptElementsType
+  functions?: FunctionsType,
+  exportData?: DataType
 ): void => {
   let scripts: ScriptFunctionType;
-  let options: ScriptOptionsType = {};
   const createScriptArguments = (
-    currentElements: ScriptElementsType,
-    currentFunctions: FunctionsType,
-    currentData: DataType | undefined
+    currentFunctions?: FunctionsType
   ): ScriptArgumentsType => {
     return {
-      elements: currentElements,
+      element,
       functions: currentFunctions,
       currentData: data,
       importedData: exportData
@@ -33,21 +28,12 @@ export const renderScript = (
   };
   if (Array.isArray(script)) {
     scripts = script[0];
-    options = script[1];
-    let elements: ScriptElementsType = {};
-    if (typeof options.elements !== "undefined") {
-      elements = currentElements ? currentElements : {};
-    }
-    const scriptArguments = createScriptArguments(
-      elements,
-      functions,
-      exportData
-    );
+    const scriptArguments = createScriptArguments(functions);
     scripts(scriptArguments);
   } else {
     if (checkFunction(script)) {
       scripts = script;
-      const scriptArguments = createScriptArguments({}, functions, exportData);
+      const scriptArguments = createScriptArguments(functions);
       scripts(scriptArguments);
     } else {
       createError("Script is an array or a function");

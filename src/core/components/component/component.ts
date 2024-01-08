@@ -12,8 +12,6 @@ import {
   DataType,
   DataFunctionType,
   ExportIdType,
-  DynamicKeyObjectArrayType,
-  ScriptElementsType,
   ComponentDynamicNodeComponentType,
   ComponentRenderType,
   ExportObjectDataType,
@@ -30,20 +28,7 @@ import {
   ImportObjectArrayType,
   DataIndexesObjectType,
   ExportTemplateFunctionArrayType,
-  FunctionsType,
-  FunctionsOptionValueType,
-  ValuesTemplateType,
-  EachTemplateType,
-  DynamicDataValueType,
-  NodeValuesType,
-  CurrentKeyType,
-  AttributesValType,
-  NodeTextType,
-  ValueType,
-  FunctionEventType,
-  NodeValueType,
-  IndexObjNode,
-  RenderNodeFunctionType
+  FunctionsType
 } from "../../../types/types";
 import {
   checkFunction,
@@ -51,7 +36,6 @@ import {
   concatObjects,
   createError,
   createWarning,
-  filterDuplicateArrObj,
   getData
 } from "../../../shared/utils";
 import { renderFunctionsData } from "../../functions/render/render-functions-data";
@@ -61,17 +45,27 @@ import { renderExportId } from "../../functions/render/render-export-id";
 import { checkObject } from "../../../shared/utils";
 import { renderImport } from "../../functions/render/render-import";
 import { DataComponent } from "../data-component/data-component";
-import { createNode } from "../../functions/data/create-node";
-import { renderElements } from "../../functions/render/render-elements";
 import { createComponentDynamicNodeComponentType } from "../../functions/data/create-component-dynamic-node-component";
-import { renderDynamicKey } from "../../functions/render/render-dynamic-key";
 import { parseTemplate } from "../../functions/parse/parse-template";
-import { renderValues } from "../../functions/render/render-values";
-import { renderKeyData } from "../../functions/render/render-key-data";
-import { updateText } from "../../functions/data/update-text";
-import { updateAttributes } from "../../functions/data/update-attributes";
-import { updateClass } from "../../functions/data/update-class";
-import { cloneNode, mapArray, push, updText } from "../../../config/config";
+import { renderDynamic1 as renderDynamic } from "../../functions/render/render-dynamics";
+import {
+  renderFn0,
+  renderFn1,
+  renderFn2,
+  renderFn3,
+  renderFn5,
+  renderFn6,
+  renderFn7,
+  renderFn8,
+  renderFn9,
+  renderFn10,
+  renderFn11,
+  renderFn12
+} from "../../functions/render/render-template-functions";
+import { createElement } from "../../functions/data/create-element";
+import { renderFunction } from "../../functions/render/render-function";
+import { renderFunctions } from "../../functions/render/render-functions";
+import { renderComponentDynamicKeyData } from "../../functions/data/render-component-dynamic-key-data";
 
 export class Component extends DataComponent {
   public data: DataComponentType;
@@ -99,40 +93,13 @@ export class Component extends DataComponent {
   ): void {
     const isObjectData = checkObject(this.data);
     if (typeof this.selector !== "undefined" && !isObjectData) {
-      const setDynamicNodes = (key: string, isAllUpdate = false) => {
+      const setDynamicNodes = () => {
         const componentNodes = this._dynamic.data.data.components.map(
           (component) => component.nodes
         );
         const nodes = componentNodes.flat();
         for (const node of nodes) {
-          if (isAllUpdate) {
-            this._dynamic.dynamicNodes.push(node);
-          } else {
-            let nodeIsKey = false;
-            for (const val of node.values) {
-              if (val.type === 1 || val.type === 2) {
-                if (val.type === 1) {
-                  const value = val as NodeTextType;
-                  if (value.key.key === key) {
-                    nodeIsKey = true;
-                    break;
-                  }
-                } else {
-                  const value = val.value as AttributesValType;
-                  if ((value.keys as AttributesValType).hasOwnProperty(key)) {
-                    nodeIsKey = true;
-                    break;
-                  }
-                  if (nodeIsKey) {
-                    break;
-                  }
-                }
-              }
-            }
-            if (nodeIsKey) {
-              this._dynamic.dynamicNodes.push(node);
-            }
-          }
+          this._dynamic.dynamicNodes.push(node);
         }
       };
       const cloneExportObject = (obj1: ExportTemplateDataType) => {
@@ -160,7 +127,9 @@ export class Component extends DataComponent {
         isDynamic?: boolean
       ) => {
         let data: DataType | undefined =
-          isDynamic && oldData ? { ...oldData } : { ...this.data };
+          isDynamic && oldData !== undefined
+            ? { ...oldData }
+            : { ...this.data };
         if (isDataFunction) {
           const dataFunction: DataFunctionType = this.data as DataFunctionType;
           data = dataFunction({
@@ -193,77 +162,23 @@ export class Component extends DataComponent {
         this._dynamic.data.data.values.push(dynamicData);
         return this._dynamic.data.data.values[dynamicIndex];
       };
-      const renderDynamicNodes = (isAllUpdate = false) => {
-        if (isAllUpdate) setDynamicNodes("", true);
-        this._dynamic.dynamicNodes.forEach((e, i) => {
-          if (!e.isNew) {
-            const data = getData(this._dynamic.data.data.values, e.dataId);
-            e.values.forEach((value) => {
-              switch (value.type) {
-                case 1:
-                  const value1 = value as NodeTextType;
-                  const newData = String(
-                    renderDynamic(value1.key, data, undefined)
-                  );
-                  if (value1.value !== newData) {
-                    (value as NodeTextType).value = newData;
-                    value.render(newData);
-                  }
-                  break;
-                case 2:
-                  const attrFunc = (key: CurrentKeyType) =>
-                    renderDynamic(key, data, undefined);
-                  value.render(attrFunc);
-                  break;
-                case 4:
-                  const classFunc = (key: CurrentKeyType) =>
-                    renderDynamic(key, data, undefined);
-                  value.render(classFunc);
-                  break;
-              }
-            });
-          } else delete this._dynamic.dynamicNodes[i].isNew;
+      const renderDynamicNodes = () => {
+        setDynamicNodes();
+        this._dynamic.dynamicNodes.forEach((e) => {
+          const data = getData(this._dynamic.data.data.values, e.dataId);
+          for (const value of e.values) {
+            value.render(data, undefined, undefined, value);
+          }
         });
         this._dynamic.dynamicNodes = [];
-      };
-      const setNode = (
-        values: NodeValuesType,
-        index: number,
-        id: number,
-        currentComponent: ComponentDynamicNodeComponentType | undefined
-      ) => {
-        const node = createNode(values, index, id, true);
-        if (currentComponent) {
-          currentComponent.nodes.push(node);
-        }
-      };
-      const renderDynamic = (
-        key: CurrentKeyType,
-        data: any,
-        importData: any
-      ) => {
-        if (!key.isValue) {
-          const firstKeyData = data[key.originKey];
-          return key.isProperty
-            ? renderKeyData(firstKeyData, key.properties as Array<string>)
-            : firstKeyData;
-        } else {
-          const str = {
-            value: ""
-          };
-          renderValues(str, key, data, importData, undefined);
-          return str.value;
-        }
       };
       const newFunction = (
         attribute: any,
         key: string,
         id: IdType,
-        index: number,
-        keys: DynamicKeyObjectArrayType
+        index: number
       ) => {
-        const renderNewFunction = (currentKey: string) => {
-          setDynamicNodes(currentKey);
+        const renderNewFunction = () => {
           try {
             renderDynamicNodes();
           } catch (err) {
@@ -272,11 +187,10 @@ export class Component extends DataComponent {
           }
           renderFunctionsData(
             updateFunction,
-            false,
             id,
             this.dataFunctions,
             index,
-            keys
+            false
           );
         };
         if (id !== undefined) {
@@ -290,13 +204,7 @@ export class Component extends DataComponent {
               const val = this._dynamic.data.data.values[index]!.value!;
               if (checkObject(dataIndex) && val.hasOwnProperty(key)) {
                 val[key] = attribute;
-                renderNewFunction(key);
-                for (const currentKey of keys) {
-                  const joinedKey = `${
-                    currentKey.key
-                  }.${currentKey.properties.join(".")}`;
-                  renderNewFunction(joinedKey);
-                }
+                renderNewFunction();
                 const currentComponent = getComponent(index);
                 renderDynamicExportData(currentComponent, index);
                 const exportData = currentComponent.exportData;
@@ -311,7 +219,7 @@ export class Component extends DataComponent {
         } else {
           if (this.data && key && this.data[key]) {
             this.data[key] = attribute;
-            renderNewFunction(key);
+            renderNewFunction();
           }
         }
       };
@@ -341,18 +249,6 @@ export class Component extends DataComponent {
         }
         currentComponent.exportData = newExportData;
       };
-      const renderFunction = (functions: FunctionsType, val: any) => {
-        let funcUser = undefined;
-        if (val.length === 2) {
-          const functionName = val[1];
-          if (functions.hasOwnProperty(functionName)) {
-            const func = functions[functionName];
-            const exportFunc = val[0];
-            funcUser = exportFunc.bind(this, func);
-          } else createError(`Function ${functionName} not found`);
-        } else createError("Data error");
-        return funcUser;
-      };
       const getExportObjectData = (
         obj: ExportTemplateDataType,
         indexesValue: DataIndexesObjectType | undefined,
@@ -362,12 +258,11 @@ export class Component extends DataComponent {
         const newObjectData = cloneExportObject(obj);
         const renderNewData = (value: string) => {
           // const values = getValues(index);
-          const dataArray = renderDynamicKey(
+          const val = renderComponentDynamicKeyData(
             getData(this._dynamic.data.data.values, index),
             value
           );
-          const newData = dataArray[0];
-          return newData;
+          return val;
         };
         for (const [key, value] of Object.entries(newObjectData)) {
           if (key === "data" || key === "functions") {
@@ -547,10 +442,9 @@ export class Component extends DataComponent {
       const updateFunction = (
         name: string,
         key: string,
-        isRender = false,
         id: IdType,
         index: number,
-        keys: DynamicKeyObjectArrayType
+        isRender = false
       ) => {
         const updateData = (attr = getDefaultData(id, key)) => {
           return attr;
@@ -561,15 +455,9 @@ export class Component extends DataComponent {
         } else {
           component.dataFunctions[name] = (attribute: any = updateData) => {
             if (typeof attribute === "function") {
-              newFunction(
-                attribute(getDefaultData(id, key)),
-                key,
-                id,
-                index,
-                keys
-              );
+              newFunction(attribute(getDefaultData(id, key)), key, id, index);
             } else {
-              newFunction(attribute, key, id, index, keys);
+              newFunction(attribute, key, id, index);
             }
           };
         }
@@ -578,8 +466,7 @@ export class Component extends DataComponent {
         e: Element | null,
         start: StartType,
         importData: DataType | undefined,
-        index: number,
-        elements?: ScriptElementsType
+        index: number
       ) => {
         if (typeof this.script !== "undefined") {
           const component = getComponent(index);
@@ -587,31 +474,31 @@ export class Component extends DataComponent {
           if (Array.isArray(this.script)) {
             if (this.script[1].start === start) {
               renderScript(
+                e,
                 oldData,
                 this.script,
                 component?.dataFunctions,
-                importData,
-                elements
+                importData
               );
             } else {
               if (this.script[1].start === undefined && start === "afterLoad") {
                 renderScript(
+                  e,
                   oldData,
                   this.script,
                   component?.dataFunctions,
-                  importData,
-                  elements
+                  importData
                 );
               }
             }
           } else {
             if (start === "afterLoad")
               renderScript(
+                e,
                 oldData,
                 this.script,
                 component?.dataFunctions,
-                importData,
-                elements
+                importData
               );
           }
         }
@@ -822,194 +709,10 @@ export class Component extends DataComponent {
         };
         this.exportDataObjects.push(exportObject);
       };
-      const cloneTemplate = (obj1: TemplateExportValueType) => {
-        const newObj: TemplateExportValueType = {};
-        Object.entries(obj1).forEach(([key, value]) => {
-          if (key === "data") {
-            if (!newObj.data) {
-              newObj.data = {};
-            }
-            newObj.data = cloneJSON(obj1.data as object);
-          } else if (key === "functions") {
-            if (!newObj.functions) {
-              newObj.functions = {};
-            }
-            Object.entries(value).forEach(([newKey, newValue]) => {
-              newObj.functions![newKey] = [
-                ...(newValue as FunctionsOptionValueType)
-              ];
-            });
-          } else
-            createError("Template data contains data or functions properties");
-        });
-        return newObj;
-      };
-      const renderComponentTemplate = (
-        valueExport: string,
-        index: number,
-        componentName: string
-      ) => {
-        if (this.export) {
-          const template: TemplateExportValueType = cloneTemplate(
-            this.export[valueExport]
-          );
-          const currentExportObject = getExportObject(index);
-          const indexesValue: IndexValuesType = {
-            data: {},
-            functions: {}
-          };
-          let importIndex: number | undefined = undefined;
-          if (currentExportObject) {
-            const newExportObject = renderExportObject(
-              componentName,
-              currentExportObject.data,
-              template,
-              indexesValue
-            );
-            const exportObject = getExportObject(index);
-            exportObject!.data = newExportObject;
-            importIndex = exportObject?.index;
-          } else {
-            createExportObject(index, componentName, template, indexesValue);
-            importIndex = index;
-          }
-          if (currentExportObject) {
-            const oldIndexesData = currentExportObject.indexesData;
-            const indexesData = renderIndexesValue(
-              oldIndexesData,
-              componentName,
-              indexesValue
-            );
-            currentExportObject.indexesData = indexesData;
-          }
-          const importObject = { ...template };
-
-          const importString = renderImportString(
-            importObject,
-            index,
-            indexesValue,
-            importIndex
-          );
-          return importString;
-        } else {
-          createError("TemplateExport is required");
-        }
-      };
-      const createElement = (
-        index: number,
-        data: DynamicDataValueType,
-        dataId: number,
-        templateEl: EachTemplateType | undefined,
-        currentComponent: ComponentDynamicNodeComponentType,
-        filtredKeys: DynamicKeyObjectArrayType
-      ) => {
-        if (templateEl && templateEl.el) {
-          const {
-            nodes: templateNodes,
-            values: templateValues,
-            el: templateElemenet
-          } = templateEl;
-          const el = cloneNode.call(templateElemenet, true);
-          const nodes: Array<IndexObjNode | ChildNode | null> = [];
-          push.call(nodes, el as ChildNode);
-          for (let i = 0; i < templateNodes.length; i++) {
-            const templateNode = templateNodes[i];
-            const { render, rootId } = templateNode;
-            push.call(
-              nodes,
-              (render as RenderNodeFunctionType).call(nodes[rootId])
-            );
-          }
-          const values: ValuesTemplateType = mapArray.call(
-            templateValues,
-            (o) => {
-              return {
-                ...o
-              } as ValueType;
-            }
-          ) as ValuesTemplateType;
-          const attrFunc = (key: CurrentKeyType) =>
-            renderDynamic(key, data, undefined);
-          const newValues: NodeValuesType = [];
-          for (const val of values) {
-            const node = nodes[val.id as number] as Element;
-            switch (val.type) {
-              case 0:
-                const { render } = val;
-                (render as FunctionEventType)(node);
-                break;
-              case 1:
-                const newData = String(
-                  renderDynamic(val.key as CurrentKeyType, data, undefined)
-                );
-                const texts = (val.texts as (number | Text)[]).map((e) => {
-                  const node = nodes[e as number] as Text;
-                  updText.call(node, newData);
-                  return node;
-                });
-                newValues.push({
-                  render: (value: any = undefined) => updateText(value, texts),
-                  type: 1,
-                  key: val.key,
-                  value: newData
-                } as NodeValueType);
-                break;
-              case 2:
-                const fn = (fnNew: any, keys?: DynamicKeyObjectArrayType) =>
-                  updateAttributes(node, val, fnNew, keys);
-                fn(attrFunc, filtredKeys);
-                newValues.push({
-                  render: fn,
-                  ...(val as AttributesValType)
-                } as NodeValueType);
-                break;
-              case 3:
-                const componentName = node.getAttribute("data-cample");
-                const keyImportString = val.value;
-                if (keyImportString && componentName) {
-                  const newImportString = renderComponentTemplate(
-                    keyImportString,
-                    index,
-                    componentName
-                  );
-                  renderImport(node, undefined, newImportString);
-                } else {
-                  createError("Render export error");
-                }
-                break;
-              case 4:
-                const fnClass = (fnNew: any) => updateClass(node, val, fnNew);
-                fnClass(attrFunc);
-                push.call(newValues, {
-                  render: fnClass,
-                  type: 4,
-                  value: val
-                });
-                break;
-            }
-          }
-          if (el) {
-            currentComponent.exportObject = getExportObject(dataId);
-            this._dynamic.data.data.currentId += 1;
-          } else {
-            renderFunctionsData(
-              updateFunction,
-              true,
-              undefined,
-              this.dataFunctions,
-              index,
-              []
-            );
-          }
-          setNode(newValues, index, dataId, currentComponent);
-          return el as Element;
-        }
-        return null;
-      };
       const getEventsData = (key: string, dataId: number) => {
         const currentData = getData(this._dynamic.data.data.values, dataId);
-        const dataArray = renderDynamicKey(currentData, key, false);
-        return dataArray[0];
+        const val = renderComponentDynamicKeyData(currentData, key);
+        return val;
       };
       const updateData = (
         id: number,
@@ -1039,8 +742,8 @@ export class Component extends DataComponent {
         if (!keyEl) createError("key error");
         const getEventData = () => {
           const currentData = getData(this._dynamic.data.data.values, dataId);
-          const dataArray = renderDynamicKey(currentData, key, false);
-          return dataArray[0];
+          const val = renderComponentDynamicKeyData(currentData, key);
+          return val;
         };
         if (functions && Object.keys(functions).length) {
           if (key in functions) {
@@ -1059,20 +762,9 @@ export class Component extends DataComponent {
       ) => {
         updateData(index, importData, isDataFunction);
         try {
-          renderDynamicNodes(true);
+          renderDynamicNodes();
         } catch (err) {
           createError(`${err}`);
-        }
-      };
-      const renderFunctions = (
-        functionsObject: FunctionsType,
-        functions: FunctionsType
-      ) => {
-        for (const functionName in this.functions) {
-          functionsObject[functionName] = renderFunction(
-            functions,
-            this.functions[functionName]
-          );
         }
       };
       const trim = (trimHTML && this.trimHTML === undefined) || this.trimHTML;
@@ -1106,37 +798,42 @@ export class Component extends DataComponent {
             const isDataFunction = this.data && checkFunction(this.data);
             renderScriptsAndStyles(e, "beforeLoad", importData, index);
             const functionsArray: FunctionsArray = [];
-            const scriptOptionElements = renderElements(this.script);
-            functionsArray.push(
-              (el: Element | null, elements?: ScriptElementsType) =>
-                renderScriptsAndStyles(
-                  el,
-                  "afterLoad",
-                  importData,
-                  index,
-                  elements
-                )
+            functionsArray.push((el: Element | null) =>
+              renderScriptsAndStyles(el, "afterLoad", importData, index)
             );
             const currentId = this._dynamic.data.data.currentId;
             const data = setData(currentId, importData, isDataFunction)?.value;
-            const setDataFunctions = (filtredKeys: DynamicKeyObjectArrayType) =>
+            const setDataFunctions = () =>
               renderFunctionsData(
                 updateFunction,
-                true,
                 this._dynamic.data.data.currentId,
                 this.dataFunctions,
                 index,
-                filterDuplicateArrObj(filtredKeys)
+                true
               );
             const currentComponent: ComponentDynamicNodeComponentType =
               setDynamicNodeComponentType(index, importObject);
             const runRenderFunction = () =>
               renderFunctions(
                 currentComponent.functions,
-                currentComponent.dataFunctions
+                currentComponent.dataFunctions,
+                this.functions
               );
-            const { filtredKeys, obj: newTemplateObj } = parseTemplate(
-              [] as any,
+            const { obj: newTemplateObj } = parseTemplate(
+              [
+                renderFn1,
+                renderFn2,
+                renderFn3,
+                renderFn0,
+                renderFn5,
+                renderFn6,
+                renderFn7,
+                renderFn8,
+                renderFn9,
+                renderFn10,
+                renderFn11,
+                renderFn12
+              ],
               this.template as string,
               index,
               currentId,
@@ -1153,21 +850,39 @@ export class Component extends DataComponent {
                 createExportObject(index);
               }
             }
-            const el = createElement(
-              index,
+            const exportFunctions = {
+              getExportObject,
+              renderExportObject,
+              createExportObject,
+              renderIndexesValue,
+              renderImportString
+            };
+            const { el, currentNode } = createElement(
+              renderDynamic,
               data,
+              index,
               currentId,
               newTemplateObj,
-              currentComponent,
-              filtredKeys
+              undefined,
+              undefined,
+              undefined,
+              exportFunctions,
+              this.export
             );
-            renderHTML(
-              e,
-              el,
-              functionsArray,
-              "component",
-              scriptOptionElements
-            );
+            if (currentNode) currentComponent.nodes.push(currentNode);
+            if (el) {
+              currentComponent.exportObject = getExportObject(currentId);
+              this._dynamic.data.data.currentId += 1;
+            } else {
+              renderFunctionsData(
+                updateFunction,
+                undefined,
+                this.dataFunctions,
+                index,
+                true
+              );
+            }
+            renderHTML(e, el, functionsArray, "component");
             renderExportData(index);
           });
       }

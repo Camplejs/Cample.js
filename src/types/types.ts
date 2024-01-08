@@ -85,7 +85,7 @@ export type EachTemplateFunction = (
   index?: number
 ) => string;
 
-export type EachDataValueType = EachDataObjectType | Array<any>;
+export type EachDataValueType = Array<any>;
 
 export type EachDataFunctionType = (
   argument?: DataFunctionArgumentsType
@@ -132,14 +132,20 @@ export type DynamicFunctionsType = {
 
 export type DataComponentType = DataType | DataFunctionType | undefined;
 
-export type DynamicDataValueType = DataComponentType | EachDataValueType;
-
 export type DynamicDataType = {
-  value: DynamicDataValueType;
-  oldValue?: DynamicDataValueType;
+  value: DataComponentType;
+  oldValue?: DataComponentType;
   importData?: ImportDataType;
   id: number;
 };
+
+export type DynamicEachDataType = {
+  value: EachDataValueType;
+  oldValue?: EachDataValueType;
+  importData?: ImportDataType;
+  id: number;
+};
+
 export type ElementIndexType = {
   id: number;
   path: Array<number>;
@@ -226,11 +232,14 @@ export type EachTemplateType = {
 export type ElementsType = Element[];
 export type DynamicNodeComponentNodeType = ChildNode | null | undefined;
 export type DynamicNodeComponentParentNodeType = ParentNode | null | undefined;
+export type DynamicDataValueType = DataComponentType | EachDataValueType;
 export type EachDynamicNodeComponentType = {
   import?: ImportObjectType;
   parentNode: ParentNode;
   template?: EachTemplateType;
   keys?: ArrayStringType;
+  dataFunctions: FunctionsType;
+  functions: FunctionsType;
   nodes: Array<NodeType>;
   nodeNext: DynamicNodeComponentNodeType;
   nodePrevious: DynamicNodeComponentNodeType;
@@ -285,19 +294,16 @@ export type DynamicNodeComponentType =
 
 export type LastNodeType = Element | ChildNode | ParentNode;
 
-export type ScriptElementsType = {
-  [key: string]: Element | null | Array<Element | null>;
-};
 export type ScriptArgumentsType = {
-  elements: ScriptElementsType;
-  functions: FunctionsType;
+  element: Element | null;
+  functions: FunctionsType | undefined;
   currentData: DataType | undefined;
   importedData?: DataType;
 };
 
 export type DynamicType = {
   data: {
-    values: Array<DynamicDataType>;
+    values: Array<DynamicDataType | DynamicEachDataType>;
     components: Array<DynamicNodeComponentType>;
     currentId: number;
   };
@@ -352,13 +358,30 @@ export type DynamicAttributesType = Array<AttributesValObjType>;
 
 export type OperandType = {
   value: KeyValuesValueConditionType | CurrentKeyType;
+  priority?: number;
+  type?: number;
+  oldType?: number;
   render: (...args: any[]) => any;
 };
-export type KeyValuesValueConditionType = {
-  operands: Array<OperandType>;
-  render: (...args: any[]) => boolean;
+export type OperationType = {
+  value: number;
+  priority?: number;
+  render: (...args: any[]) => any;
 };
-export type RenderConditionType = (operand1: any, operand2?: any) => boolean;
+
+export type ConnectingOperationType = {
+  priority: number;
+  value: OperationType | OperandType;
+};
+export type KeyValuesValueConditionType = {
+  operands: Array<OperandType | OperationType | KeyValuesValueConditionType>;
+  priority?: number;
+  oldBracketType?: number;
+  isFirstOperation?: boolean;
+  connectingOperations?: ConnectingOperationType[];
+  render?: (...args: any[]) => boolean;
+};
+export type RenderConditionType = (...args: any[]) => any;
 export type ValueKeyStringType = {
   valueClass: {
     value: ValueItemType | Array<ValueItemType>;
@@ -541,15 +564,10 @@ export type DataType = {
   [key: string]: any | DataPropertyType;
 };
 
-export type ElementsOptionsType = {
-  [key: string]: string;
-};
-
 export type StartType = "afterLoad" | "beforeLoad";
 
 export type ScriptOptionsType = {
   start?: StartType;
-  elements?: ElementsOptionsType;
 };
 
 export type ExportDataArrayType = Array<ExportDataType | undefined>;

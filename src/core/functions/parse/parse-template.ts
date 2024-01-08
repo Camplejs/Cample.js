@@ -15,7 +15,6 @@ import {
 } from "../../../shared/utils";
 import {
   CurrentKeyType,
-  DynamicKeyObjectArrayType,
   DynamicNodesObjectType,
   DynamicTextType,
   EachTemplateType,
@@ -56,7 +55,7 @@ export const parseTemplate = (
   trim?: boolean,
   getEventsData?: any,
   getEventsFunction?: EventEachGetFunctionType,
-  setDataFunctions?: (filtredKeys: DynamicKeyObjectArrayType) => void,
+  setDataFunctions?: () => void,
   renderFunctions?: () => void,
   functions?: FunctionsType,
   valueName?: string,
@@ -64,11 +63,9 @@ export const parseTemplate = (
   indexName?: string,
   isEach?: boolean
 ): {
-  filtredKeys: DynamicKeyObjectArrayType;
   obj: EachTemplateType;
 } => {
   const el = getElement(template, trim);
-  const filtredKeys: DynamicKeyObjectArrayType = [];
   const firstNode: IndexObjNode = { rootId: 0, id: 0 };
   const stackNodes = [firstNode];
   const dynamicNodesObj: DynamicNodesObjectType = {};
@@ -150,23 +147,19 @@ export const parseTemplate = (
     if (node.nodeType === Node.ELEMENT_NODE) {
       parseText(node as Element);
       renderEl(
-        domSiblingNode,
         valueFunctions,
-        filtredKeys,
         eventArray,
         node as Element,
-        i,
         getEventsData,
         newNode,
         dynamicNodesObj,
         id,
-        isEach,
         obj.values,
         values,
         valueName,
         importedDataName,
         indexName,
-        id === 0 && isEach,
+        isEach,
         obj.key,
         getEventsFunction
       );
@@ -224,10 +217,6 @@ export const parseTemplate = (
               key: renderedKey,
               texts: [i]
             };
-            filtredKeys.push({
-              key: renderedKey.originKey,
-              properties: renderedKey.properties ?? []
-            });
             const nodeObj = {
               type: 1,
               ...dynamicText
@@ -360,7 +349,7 @@ export const parseTemplate = (
       }
     } else fnAlgorithm.push(render);
   }
-  setDataFunctions?.(filtredKeys);
+  setDataFunctions?.();
   renderFunctions?.();
   for (const {
     elId,
@@ -373,18 +362,12 @@ export const parseTemplate = (
     id,
     key
   } of eventArray) {
-    const fn = isEach
-      ? (getEventsFunction as EventEachGetFunctionType)?.(
-          renderedKey.key,
-          id,
-          key
-        )
-      : (getEventsFunction as EventEachGetFunctionType)?.(
-          renderedKey.key,
-          id,
-          key,
-          functions
-        );
+    const fn = (getEventsFunction as EventEachGetFunctionType)?.(
+      renderedKey.key,
+      id,
+      key,
+      functions
+    );
     if (!checkFunction(fn)) createError("Data key is of function type");
     const setEvent = (element: Element, keyEl?: string) => {
       renderListeners(element, fn, args, keyEvent, (key: string) =>
@@ -424,5 +407,5 @@ export const parseTemplate = (
     }
   }
   obj.nodes.shift();
-  return { filtredKeys, obj };
+  return { obj };
 };

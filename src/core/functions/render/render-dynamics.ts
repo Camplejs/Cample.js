@@ -1,9 +1,23 @@
 "use-strict";
 
 import { CurrentKeyType } from "../../../types/types";
+import { renderKeyData } from "./render-key-data";
 import { renderValues } from "./render-values";
-
-export const renderDynamic = (
+export const renderDynamic1 = (key: CurrentKeyType, data: any) => {
+  if (!key.isValue) {
+    const firstKeyData = data[key.originKey];
+    return key.isProperty
+      ? renderKeyData(firstKeyData, key.properties as Array<string>)
+      : firstKeyData;
+  } else {
+    const str = {
+      value: ""
+    };
+    renderValues(str, key, data, undefined, undefined);
+    return str.value;
+  }
+};
+export const renderDynamic2 = (
   key: CurrentKeyType,
   data: any,
   importData: any,

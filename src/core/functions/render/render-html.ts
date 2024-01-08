@@ -1,20 +1,13 @@
 "use-strict";
 import { appendChild } from "../../../config/config";
 import { createError } from "../../../shared/utils";
-import {
-  ElementsOptionsType,
-  FunctionsArray,
-  RenderComponentType,
-  ScriptElementsType
-} from "../../../types/types";
-import { renderScriptElements } from "./render-script-elements";
+import { FunctionsArray, RenderComponentType } from "../../../types/types";
 
 export const renderHTML = (
   e: Element,
   template: Element | null,
   functions: FunctionsArray,
-  renderType: RenderComponentType,
-  elements?: ElementsOptionsType
+  renderType: RenderComponentType
 ) => {
   if (e instanceof HTMLTemplateElement) {
     const content = e.content;
@@ -29,10 +22,6 @@ export const renderHTML = (
             content.childNodes[0].nodeType === Node.ELEMENT_NODE &&
             content.firstElementChild
           ) {
-            let elementsObject: ScriptElementsType = {};
-            if (renderType === "component" && elements) {
-              elementsObject = renderScriptElements(elements, content);
-            }
             parent.insertBefore(content.firstElementChild, e);
             const el = e.previousElementSibling;
             parent.removeChild(e);
@@ -40,7 +29,7 @@ export const renderHTML = (
               if (i === 0 && renderType === "each") {
                 return func(el?.parentNode);
               } else if (i === 0 && renderType === "component") {
-                return func(el, elementsObject);
+                return func(el);
               } else return func(el);
             });
           } else {

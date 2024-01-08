@@ -9,9 +9,11 @@ import {
   ExportCampleDataType,
   ExportDataValueType,
   ExportIdType,
+  FunctionsOptionValueType,
   ImportObjectStringType,
   ImportObjectType,
-  IndexObjNode
+  IndexObjNode,
+  TemplateExportValueType
 } from "./../types/types";
 
 import { ArrayStringType, ExportDataType } from "../types/types";
@@ -211,6 +213,26 @@ export const getTextKey = (text: string) => {
     return str;
   });
   return key;
+};
+
+export const cloneTemplate = (obj1: TemplateExportValueType) => {
+  const newObj: TemplateExportValueType = {};
+  Object.entries(obj1).forEach(([key, value]) => {
+    if (key === "data") {
+      if (!newObj.data) {
+        newObj.data = {};
+      }
+      newObj.data = cloneJSON(obj1.data as object);
+    } else if (key === "functions") {
+      if (!newObj.functions) {
+        newObj.functions = {};
+      }
+      Object.entries(value).forEach(([newKey, newValue]) => {
+        newObj.functions![newKey] = [...(newValue as FunctionsOptionValueType)];
+      });
+    } else createError("Template data contains data or functions properties");
+  });
+  return newObj;
 };
 
 export const swapElements = (

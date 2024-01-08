@@ -21,6 +21,8 @@ export const createEachDynamicNodeComponentType = (
     import: currentImport,
     elements,
     nodePrevious,
+    functions: {},
+    dataFunctions: {},
     nodes: [],
     nodeNext,
     template,
