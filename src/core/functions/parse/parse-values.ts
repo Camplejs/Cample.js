@@ -722,7 +722,6 @@ const parseValue = (
       });
   }
   const isObject = valueClass.length === 1;
-
   return {
     valueClass: {
       value: isObject ? valueClass[0] : valueClass,

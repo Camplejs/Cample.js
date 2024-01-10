@@ -27,7 +27,8 @@ export const renderFn1 = (
   let str = "";
   for (const val of value) {
     const { value: currentVal, render } = val;
-    str += render(currentVal, indexData, importData, eachIndex);
+    const prop = render(currentVal, indexData, importData, eachIndex);
+    str = concat.call(str, " ", prop).trim();
   }
   return str;
 };
@@ -107,14 +108,10 @@ export const renderFn9 = (
   eachIndex?: number
 ) => {
   const length = currentValues.length;
-  const lastIndex = length - 1;
   for (let i = 0; i < length; i++) {
     const { value, render } = currentValues[i];
     const prop = render(value, data, importData, eachIndex);
-    str.value =
-      i !== lastIndex
-        ? concat.call(str.value, " ", prop)
-        : concat.call(str.value, prop);
+    str.value = concat.call(str.value, " ", prop).trim();
   }
 };
 export const renderFn10 = (
