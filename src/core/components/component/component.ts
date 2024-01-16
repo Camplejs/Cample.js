@@ -736,10 +736,9 @@ export class Component extends DataComponent {
       const getEventsFunction = (
         key: string,
         dataId: number,
-        keyEl: string | undefined,
+        _: string | undefined,
         functions?: FunctionsType
       ) => {
-        if (!keyEl) createError("key error");
         const getEventData = () => {
           const currentData = getData(this._dynamic.data.data.values, dataId);
           const val = renderComponentDynamicKeyData(currentData, key);

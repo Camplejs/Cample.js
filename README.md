@@ -3,7 +3,7 @@
         <img width="400" height="400" src="https://github.com/Camplejs/media/blob/main/logo_transparent.png" alt="cample" >
     </a>
 </p>
-<h1 align="center">Cample.js - just a fast javascript framework.</h1>
+<h1 align="center">Cample.js - fast modern javascript framework.</h1>
 <h3 align="center">Reactivity without Virtual DOM!</h3>
 <div align="center">
 
@@ -60,7 +60,7 @@ const newComponent = component("new-component", "<span>component</span>");
 
 const newCample = cample("#page");
 newCample.render(
-`
+  `
     <div class="content">
         {{newComponent}}
     </div>

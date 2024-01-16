@@ -1,7 +1,7 @@
 {
   "name": "cample",
-  "version": "3.2.0-alpha.1",
-  "description": "Cample.js - just a fast javascript framework. Reactivity without virtual DOM!",
+  "version": "3.2.0-alpha.2",
+  "description": "Cample.js - fast modern javascript framework. Reactivity without virtual DOM!",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

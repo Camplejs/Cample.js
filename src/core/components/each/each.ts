@@ -778,7 +778,7 @@ export class Each extends DataComponent {
           keyEl: string | undefined,
           _: number
         ) => {
-          if (!keyEl) createError("key error");
+          if (keyEl === undefined) createError("key error");
           const currentComponent = getCurrentComponent(
             this._dynamic.data.data.components,
             dataId
