@@ -444,7 +444,7 @@ export class Component extends DataComponent {
         key: string,
         id: IdType,
         index: number,
-        isRender: boolean = false
+        isRender = false
       ) => {
         const updateData = (attr = getDefaultData(id, key)) => {
           return attr;

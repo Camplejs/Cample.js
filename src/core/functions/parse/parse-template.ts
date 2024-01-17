@@ -121,7 +121,7 @@ export const parseTemplate = (
   ) => {
     i++;
     const isUndefined = isNext !== undefined;
-    let newNode: IndexObjNode = isUndefined
+    const newNode: IndexObjNode = isUndefined
       ? ({} as unknown as IndexObjNode)
       : firstNode;
     const domSiblingNode = createNodeDOM(
@@ -321,7 +321,7 @@ export const parseTemplate = (
             rootId,
             id: dynamicNodeId
           };
-          let fnDynamicNodeAlgorithm = [];
+          const fnDynamicNodeAlgorithm = [];
           const { path } = dynamicNode.node as NodeDOMType;
           for (let k = path.length - 1; k >= 0; k--) {
             const pathItem = path[k];
