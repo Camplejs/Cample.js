@@ -8,7 +8,7 @@ export const renderFunctions = (
   functionsObject: FunctionsType,
   functions: FunctionsType,
   functionsList: FunctionsOptionType | undefined,
-  isEach = false
+  isEach: boolean = false
 ) => {
   for (const functionName in functionsList) {
     if (isEach && functions.hasOwnProperty(functionName)) {

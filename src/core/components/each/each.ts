@@ -213,8 +213,7 @@ export class Each extends DataComponent {
           const template: EachTemplateType =
             currentComponent.template as EachTemplateType;
           let nodeNext = currentComponent.nodeNext as Node;
-          const nodePrevious: Element =
-            currentComponent.nodePrevious as Element;
+          let nodePrevious: Element = currentComponent.nodePrevious as Element;
           let nextElNode: CharacterData | null = null;
           const { key } = template as EachTemplateType;
           const { render: renderKey, value: keyValue } = key as ValueItemsType;
@@ -705,7 +704,7 @@ export class Each extends DataComponent {
           key: string,
           dataId: IdType,
           index: number,
-          _ = false,
+          _: boolean = false,
           currentComponent?: EachDynamicNodeComponentType
         ) => {
           const updateData = (attr = getDefaultData(dataId)) => {

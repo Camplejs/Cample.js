@@ -169,7 +169,7 @@ export const createElement = (
           eachIndex
         );
         if (str !== "") {
-          updClass.call(el, str);
+          updClass.call(node, str);
           val.old = str;
         }
         push.call(newValues, {
