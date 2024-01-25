@@ -1,36 +1,40 @@
 <p align="center">
     <a href="https://www.npmjs.com/package/cample">
-        <img width="400" height="400" src="https://github.com/Camplejs/media/blob/main/logo_transparent.png" alt="cample" >
+        <img width="200" height="200" src="https://github.com/Camplejs/media/blob/main/logo_transparent.png" alt="cample" >
     </a>
 </p>
 <h1 align="center">Cample.js - fast modern javascript framework.</h1>
-<h3 align="center">Reactivity without Virtual DOM!</h3>
 <div align="center">
 
-[![npm-version](https://img.shields.io/npm/v/cample?logo=npm&color=blue&style=flat-square)](https://www.npmjs.com/package/cample)
-[![downloads](https://img.shields.io/npm/dt/cample?color=blue&style=flat-square)](https://www.npmjs.com/package/cample)
-[![stars](https://img.shields.io/github/stars/Camplejs/Cample.js?logo=github&style=flat-square)](https://github.com/Camplejs/Cample.js)
-[![types](https://img.shields.io/npm/types/cample?logo=typescript&style=flat-square)](https://github.com/Camplejs/Cample.js)<br>
-[![license](https://img.shields.io/npm/l/cample?color=blue&style=flat-square)](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
-[![repo-size](https://img.shields.io/github/repo-size/Camplejs/Cample.js?logo=github&style=flat-square)](https://github.com/Camplejs/Cample.js)
-[![minified size](https://img.shields.io/bundlephobia/min/cample?logo=npm&style=flat-square)](https://www.npmjs.com/package/cample)
+[![npm-version](https://img.shields.io/npm/v/cample?logo=npm&color=0183ff&style=for-the-badge)](https://www.npmjs.com/package/cample)
+[![discussions](https://img.shields.io/badge/discussions-0183ff?style=for-the-badge&logo=github&labelColor=555555)](https://github.com/Camplejs/Cample.js/discussions)
+[![twitter](https://img.shields.io/badge/twitter-0183ff?style=for-the-badge&logo=x&labelColor=555555)](https://twitter.com/Camplejs)
+[![license](https://img.shields.io/npm/l/cample?color=0183ff&style=for-the-badge)](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
 
 </div>
 
-<div align="center"><b>Links:<br> <a href="https://camplejs.github.io">Website</a> • <a href="https://camplejs.github.io/documentation/introduction.html">Documentation</a> • <a href="https://camplejs.github.io/examples.html"> Examples </a> • <a href="https://codepen.io/Camplejs">Examples source</a></div>
+<div align="center"><a href="https://camplejs.github.io">Website</a> • <a href="https://camplejs.github.io/documentation/introduction.html">Documentation</a> • <a href="https://camplejs.github.io/examples.html"> Examples </a> • <a href="https://codepen.io/Camplejs">Examples source</a></div>
 <br>
 
 <div align="center"><b>Alpha version</b></div>
 
 ## Installation
 
-Install via NPM:
+To create an application, it is better to use the official cample-start command to generate a “starting point”, choosing from two currently available templates.
+
+```bash
+npx cample-start
+```
+
+The main two templates are based on two module bundlers such as Webpack and Parcel. To select one of them from the list in the terminal, you can select the most suitable one. All of them have official support.
+
+Also, to install only the framework, you can use the following command:
 
 ```bash
 npm i cample
 ```
 
-Installing via npm is currently the default. The framework can work with most modern bundlers.
+With this installation, functions will still be available directly from the module. Installation using cample-start simply specifies the start files for the application.
 
 ## Why Cample.js?
 
@@ -51,22 +55,45 @@ And a few others :)
 
 ## Getting started
 
-An instance of the Cample class is created, which is the main handler for all components.
+After setting the starting point of the application, the js file will contain the following code, or the same one, but with html import.
 
 ### JavaScript
 
 ```javascript
-const newComponent = component("new-component", "<span>component</span>");
-
-const newCample = cample("#page");
-newCample.render(
+const newComponent = component(
+  "new-component",
+  `<div class="component">
+    <div class="clicks" data-value="{{dynamicData}}">Clicks:{{dynamicData}}</div>
+    <button class="button">Click</button>
+  </div>`,
+  {
+    script: ({ element, functions }) => {
+      const button = element.querySelector(".button");
+      const updateFunction = () => {
+        functions?.updateClicks((data) => {
+          return data + 1;
+        });
+      };
+      button.addEventListener("click", updateFunction);
+    },
+    data: () => {
+      return {
+        dynamicData: 0,
+      };
+    },
+    dataFunctions: {
+      updateClicks: "dynamicData",
+    },
+  }
+);
+cample("#app", {
+  trimHTML: true,
+}).render(
   `
-    <div class="content">
-        {{newComponent}}
-    </div>
+<template data-cample="new-component"></template>
 `,
   {
-    newComponent
+    newComponent,
   }
 );
 ```
@@ -74,15 +101,24 @@ newCample.render(
 ### HTML
 
 ```html
-<div id="page"></div>
+<div id="app"></div>
 ```
 
+You can change this code to any other you want. This code is presented as an example of how the framework works.
+
 Link article: <a href="https://camplejs.github.io/documentation/getting-started.html">Getting started</a>.<br>
-See <a href="https://camplejs.github.io/documentation/introduction.html">Cample.js docs</a> for more details.
 
-## Repository
+## Reactivity
 
-[Repository](https://github.com/Camplejs/Cample.js)
+Reactivity in the framework is understood as the ability, in response to data changes, to automatically update parts of the javascript code or HTML nodes that used this data.
+
+<a href="https://camplejs.github.io/documentation/reactivity.html">
+  <img width="50%" src="https://github.com/Camplejs/media/blob/main/reactivity.svg" alt="reactivity" >
+</a>
+
+This diagram shows that data is updated when you use a function that updates it. That is, it is as if a single-threaded data update is being created. In future versions, the structure may change slightly due to the processing of asynchronous data.
+
+Link article: <a href="https://camplejs.github.io/documentation/reactivity.html">Reactivity</a>.<br>
 
 ## Changelog
 
@@ -90,7 +126,20 @@ See <a href="https://camplejs.github.io/documentation/introduction.html">Cample.
 
 ## Benchmark
 
-js-framework-benchmark/tree/master/frameworks/keyed/cample
+| Name  | Cample.js |
+| ------------- | ------------- |
+| create rows  | 40.4  |
+| replace all rows  | 47.8  |
+| partial update  | 20.0  |
+| select row  | 5.5  |
+| swap rows  | 23.4  |
+| remove row  | 18.7  |
+| create many rows  | 412.9  |
+| append rows to large table  | 50.0  |
+| clear rows | 13.9  |
+| geometric mean | 1.14  |
+
+[Code](https://github.com/krausest/js-framework-benchmark/tree/master/frameworks/keyed/cample)
 
 ## Contribution
 
@@ -99,6 +148,10 @@ If you would like to contribute to this framework, please see [Contributing Guid
 ## Inspiration
 
 If you like the framework, it will be very cool if you rate the repository with a star ★
+
+## Contact
+
+Email - camplejs@gmail.com
 
 ## License
 
