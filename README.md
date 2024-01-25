@@ -18,6 +18,24 @@
 
 <div align="center"><b>Alpha version</b></div>
 
+## Why Cample.js?
+
+Cample.js is an actively developed and maintained framework that supports many modern technology solutions for creating user interfaces. The component-based approach, as well as reactivity without a virtual DOM and data export and import, will make building a site much faster than if the site was developed using js alone. Moreover, the framework is new and you can try it as something new when creating a website.
+
+## Features
+
+Cample.js provides the following features:
+
+- Reactivity without Virtual DOM. The framework does not create large DOM trees for working with HTML.
+- Keyed implementation. Blocks in a loop will not be overwritten by new ones if their keys match.
+- Component approach. It allows to repeat many UI blocks on the site, which makes development much easier.
+- Convenient approach to working with data inside a component. Transferring data between components allows to work with components even if they are in different files
+- The frameworks make it easy to work with HTML files. The syntax of the framework itself is built on objects with HTML templates. When using modern project builders, HTML files are imported through a variable that does not pass through any function.
+- Fast.
+- CLI for creating an application.
+
+And a few others :)
+
 ## Installation
 
 To create an application, it is better to use the official cample-start command to generate a “starting point”, choosing from two currently available templates.
@@ -35,23 +53,6 @@ npm i cample
 ```
 
 With this installation, functions will still be available directly from the module. Installation using cample-start simply specifies the start files for the application.
-
-## Why Cample.js?
-
-Cample.js is an actively developed and maintained framework that supports many modern technology solutions for creating a website. The component-based approach, as well as reactivity without a virtual DOM and data export and import, will make building a site much faster than if the site was developed using js alone. Moreover, the framework is new and you can try it as something new when creating a website.
-
-## Features
-
-Cample.js provides the following features:
-
-- Reactivity without Virtual DOM. The framework does not create large DOM trees for working with HTML.
-- Keyed implementation. Blocks in a loop will not be overwritten by new ones if their keys match.
-- Component approach. It allows to repeat many UI blocks on the site, which makes development much easier.
-- Convenient approach to working with data inside a component. Transferring data between components allows to work with components even if they are in different files
-- The frameworks make it easy to work with HTML files. The syntax of the framework itself is built on objects with HTML templates. When using modern project builders, HTML files are imported through a variable that does not pass through any function.
-- Fast.
-
-And a few others :)
 
 ## Getting started
 
