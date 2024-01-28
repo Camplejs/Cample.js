@@ -119,7 +119,7 @@ export type DynamicElement = {
 export type DynamicTextType = {
   key?: CurrentKeyType;
   isProperty?: boolean;
-  texts?: Array<Text | number>;
+  text?: Text | number;
 };
 
 export type DynamicTextArrayType = Array<DynamicTextType>;
@@ -187,7 +187,6 @@ export type OldClassListType = {
 };
 export type ClassType = {
   classes?: ValueItemsType;
-  old?: string;
 };
 
 export type RenderedKeyType = string | DynamicKeyObjectType | undefined;
@@ -206,6 +205,7 @@ export type NodeDOMType = {
   parentNode: NodeDOMType | null;
   path: Array<IndexObjNode>;
   nextNode: NodeDOMType | null;
+  values: ValuesTemplateType;
   siblings: Array<NodeDOMType>;
 };
 export type DynamicNodesObjectType = {
@@ -226,7 +226,7 @@ export type EachTemplateType = {
   el: Element | null;
   key?: ValueItemsType;
   nodes: EachTemplateNodesType;
-  values: ValuesTemplateType;
+  render?: (...args: any[]) => void;
 };
 
 export type ElementsType = Element[];
@@ -408,7 +408,6 @@ export type CurrentKeyType = {
 };
 export type NodeTextType = {
   key: CurrentKeyType;
-  value: string;
 };
 
 export type NodeValueType = {

@@ -1,5 +1,5 @@
 "use-strict";
-import { MAIN_REGEX, setAttribute } from "../../../config/config";
+import { MAIN_REGEX, getAttribute, setAttribute } from "../../../config/config";
 import {
   AttributesValType,
   DynamicEl,
@@ -25,8 +25,7 @@ export const updateAttributes = (
         });
         return String(data);
       });
-      if (attr.oldValue !== val) {
-        attr.oldValue = val;
+      if (getAttribute.call(el, attr.name as string) !== String(val)) {
         setAttribute.call(el, attr.name as string, val);
       }
     } else {
@@ -40,8 +39,7 @@ export const updateAttributes = (
           });
         return String(data);
       });
-      if (attr.oldValue !== newVal) {
-        attr.oldValue = newVal;
+      if (getAttribute.call(el, attr.name as string) !== String(newVal)) {
         setAttribute.call(el, attr.name as string, newVal);
       }
     }

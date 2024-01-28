@@ -5,7 +5,9 @@ import {
   push,
   indexOf,
   pop,
-  unshift
+  unshift,
+  updText,
+  updClass
 } from "../../../config/config";
 import {
   checkFunction,
@@ -14,22 +16,36 @@ import {
   getTextKey
 } from "../../../shared/utils";
 import {
+  AttributesValType,
+  ClassType,
   CurrentKeyType,
+  DynamicEl,
   DynamicNodesObjectType,
   DynamicTextType,
   EachTemplateType,
   EventEachGetDataType,
   EventEachGetFunctionType,
   EventGetDataType,
+  ExportDataType,
+  ExportDynamicType,
+  FunctionEventType,
   FunctionsType,
+  ImportDataType,
   IndexObjNode,
   NodeDOMType,
+  NodeTextType,
+  NodeValueType,
+  NodeValuesType,
   RenderNodeFunctionType,
+  ValueItemsType,
   ValueType,
   ValuesType
 } from "../../../types/types";
 import { renderListeners } from "../data/render-listeners";
+import { updateAttributes } from "../data/update-attributes";
+import { renderComponentTemplate } from "../render/render-component-template";
 import { renderEl } from "../render/render-el";
+import { renderImport } from "../render/render-import";
 import { parseKey } from "./parse-key";
 import { parseText } from "./parse-text";
 
@@ -71,8 +87,7 @@ export const parseTemplate = (
   const dynamicNodesObj: DynamicNodesObjectType = {};
   const obj: EachTemplateType = {
     el,
-    nodes: [firstNode],
-    values: []
+    nodes: [firstNode]
   };
   if (isEach) {
     obj.key = {
@@ -97,6 +112,7 @@ export const parseTemplate = (
       parentNode,
       nextNode: null,
       siblings: [],
+      values: [],
       path: newPath
     };
   };
@@ -154,7 +170,7 @@ export const parseTemplate = (
         newNode,
         dynamicNodesObj,
         id,
-        obj.values,
+        domSiblingNode.values,
         values,
         valueName,
         importedDataName,
@@ -182,47 +198,36 @@ export const parseTemplate = (
       if (text) {
         const key: string | undefined = getTextKey(text);
         if (key) {
-          const data = obj.values.filter(
-            (e) => e.type === 1 && (e.key as CurrentKeyType).key === key
-          );
-          if (data.length > 1) {
-            createError("id is unique");
-          }
-          const searchedNodeObj = data[0];
           newNode.isText = true;
           dynamicNodesObj[domSiblingNode.id] = domSiblingNode.path;
-          if (searchedNodeObj) {
-            push.call(searchedNodeObj.texts, i);
-          } else {
-            const renderedKey = parseKey(
-              key,
-              [
-                valueFunctions[3],
-                valueFunctions[4],
-                valueFunctions[2],
-                valueFunctions[5],
-                valueFunctions[6],
-                valueFunctions[7],
-                valueFunctions[8],
-                valueFunctions[9],
-                valueFunctions[10],
-                valueFunctions[11]
-              ],
-              values,
-              valueName,
-              importedDataName,
-              indexName
-            );
-            const dynamicText: DynamicTextType = {
-              key: renderedKey,
-              texts: [i]
-            };
-            const nodeObj = {
-              type: 1,
-              ...dynamicText
-            };
-            obj.values.push(nodeObj);
-          }
+          const renderedKey = parseKey(
+            key,
+            [
+              valueFunctions[3],
+              valueFunctions[4],
+              valueFunctions[2],
+              valueFunctions[5],
+              valueFunctions[6],
+              valueFunctions[7],
+              valueFunctions[8],
+              valueFunctions[9],
+              valueFunctions[10],
+              valueFunctions[11]
+            ],
+            values,
+            valueName,
+            importedDataName,
+            indexName
+          );
+          const dynamicText: DynamicTextType = {
+            key: renderedKey,
+            text: i
+          };
+          const nodeObj = {
+            type: 1,
+            ...dynamicText
+          };
+          push.call(domSiblingNode.values, nodeObj);
         }
       }
     }
@@ -286,73 +291,11 @@ export const parseTemplate = (
   let fnAlgorithm: Array<RenderNodeFunctionType> = [];
   let rootId = 0;
   let dynamicLength = 0;
-  for (let i = 1; i < stackLineNodes.length; i++) {
-    const currentNode = stackLineNodes[i];
-    const render = currentNode.isNext ? nextSibling : firstChild;
-    const { dynamicNodes } = currentNode;
-    if (dynamicNodes) {
-      const currentNodeId = currentNode.id;
-      const newObj: IndexObjNode = {
-        rootId,
-        id: currentNodeId
-      };
-      if (fnAlgorithm.length) {
-        push.call(fnAlgorithm, render);
-        const arr = [...fnAlgorithm];
-        function fn(this: Element) {
-          let currentEl = this;
-          for (let j = 0; j < arr.length; j++) {
-            const currentFn: RenderNodeFunctionType = arr[j];
-            currentEl = currentFn.call(currentEl) as Element;
-          }
-          return currentEl;
-        }
-        newObj.render = fn;
-        fnAlgorithm = [];
-      } else newObj.render = render;
-      push.call(obj.nodes, newObj);
-      rootId = rootId + dynamicLength + 1;
-      dynamicLength = dynamicNodes.length;
-      for (let j = 0; j < dynamicNodes.length; j++) {
-        const dynamicNode = dynamicNodes[j];
-        const dynamicNodeId = dynamicNode.id;
-        if (dynamicNodeId !== currentNodeId) {
-          const newObj: IndexObjNode = {
-            rootId,
-            id: dynamicNodeId
-          };
-          const fnDynamicNodeAlgorithm = [];
-          const { path } = dynamicNode.node as NodeDOMType;
-          for (let k = path.length - 1; k >= 0; k--) {
-            const pathItem = path[k];
-            if (pathItem.id === currentNodeId) {
-              if (fnDynamicNodeAlgorithm.length !== 1) {
-                function fn(this: Element) {
-                  let currentEl = this;
-                  for (let l = 0; l < fnDynamicNodeAlgorithm.length; l++) {
-                    const currentFn: RenderNodeFunctionType =
-                      fnDynamicNodeAlgorithm[l];
-                    currentEl = currentFn.call(currentEl) as Element;
-                  }
-                  return currentEl;
-                }
-                newObj.render = fn;
-              } else newObj.render = fnDynamicNodeAlgorithm[0];
-              break;
-            } else {
-              const pathRender = pathItem.isNext ? nextSibling : firstChild;
-              unshift.call(fnDynamicNodeAlgorithm, pathRender);
-            }
-          }
-          push.call(obj.nodes, newObj);
-        } else dynamicLength--;
-      }
-    } else fnAlgorithm.push(render);
-  }
   setDataFunctions?.();
   renderFunctions?.();
   for (const {
     elId,
+    values,
     indexValue,
     args,
     keyEvent,
@@ -381,29 +324,449 @@ export const parseTemplate = (
       type: 0,
       render: (element: Element, keyEl: string) => setEvent(element, keyEl)
     };
-    obj.values[indexValue] = newVal;
+    values[indexValue] = newVal;
   }
-  for (let i = 0; i < obj.values.length; i++) {
-    const value = obj.values[i];
-    if (value.type === 1) {
-      if (value.texts)
-        value.texts = value.texts.map((e) => {
-          for (let j = 0; j < obj.nodes.length; j++) {
-            const currentNode = obj.nodes[j];
-            if (currentNode.id === e) {
-              return j as number;
+  const renderValue = (val: ValueType) => {
+    const valKey = val.key as CurrentKeyType;
+    switch (val.type) {
+      case 0:
+        return (
+          newValues: NodeValuesType,
+          val: ValueType,
+          node: ChildNode,
+          renderDynamic: (...args: any[]) => any,
+          indexData: any,
+          eachIndex?: number,
+          importData?: ImportDataType,
+          key?: string,
+          exportFunctions?: any,
+          currentExport?: ExportDataType | ExportDynamicType
+        ) => {
+          const { render } = val;
+          (render as FunctionEventType)(node, key);
+        };
+      case 1:
+        return (
+          newValues: NodeValuesType,
+          currentVal: ValueType,
+          node: ChildNode,
+          renderDynamic: (...args: any[]) => any,
+          indexData: any,
+          eachIndex?: number,
+          importData?: ImportDataType,
+          key?: string,
+          exportFunctions?: any,
+          currentExport?: ExportDataType | ExportDynamicType
+        ) => {
+          const newData = renderDynamic(
+            valKey,
+            indexData,
+            importData,
+            eachIndex
+          );
+          let old = newData;
+          updText.call(node, newData);
+          const fnText = (
+            currentIndexData: any,
+            currentImportData: any,
+            currentEachIndex: number | undefined,
+            _: NodeTextType
+          ) => {
+            const newData = renderDynamic(
+              valKey,
+              currentIndexData,
+              currentImportData,
+              currentEachIndex
+            );
+            if (old !== newData) {
+              updText.call(node, newData);
+              old = newData;
+            }
+          };
+          push.call(newValues, {
+            render: fnText,
+            type: 1,
+            key: valKey
+          } as NodeValueType);
+        };
+      case 2:
+        return (
+          newValues: NodeValuesType,
+          val: ValueType,
+          node: ChildNode,
+          renderDynamic: (...args: any[]) => any,
+          indexData: any,
+          eachIndex?: number,
+          importData?: ImportDataType,
+          key?: string,
+          exportFunctions?: any,
+          currentExport?: ExportDataType | ExportDynamicType
+        ) => {
+          const fnAttr = (
+            currentIndexData: any,
+            currentImportData: any,
+            currentEachIndex: number | undefined
+          ) => {
+            const fnNew = (key: CurrentKeyType) =>
+              renderDynamic(
+                key,
+                currentIndexData,
+                currentImportData,
+                currentEachIndex
+              );
+            updateAttributes(node as DynamicEl, val, fnNew);
+          };
+          fnAttr(indexData, importData, eachIndex);
+          push.call(newValues, {
+            render: fnAttr,
+            ...(val as AttributesValType)
+          } as NodeValueType);
+        };
+      case 3:
+        return (
+          newValues: NodeValuesType,
+          val: ValueType,
+          node: ChildNode,
+          renderDynamic: (...args: any[]) => any,
+          indexData: any,
+          eachIndex?: number,
+          importData?: ImportDataType,
+          key?: string,
+          exportFunctions?: any,
+          currentExport?: ExportDataType | ExportDynamicType
+        ) => {
+          const componentName = (node as Element).getAttribute("data-cample");
+          const keyImportString = val.value;
+          if (keyImportString && componentName) {
+            const newImportString = renderComponentTemplate(
+              currentExport,
+              exportFunctions,
+              keyImportString,
+              index,
+              componentName
+            );
+            renderImport(node as Element, undefined, newImportString);
+          } else {
+            createError("Render export error");
+          }
+        };
+      default:
+        return (
+          newValues: NodeValuesType,
+          val: ValueType,
+          node: ChildNode,
+          renderDynamic: (...args: any[]) => any,
+          indexData: any,
+          eachIndex?: number,
+          importData?: ImportDataType,
+          key?: string,
+          exportFunctions?: any,
+          currentExport?: ExportDataType | ExportDynamicType
+        ) => {
+          const { classes } = val;
+          const { value: classListValue, render: renderClass } =
+            classes as ValueItemsType;
+          const str = renderClass(
+            indexData,
+            classListValue,
+            importData,
+            eachIndex
+          );
+          const fnClass = (
+            currentIndexData: any,
+            currentImportData: any,
+            currentEachIndex: number | undefined
+          ) => {
+            const classVal = renderClass(
+              currentIndexData,
+              classListValue,
+              currentImportData,
+              currentEachIndex
+            );
+            if ((node as Element).className !== classVal) {
+              updClass.call(node, classVal);
+            }
+          };
+          if (str !== "") {
+            updClass.call(node, str);
+          }
+          push.call(newValues, {
+            render: fnClass,
+            ...(val as ClassType)
+          } as NodeValueType);
+        };
+    }
+  };
+  const renderFunction = (
+    currentNode: IndexObjNode,
+    arr: RenderNodeFunctionType[],
+    currentRender?: (this: Element) => any
+  ) => {
+    const { node } = currentNode;
+    const isCurrentRender = currentRender !== undefined;
+    let currentFn: RenderNodeFunctionType = isCurrentRender
+      ? currentRender
+      : function fn(this: Element) {
+          let currentEl = this;
+          for (let j = 0; j < arr.length; j++) {
+            const currentFn: RenderNodeFunctionType = arr[j];
+            currentEl = currentFn.call(currentEl) as Element;
+          }
+          return currentEl;
+        };
+    const { values: nodeValues } = node as NodeDOMType;
+    const valuesLength = nodeValues.length;
+    if (valuesLength !== 0) {
+      if (valuesLength === 1) {
+        const val = nodeValues[0];
+        const valueFn = renderValue(val);
+        currentFn = isCurrentRender
+          ? function fn(
+              this: Element,
+              newValues: NodeValuesType,
+              renderDynamic: (...args: any[]) => any,
+              indexData: any,
+              eachIndex?: number,
+              importData?: ImportDataType,
+              key?: string,
+              exportFunctions?: any,
+              currentExport?: ExportDataType | ExportDynamicType
+            ) {
+              const currentEl = currentRender.call(this);
+              valueFn(
+                newValues,
+                val,
+                currentEl,
+                renderDynamic,
+                indexData,
+                eachIndex,
+                importData,
+                key,
+                exportFunctions,
+                currentExport
+              );
+              return currentEl;
+            }
+          : function fn(
+              this: Element,
+              newValues: NodeValuesType,
+              renderDynamic: (...args: any[]) => any,
+              indexData: any,
+              eachIndex?: number,
+              importData?: ImportDataType,
+              key?: string,
+              exportFunctions?: any,
+              currentExport?: ExportDataType | ExportDynamicType
+            ) {
+              let currentEl = this;
+              for (let j = 0; j < arr.length; j++) {
+                const currentFn: RenderNodeFunctionType = arr[j];
+                currentEl = currentFn.call(currentEl) as Element;
+              }
+              valueFn(
+                newValues,
+                val,
+                currentEl,
+                renderDynamic,
+                indexData,
+                eachIndex,
+                importData,
+                key,
+                exportFunctions,
+                currentExport
+              );
+              return currentEl;
+            };
+      } else {
+        const valFns = nodeValues.map((val) => {
+          return renderValue(val);
+        });
+        const fnsLength = valFns.length;
+        currentFn = isCurrentRender
+          ? function fn(
+              this: Element,
+              newValues: NodeValuesType,
+              renderDynamic: (...args: any[]) => any,
+              indexData: any,
+              eachIndex?: number,
+              importData?: ImportDataType,
+              key?: string,
+              exportFunctions?: any,
+              currentExport?: ExportDataType | ExportDynamicType
+            ) {
+              const currentEl = currentRender.call(this);
+              for (let i = 0; i < fnsLength; i++) {
+                const valueFn = valFns[i];
+                valueFn(
+                  newValues,
+                  nodeValues[i],
+                  currentEl,
+                  renderDynamic,
+                  indexData,
+                  eachIndex,
+                  importData,
+                  key,
+                  exportFunctions,
+                  currentExport
+                );
+              }
+              return currentEl;
+            }
+          : function fn(
+              this: Element,
+              newValues: NodeValuesType,
+              renderDynamic: (...args: any[]) => any,
+              indexData: any,
+              eachIndex?: number,
+              importData?: ImportDataType,
+              key?: string,
+              exportFunctions?: any,
+              currentExport?: ExportDataType | ExportDynamicType
+            ) {
+              let currentEl = this;
+              for (let j = 0; j < arr.length; j++) {
+                const currentFn: RenderNodeFunctionType = arr[j];
+                currentEl = currentFn.call(currentEl) as Element;
+              }
+              for (let i = 0; i < fnsLength; i++) {
+                const valueFn = valFns[i];
+                valueFn(
+                  newValues,
+                  nodeValues[i],
+                  currentEl,
+                  renderDynamic,
+                  indexData,
+                  eachIndex,
+                  importData,
+                  key,
+                  exportFunctions,
+                  currentExport
+                );
+              }
+              return currentEl;
+            };
+      }
+    }
+    return currentFn;
+  };
+  for (let i = 1; i < stackLineNodes.length; i++) {
+    const currentNode = stackLineNodes[i];
+    const render = currentNode.isNext ? nextSibling : firstChild;
+    const { dynamicNodes } = currentNode;
+    if (dynamicNodes) {
+      const currentNodeId = currentNode.id;
+      const newObj: IndexObjNode = {
+        rootId,
+        id: currentNodeId
+      };
+      if (fnAlgorithm.length) {
+        push.call(fnAlgorithm, render);
+        const arr = [...fnAlgorithm];
+        const fn = renderFunction(currentNode, arr);
+        newObj.render = fn;
+        fnAlgorithm = [];
+      } else {
+        newObj.render = renderFunction(currentNode, [], render);
+      }
+      push.call(obj.nodes, newObj);
+      rootId = rootId + dynamicLength + 1;
+      dynamicLength = dynamicNodes.length;
+      for (let j = 0; j < dynamicNodes.length; j++) {
+        const dynamicNode = dynamicNodes[j];
+        const dynamicNodeId = dynamicNode.id;
+        if (dynamicNodeId !== currentNodeId) {
+          const newObj: IndexObjNode = {
+            rootId,
+            id: dynamicNodeId
+          };
+          const fnDynamicNodeAlgorithm: RenderNodeFunctionType[] = [];
+          const { path } = dynamicNode.node as NodeDOMType;
+          for (let k = path.length - 1; k >= 0; k--) {
+            const pathItem = path[k];
+            if (pathItem.id === currentNodeId) {
+              if (fnDynamicNodeAlgorithm.length !== 1) {
+                const fn = renderFunction(dynamicNode, fnDynamicNodeAlgorithm);
+                newObj.render = fn;
+              } else {
+                newObj.render = renderFunction(
+                  dynamicNode,
+                  [],
+                  fnDynamicNodeAlgorithm[0]
+                );
+              }
+              break;
+            } else {
+              const pathRender = pathItem.isNext ? nextSibling : firstChild;
+              unshift.call(fnDynamicNodeAlgorithm, pathRender);
             }
           }
-          return -1;
-        });
-    } else {
-      for (let j = 0; j < obj.nodes.length; j++) {
-        const currentNode = obj.nodes[j];
-        if (currentNode.id === value.id) {
-          value.id = j;
-          break;
-        }
+          push.call(obj.nodes, newObj);
+        } else dynamicLength--;
       }
+    } else fnAlgorithm.push(render);
+  }
+  const { values: nodeValues } = DOM as unknown as NodeDOMType;
+  const valuesLength = nodeValues.length;
+  if (valuesLength !== 0) {
+    if (valuesLength === 1) {
+      const val = nodeValues[0];
+      const valueFn = renderValue(val);
+      obj.render = function (
+        this: Element,
+        newValues: NodeValuesType,
+        renderDynamic: (...args: any[]) => any,
+        indexData: any,
+        eachIndex?: number,
+        importData?: ImportDataType,
+        key?: string,
+        exportFunctions?: any,
+        currentExport?: ExportDataType | ExportDynamicType
+      ) {
+        valueFn(
+          newValues,
+          val,
+          this,
+          renderDynamic,
+          indexData,
+          eachIndex,
+          importData,
+          key,
+          exportFunctions,
+          currentExport
+        );
+      };
+    } else {
+      const valFns = nodeValues.map((val) => {
+        return renderValue(val);
+      });
+      const fnsLength = valFns.length;
+      obj.render = function (
+        this: Element,
+        newValues: NodeValuesType,
+        renderDynamic: (...args: any[]) => any,
+        indexData: any,
+        eachIndex?: number,
+        importData?: ImportDataType,
+        key?: string,
+        exportFunctions?: any,
+        currentExport?: ExportDataType | ExportDynamicType
+      ) {
+        for (let i = 0; i < fnsLength; i++) {
+          const valueFn = valFns[i];
+          valueFn(
+            newValues,
+            nodeValues[i],
+            this,
+            renderDynamic,
+            indexData,
+            eachIndex,
+            importData,
+            key,
+            exportFunctions,
+            currentExport
+          );
+        }
+      };
     }
   }
   obj.nodes.shift();

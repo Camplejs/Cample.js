@@ -844,11 +844,11 @@ export class Component extends DataComponent {
               runRenderFunction,
               currentComponent.functions
             );
-            if (!newTemplateObj.values.some((e) => e.type === 3)) {
-              if (this.export) {
-                createExportObject(index);
-              }
-            }
+            // if (!newTemplateObj.values.some((e) => e.type === 3)) {
+            //   if (this.export) {
+            //     createExportObject(index);
+            //   }
+            // }
             const exportFunctions = {
               getExportObject,
               renderExportObject,

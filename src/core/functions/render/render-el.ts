@@ -133,6 +133,7 @@ export const renderEl = (
                 keys
               };
               addValue(undefined, attr, 2);
+              setAttribute.call(el, e.name, "");
             } else {
               if (e.name[0] !== ":") createError("Event error");
               let key = "";
@@ -153,6 +154,7 @@ export const renderEl = (
                 getEventsFunction,
                 renderedKey,
                 id,
+                values,
                 key
               };
               removeAttribute.call(el, e.name);
@@ -211,8 +213,7 @@ export const renderEl = (
             });
           }
           const newVal: ValueValueType = {
-            classes: classList,
-            old: ""
+            classes: classList
           };
           addValue(undefined, newVal, 4);
           setAttribute.call(el, "class", "");
