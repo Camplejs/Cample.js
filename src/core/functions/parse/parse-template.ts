@@ -137,7 +137,7 @@ export const parseTemplate = (
   ) => {
     i++;
     const isUndefined = isNext !== undefined;
-    let newNode: IndexObjNode = isUndefined
+    const newNode: IndexObjNode = isUndefined
       ? ({} as unknown as IndexObjNode)
       : firstNode;
     const domSiblingNode = createNodeDOM(
@@ -533,7 +533,7 @@ export const parseTemplate = (
               exportFunctions?: any,
               currentExport?: ExportDataType | ExportDynamicType
             ) {
-              let currentEl = currentRender.call(this);
+              const currentEl = currentRender.call(this);
               valueFn(
                 newValues,
                 val,
@@ -595,7 +595,7 @@ export const parseTemplate = (
               exportFunctions?: any,
               currentExport?: ExportDataType | ExportDynamicType
             ) {
-              let currentEl = currentRender.call(this);
+              const currentEl = currentRender.call(this);
               for (let i = 0; i < fnsLength; i++) {
                 const valueFn = valFns[i];
                 valueFn(
@@ -680,7 +680,7 @@ export const parseTemplate = (
             rootId,
             id: dynamicNodeId
           };
-          let fnDynamicNodeAlgorithm: RenderNodeFunctionType[] = [];
+          const fnDynamicNodeAlgorithm: RenderNodeFunctionType[] = [];
           const { path } = dynamicNode.node as NodeDOMType;
           for (let k = path.length - 1; k >= 0; k--) {
             const pathItem = path[k];
@@ -706,7 +706,7 @@ export const parseTemplate = (
       }
     } else fnAlgorithm.push(render);
   }
-  let { values: nodeValues } = DOM as unknown as NodeDOMType;
+  const { values: nodeValues } = DOM as unknown as NodeDOMType;
   const valuesLength = nodeValues.length;
   if (valuesLength !== 0) {
     if (valuesLength === 1) {

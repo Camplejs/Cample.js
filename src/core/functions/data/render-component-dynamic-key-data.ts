@@ -8,7 +8,7 @@ import { renderKeyData } from "../render/render-key-data";
 export const renderComponentDynamicKeyData = (
   data: DynamicDataValueType,
   key: string,
-  isValueKey: boolean = false,
+  isValueKey = false,
   renderedKey?: [string, boolean, ArrayStringType]
 ): any => {
   const dynamicKeyRendered =
