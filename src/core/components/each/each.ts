@@ -192,7 +192,9 @@ export class Each extends DataComponent {
           eachIndex: number,
           importData: any
         ) => {
-          for (const value of currentNode.values) {
+          const values = currentNode.values;
+          for (let i = 0; i < values.length; i++) {
+            const value = values[i];
             value.render(indexData, importData, eachIndex, value);
           }
         };
@@ -213,13 +215,12 @@ export class Each extends DataComponent {
           const template: EachTemplateType =
             currentComponent.template as EachTemplateType;
           let nodeNext = currentComponent.nodeNext as Node;
-          const nodePrevious: Element =
-            currentComponent.nodePrevious as Element;
+          let nodePrevious: Element = currentComponent.nodePrevious as Element;
           let nextElNode: CharacterData | null = null;
           const { key } = template as EachTemplateType;
           const { render: renderKey, value: keyValue } = key as ValueItemsType;
           const data = newData;
-          if (isNewDataEmpty && oldDataLength) {
+          if (isNewDataEmpty && oldDataLength !== 0) {
             if (nodePrevious !== null) {
               while (
                 nextSibling.call(nodePrevious) !== null &&
@@ -238,7 +239,7 @@ export class Each extends DataComponent {
             }
             currentComponent.nodes = [];
             return;
-          } else if (isOldDataEmpty && newDataLength) {
+          } else if (isOldDataEmpty && newDataLength !== 0) {
             const isNullNodeNext = nodeNext === null;
             if (isNullNodeNext) {
               nextElNode = document.createComment("");
@@ -431,7 +432,6 @@ export class Each extends DataComponent {
                 indexesOldArr[oldNodes[currentIndex].key as string] =
                   currentIndex;
               }
-              const oldСontainedKeys = {};
               while (
                 oldFirstIndex < oldLastIndex ||
                 newFirstIndex < newLastIndex
@@ -442,18 +442,11 @@ export class Each extends DataComponent {
                 ) {
                   break;
                 }
-                if (
-                  oldСontainedKeys[oldNodes[oldFirstIndex].key as string] !==
-                  undefined
-                ) {
+                if (oldNodes[oldFirstIndex] === undefined) {
                   oldFirstIndex++;
                 }
                 currentOldLastIndex = oldLastIndex - 1;
-                if (
-                  oldСontainedKeys[
-                    oldNodes[currentOldLastIndex].key as string
-                  ] !== undefined
-                ) {
+                if (oldNodes[currentOldLastIndex] === undefined) {
                   oldLastIndex--;
                 }
                 if (
@@ -526,7 +519,6 @@ export class Each extends DataComponent {
                   const currentIndex = indexesOldArr[newFirstDataKey];
                   const currentNode = oldNodes[currentIndex];
                   const { el } = currentNode;
-                  oldСontainedKeys[newFirstDataKey] = null;
                   newData[newFirstIndex] = currentNode;
                   insertBefore.call(
                     parentNode,
@@ -539,6 +531,7 @@ export class Each extends DataComponent {
                     newFirstIndex++,
                     importData
                   );
+                  oldNodes[currentIndex] = undefined as unknown as NodeType;
                   continue;
                 }
                 const { el, currentNode } = createElement(
@@ -606,9 +599,7 @@ export class Each extends DataComponent {
                   i++
                 ) {
                   const currentNode = oldNodes[i];
-                  if (
-                    oldСontainedKeys[currentNode.key as string] === undefined
-                  ) {
+                  if (currentNode !== undefined) {
                     const { el } = currentNode;
                     removeChild.call(parentNode, el as Node);
                   }
@@ -705,7 +696,7 @@ export class Each extends DataComponent {
           key: string,
           dataId: IdType,
           index: number,
-          _ = false,
+          _: boolean = false,
           currentComponent?: EachDynamicNodeComponentType
         ) => {
           const updateData = (attr = getDefaultData(dataId)) => {

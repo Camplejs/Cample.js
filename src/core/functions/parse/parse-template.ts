@@ -137,7 +137,7 @@ export const parseTemplate = (
   ) => {
     i++;
     const isUndefined = isNext !== undefined;
-    const newNode: IndexObjNode = isUndefined
+    let newNode: IndexObjNode = isUndefined
       ? ({} as unknown as IndexObjNode)
       : firstNode;
     const domSiblingNode = createNodeDOM(
@@ -504,11 +504,12 @@ export const parseTemplate = (
   ) => {
     const { node } = currentNode;
     const isCurrentRender = currentRender !== undefined;
+    const arrLength = arr.length;
     let currentFn: RenderNodeFunctionType = isCurrentRender
       ? currentRender
       : function fn(this: Element) {
           let currentEl = this;
-          for (let j = 0; j < arr.length; j++) {
+          for (let j = 0; j < arrLength; j++) {
             const currentFn: RenderNodeFunctionType = arr[j];
             currentEl = currentFn.call(currentEl) as Element;
           }
@@ -532,7 +533,7 @@ export const parseTemplate = (
               exportFunctions?: any,
               currentExport?: ExportDataType | ExportDynamicType
             ) {
-              const currentEl = currentRender.call(this);
+              let currentEl = currentRender.call(this);
               valueFn(
                 newValues,
                 val,
@@ -559,7 +560,7 @@ export const parseTemplate = (
               currentExport?: ExportDataType | ExportDynamicType
             ) {
               let currentEl = this;
-              for (let j = 0; j < arr.length; j++) {
+              for (let j = 0; j < arrLength; j++) {
                 const currentFn: RenderNodeFunctionType = arr[j];
                 currentEl = currentFn.call(currentEl) as Element;
               }
@@ -594,7 +595,7 @@ export const parseTemplate = (
               exportFunctions?: any,
               currentExport?: ExportDataType | ExportDynamicType
             ) {
-              const currentEl = currentRender.call(this);
+              let currentEl = currentRender.call(this);
               for (let i = 0; i < fnsLength; i++) {
                 const valueFn = valFns[i];
                 valueFn(
@@ -624,7 +625,7 @@ export const parseTemplate = (
               currentExport?: ExportDataType | ExportDynamicType
             ) {
               let currentEl = this;
-              for (let j = 0; j < arr.length; j++) {
+              for (let j = 0; j < arrLength; j++) {
                 const currentFn: RenderNodeFunctionType = arr[j];
                 currentEl = currentFn.call(currentEl) as Element;
               }
@@ -679,7 +680,7 @@ export const parseTemplate = (
             rootId,
             id: dynamicNodeId
           };
-          const fnDynamicNodeAlgorithm: RenderNodeFunctionType[] = [];
+          let fnDynamicNodeAlgorithm: RenderNodeFunctionType[] = [];
           const { path } = dynamicNode.node as NodeDOMType;
           for (let k = path.length - 1; k >= 0; k--) {
             const pathItem = path[k];
@@ -705,7 +706,7 @@ export const parseTemplate = (
       }
     } else fnAlgorithm.push(render);
   }
-  const { values: nodeValues } = DOM as unknown as NodeDOMType;
+  let { values: nodeValues } = DOM as unknown as NodeDOMType;
   const valuesLength = nodeValues.length;
   if (valuesLength !== 0) {
     if (valuesLength === 1) {

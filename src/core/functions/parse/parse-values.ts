@@ -256,16 +256,16 @@ const parseCondition = (
     return arr;
   }, []);
   const brackets: { id: number; isOpen: boolean }[] = [];
-  const lastIndex: number = filtredString.length - 1;
+  let lastIndex: number = filtredString.length - 1;
   if (lastIndex === -1) createError("Condition error");
-  const firstIndex = 0;
+  let firstIndex = 0;
   filtredString.forEach((text, i) => {
     const isOpen = text === "(";
     if (isOpen || text === ")") {
       brackets.push({ id: i, isOpen });
     }
   });
-  let currentBracketId = 0;
+  let currentBracketId: number = 0;
   let nextBracketId = 0;
   let bracketOpenId = 0;
   let currentOpenBracket: any = undefined;
@@ -281,9 +281,9 @@ const parseCondition = (
     range: [firstIndex, lastIndex]
   };
   brackets.forEach(({ id, isOpen }) => {
-    const currentBracket = mainBracket.siblingBrackets[nextBracketId];
+    let currentBracket = mainBracket.siblingBrackets[nextBracketId];
     if (isOpen) {
-      const bracket = {
+      let bracket = {
         id: currentBracketId++,
         siblingBrackets: [],
         range: [id],
@@ -338,8 +338,8 @@ const parseCondition = (
   const createOperand = (
     value: KeyValuesValueConditionType | CurrentKeyType,
     render: RenderConditionType = defaultRenderFn,
-    type = 0,
-    priority = 0
+    type: number = 0,
+    priority: number = 0
   ): OperandType => {
     return {
       value,
@@ -348,7 +348,7 @@ const parseCondition = (
       priority
     };
   };
-  const mainCurrentVal: KeyValuesValueConditionType = {
+  let mainCurrentVal: KeyValuesValueConditionType = {
     ...defaultCurrentVal,
     connectingOperations: [],
     operands: []
@@ -545,7 +545,7 @@ const parseCondition = (
     const operandsLength = val.operands.length;
     const { operands } = val;
     if (operandsLength % 2 === 0) createError("Condition error");
-    const connectingOperations =
+    let connectingOperations =
       val.connectingOperations as ConnectingOperationType[];
     if (connectingOperations.length === 0) {
       const operand: OperandType = val.operands[0] as OperandType;
