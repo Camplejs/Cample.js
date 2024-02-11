@@ -51,11 +51,11 @@ import {
   remove,
   removeChild
 } from "../../../config/config";
+import { renderDynamic2 as renderDynamic } from "../../functions/render/render-dynamics";
 import {
   renderFn1,
   renderFn2,
   renderFn3,
-  renderFn4,
   renderFn5,
   renderFn6,
   renderFn7,
@@ -65,7 +65,6 @@ import {
   renderFn11,
   renderFn12
 } from "../../functions/render/render-template-functions";
-import { renderDynamic2 as renderDynamic } from "../../functions/render/render-dynamics";
 import { createElement } from "../../functions/data/create-element";
 import { renderFunctionsData } from "../../functions/render/render-functions-data";
 import { renderFunctions } from "../../functions/render/render-functions";
@@ -867,7 +866,7 @@ export class Each extends DataComponent {
               renderFn1,
               renderFn2,
               renderFn3,
-              renderFn4,
+              renderDynamic,
               renderFn5,
               renderFn6,
               renderFn7,

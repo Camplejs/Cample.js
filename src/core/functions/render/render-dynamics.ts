@@ -23,7 +23,7 @@ export const renderDynamic2 = (
   importData: any,
   eachIndex: number | undefined
 ) => {
-  if (key.isValue === true) {
+  if (key.isValue) {
     const str = {
       value: ""
     };

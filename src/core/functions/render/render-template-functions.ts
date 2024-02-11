@@ -11,7 +11,7 @@ import {
   ValueItemType,
   ValueKeyStringType
 } from "../../../types/types";
-import { renderDynamic1, renderDynamic2 } from "./render-dynamics";
+import { renderDynamic1 } from "./render-dynamics";
 export const renderFn0 = (
   value: string | CurrentKeyType,
   data: any,
@@ -42,12 +42,6 @@ export const renderFn2 = (
   return render(val, indexData, importData, eachIndex);
 };
 export const renderFn3 = (e: string) => e;
-export const renderFn4 = (
-  value: string | CurrentKeyType,
-  indexData: any,
-  importData: ImportDataType | undefined,
-  eachIndex?: number
-) => renderDynamic2(value as CurrentKeyType, indexData, importData, eachIndex);
 export const renderFn5 = (
   operand: KeyValuesValueConditionType,
   indexData: any,

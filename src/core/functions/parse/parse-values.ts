@@ -23,6 +23,9 @@ import {
   ValueKeyStringType,
   ValuesValueType
 } from "../../../types/types";
+import { renderDynamic1, renderDynamic2 } from "../render/render-dynamics";
+import { renderKeyData } from "../render/render-key-data";
+import { renderValues } from "../render/render-values";
 import { parseKey } from "./parse-key";
 const defaultRenderFn = (operand1: any) => operand1;
 const defaultRenderBooleanFn = (operand1: any) => !!operand1;
@@ -640,15 +643,137 @@ const parseCondition = (
       delete (val as OperandType).type;
       delete (val as OperandType).oldType;
       const value = (val as OperandType).value;
-      val.render = (
-        data: any,
-        importData: any,
-        eachIndex: number | undefined
-      ) => render(value, data, importData, eachIndex);
+      if (render === renderDynamic1) {
+        if ((value as CurrentKeyType).isValue) {
+          val.render = (
+            data: any,
+            importData: any,
+            eachIndex: number | undefined
+          ) => {
+            const str = {
+              value: ""
+            };
+            renderValues(
+              str,
+              value as CurrentKeyType,
+              data,
+              importData,
+              eachIndex
+            );
+            return str.value;
+          };
+        } else {
+          if ((value as CurrentKeyType).isProperty) {
+            val.render = (
+              data: any,
+              importData: any,
+              eachIndex: number | undefined
+            ) => {
+              const firstKeyData = data[(value as CurrentKeyType).originKey];
+              return renderKeyData(
+                firstKeyData,
+                (value as CurrentKeyType).properties as Array<string>
+              );
+            };
+          } else {
+            val.render = (
+              data: any,
+              importData: any,
+              eachIndex: number | undefined
+            ) => data[(value as CurrentKeyType).originKey];
+          }
+        }
+      } else if (render === renderDynamic2) {
+        if ((value as CurrentKeyType).isValue) {
+          val.render = (
+            data: any,
+            importData: any,
+            eachIndex: number | undefined
+          ) => {
+            const str = {
+              value: ""
+            };
+            renderValues(
+              str,
+              value as CurrentKeyType,
+              data,
+              importData,
+              eachIndex
+            );
+            return str.value;
+          };
+        } else {
+          switch ((value as CurrentKeyType).originType) {
+            case 1:
+              if ((value as CurrentKeyType).isProperty) {
+                if ((value as CurrentKeyType).properties?.length === 1) {
+                  const currentProp = (
+                    (value as CurrentKeyType).properties as any
+                  )[0];
+                  return (val.render = (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp]);
+                } else {
+                  return (val.render = (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => (value as CurrentKeyType as any)(data));
+                }
+              } else {
+                return (val.render = (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) => data);
+              }
+            case 2:
+              if ((value as CurrentKeyType).isProperty) {
+                if ((value as CurrentKeyType).properties?.length === 1) {
+                  const currentProp = (
+                    (value as CurrentKeyType).properties as any
+                  )[0];
+                  return (val.render = (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp]);
+                } else {
+                  return (val.render = (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => (value as CurrentKeyType as any)(importData));
+                }
+              } else {
+                return (val.render = (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) => importData);
+              }
+            case 3:
+              return (val.render = (
+                data: any,
+                importData: any,
+                eachIndex: number | undefined
+              ) => eachIndex);
+            default:
+              return (val.render = (
+                data: any,
+                importData: any,
+                eachIndex: number | undefined
+              ) => undefined);
+          }
+        }
+      } else {
+        val.render = render.bind(this, value);
+      }
     }
   };
   structuringValue(mainCurrentVal);
-
   return mainCurrentVal;
 };
 const parseValue = (

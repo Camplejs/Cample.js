@@ -172,7 +172,7 @@ export const renderEl = (
           }
         } else {
           const arrList = Array.from(el.classList);
-          const classList: ValueItemsType = {
+          const classList: any = {
             value: [],
             render: valueFunctions[0]
           };
@@ -206,7 +206,7 @@ export const renderEl = (
           if (arrList.length === 1) {
             const val1 = getVal(arrList[0]);
             classList.value = createValItem(val1);
-            classList.render = valueFunctions[1];
+            delete classList.render;
           } else {
             classList.value = arrList.map((e) => {
               return createValItem(getVal(e));
