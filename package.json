@@ -1,6 +1,6 @@
 {
   "name": "cample",
-  "version": "3.2.0-alpha.9",
+  "version": "3.2.0-alpha.10",
   "description": "Cample.js - fast modern javascript framework. Reactivity without virtual DOM!",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -63,9 +63,7 @@
     "mocha": "^10.3.0",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
-  },
-  "dependencies": {
+    "typescript": "^5.3.3",
     "node-html-parser": "^6.1.12"
   }
 }
