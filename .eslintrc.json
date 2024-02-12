@@ -1,7 +1,7 @@
 {
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 2020,
+    "ecmaVersion": 2023,
     "sourceType": "module"
   },
   "extends": [
@@ -10,7 +10,7 @@
   ],
   "rules": {
     "@typescript-eslint/no-explicit-any": ["off"],
-    "prefer-spread": ["off"],
+    "@typescript-eslint/no-unused-vars": ["off"],
     "@typescript-eslint/no-this-alias": ["off"]
   }
 }

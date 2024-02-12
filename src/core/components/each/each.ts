@@ -686,8 +686,8 @@ export class Each extends DataComponent {
                 ? cloneValue(data[0].value)
                 : undefined
               : this.data
-              ? this.data
-              : undefined;
+                ? this.data
+                : undefined;
 
           return defaultData;
         };
@@ -696,7 +696,7 @@ export class Each extends DataComponent {
           key: string,
           dataId: IdType,
           index: number,
-          _ = false,
+          _: boolean = false,
           currentComponent?: EachDynamicNodeComponentType
         ) => {
           const updateData = (attr = getDefaultData(dataId)) => {

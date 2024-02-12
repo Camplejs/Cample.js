@@ -404,7 +404,7 @@ export type CurrentKeyType = {
   isProperty?: boolean;
   originType: number;
   isClass?: boolean;
-  isValue: boolean;
+  isValue?: boolean;
 };
 export type NodeTextType = {
   key: CurrentKeyType;

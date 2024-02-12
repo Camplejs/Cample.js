@@ -77,8 +77,8 @@ export class Cample {
           options[e]._getExportId !== undefined
             ? options[e]._getExportId
             : options[e]._getExport
-            ? i
-            : undefined
+              ? i
+              : undefined
         );
         if (selector && this.exportData.hasOwnProperty(selector)) {
           setComponents(selector, options[e]);

@@ -10,7 +10,7 @@
     "checkJs": true,
     "removeComments": false,
     "declaration": true,
-    "target":"ES6",
+    "target": "esnext",
     "pretty": true,
     "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
@@ -22,6 +22,6 @@
     "skipLibCheck": true,
     "outDir": "./build"
   },
-  "include":["./src/**/*"],
+  "include": ["./src/**/*"],
   "exclude": ["node_modules"]
 }

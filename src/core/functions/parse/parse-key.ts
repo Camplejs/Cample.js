@@ -92,11 +92,17 @@ export const parseKey = (
   const keyObj: CurrentKeyType = {
     originKey,
     key: isValue ? (renderedKey as string) : key,
-    originType,
-    isProperty,
-    isClass,
-    isValue
+    originType
   };
+  if (isValue) {
+    keyObj.isValue = isValue;
+  }
+  if (isProperty) {
+    keyObj.isProperty = isProperty;
+  }
+  if (isClass) {
+    keyObj.isClass = isClass;
+  }
   if (properties && properties.length) {
     keyObj.properties = properties;
     if (properties.length === 1) {

@@ -435,8 +435,8 @@ export class Component extends DataComponent {
               ? data[0].value[key]
               : undefined
             : this.data && this.data[key]
-            ? this.data[key]
-            : undefined;
+              ? this.data[key]
+              : undefined;
         return defaultData;
       };
       const updateFunction = (
@@ -444,7 +444,7 @@ export class Component extends DataComponent {
         key: string,
         id: IdType,
         index: number,
-        isRender = false
+        isRender: boolean = false
       ) => {
         const updateData = (attr = getDefaultData(id, key)) => {
           return attr;

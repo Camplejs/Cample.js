@@ -268,7 +268,7 @@ const parseCondition = (
       brackets.push({ id: i, isOpen });
     }
   });
-  let currentBracketId = 0;
+  let currentBracketId: number = 0;
   let nextBracketId = 0;
   let bracketOpenId = 0;
   let currentOpenBracket: any = undefined;
@@ -341,8 +341,8 @@ const parseCondition = (
   const createOperand = (
     value: KeyValuesValueConditionType | CurrentKeyType,
     render: RenderConditionType = defaultRenderFn,
-    type = 0,
-    priority = 0
+    type: number = 0,
+    priority: number = 0
   ): OperandType => {
     return {
       value,
