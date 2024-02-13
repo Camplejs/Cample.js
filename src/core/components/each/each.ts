@@ -444,10 +444,12 @@ export class Each extends DataComponent {
                 }
                 if (oldNodes[oldFirstIndex] === undefined) {
                   oldFirstIndex++;
+                  continue;
                 }
                 currentOldLastIndex = oldLastIndex - 1;
                 if (oldNodes[currentOldLastIndex] === undefined) {
                   oldLastIndex--;
+                  continue;
                 }
                 if (
                   oldNodes[oldFirstIndex].key ===
