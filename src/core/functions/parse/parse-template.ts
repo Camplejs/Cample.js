@@ -38,6 +38,7 @@ import {
   NodeValuesType,
   RenderNodeFunctionType,
   ValueItemsType,
+  ValueSingleType,
   ValueType,
   ValuesType
 } from "../../../types/types";
@@ -396,7 +397,7 @@ export const parseTemplate = (
                 old = newData;
               }
             };
-            push.call(newValues, {
+            newValues.push({
               render: fnText,
               type: 1,
               key: valKey
@@ -421,9 +422,8 @@ export const parseTemplate = (
                       exportFunctions?: any,
                       currentExport?: ExportDataType | ExportDynamicType
                     ) => {
-                      const newData = indexData[currentProp];
-                      let old = newData;
-                      updText.call(node, newData);
+                      let old = indexData[currentProp];
+                      updText.call(node, old);
                       const fnText = (
                         currentIndexData: any,
                         currentImportData: any,
@@ -436,7 +436,7 @@ export const parseTemplate = (
                           old = newData;
                         }
                       };
-                      push.call(newValues, {
+                      newValues.push({
                         render: fnText,
                         type: 1,
                         key: valKey
@@ -455,9 +455,8 @@ export const parseTemplate = (
                       exportFunctions?: any,
                       currentExport?: ExportDataType | ExportDynamicType
                     ) => {
-                      const newData = (valKey.render as any)(indexData);
-                      let old = newData;
-                      updText.call(node, newData);
+                      let old = (valKey.render as any)(indexData);
+                      updText.call(node, old);
                       const fnText = (
                         currentIndexData: any,
                         currentImportData: any,
@@ -472,7 +471,7 @@ export const parseTemplate = (
                           old = newData;
                         }
                       };
-                      push.call(newValues, {
+                      newValues.push({
                         render: fnText,
                         type: 1,
                         key: valKey
@@ -492,9 +491,8 @@ export const parseTemplate = (
                     exportFunctions?: any,
                     currentExport?: ExportDataType | ExportDynamicType
                   ) => {
-                    const newData = indexData;
-                    let old = newData;
-                    updText.call(node, newData);
+                    let old = indexData;
+                    updText.call(node, old);
                     const fnText = (
                       currentIndexData: any,
                       currentImportData: any,
@@ -507,7 +505,7 @@ export const parseTemplate = (
                         old = newData;
                       }
                     };
-                    push.call(newValues, {
+                    newValues.push({
                       render: fnText,
                       type: 1,
                       key: valKey
@@ -527,9 +525,8 @@ export const parseTemplate = (
                   exportFunctions?: any,
                   currentExport?: ExportDataType | ExportDynamicType
                 ) => {
-                  const newData = (valKey.render as any)(importData);
-                  let old = newData;
-                  updText.call(node, newData);
+                  let old = (valKey.render as any)(importData);
+                  updText.call(node, old);
                   const fnText = (
                     currentIndexData: any,
                     currentImportData: any,
@@ -542,7 +539,7 @@ export const parseTemplate = (
                       old = newData;
                     }
                   };
-                  push.call(newValues, {
+                  newValues.push({
                     render: fnText,
                     type: 1,
                     key: valKey
@@ -561,9 +558,8 @@ export const parseTemplate = (
                   exportFunctions?: any,
                   currentExport?: ExportDataType | ExportDynamicType
                 ) => {
-                  const newData = eachIndex;
-                  let old = newData;
-                  updText.call(node, newData);
+                  let old = eachIndex;
+                  updText.call(node, old);
                   const fnText = (
                     currentIndexData: any,
                     currentImportData: any,
@@ -576,7 +572,7 @@ export const parseTemplate = (
                       old = newData;
                     }
                   };
-                  push.call(newValues, {
+                  newValues.push({
                     render: fnText,
                     type: 1,
                     key: valKey
@@ -595,9 +591,8 @@ export const parseTemplate = (
                   exportFunctions?: any,
                   currentExport?: ExportDataType | ExportDynamicType
                 ) => {
-                  const newData = undefined;
-                  let old = newData;
-                  updText.call(node, newData);
+                  let old = undefined;
+                  updText.call(node, old);
                   const fnText = (
                     currentIndexData: any,
                     currentImportData: any,
@@ -610,7 +605,7 @@ export const parseTemplate = (
                       old = newData;
                     }
                   };
-                  push.call(newValues, {
+                  newValues.push({
                     render: fnText,
                     type: 1,
                     key: valKey
@@ -632,12 +627,11 @@ export const parseTemplate = (
                 currentExport?: ExportDataType | ExportDynamicType
               ) => {
                 const firstKeyData = indexData[valKey.originKey];
-                const newData = renderKeyData(
+                let old = renderKeyData(
                   firstKeyData,
                   valKey.properties as Array<string>
                 );
-                let old = newData;
-                updText.call(node, newData);
+                updText.call(node, old);
                 const fnText = (
                   currentIndexData: any,
                   currentImportData: any,
@@ -654,7 +648,7 @@ export const parseTemplate = (
                     old = newData;
                   }
                 };
-                push.call(newValues, {
+                newValues.push({
                   render: fnText,
                   type: 1,
                   key: valKey
@@ -673,9 +667,8 @@ export const parseTemplate = (
                 exportFunctions?: any,
                 currentExport?: ExportDataType | ExportDynamicType
               ) => {
-                const newData = indexData[valKey.originKey];
-                let old = newData;
-                updText.call(node, newData);
+                let old = indexData[valKey.originKey];
+                updText.call(node, old);
                 const fnText = (
                   currentIndexData: any,
                   currentImportData: any,
@@ -688,7 +681,7 @@ export const parseTemplate = (
                     old = newData;
                   }
                 };
-                push.call(newValues, {
+                newValues.push({
                   render: fnText,
                   type: 1,
                   key: valKey
@@ -725,7 +718,7 @@ export const parseTemplate = (
             updateAttributes(node as DynamicEl, val, fnNew);
           };
           fnAttr(indexData, importData, eachIndex);
-          push.call(newValues, {
+          newValues.push({
             render: fnAttr,
             ...(val as AttributesValType)
           } as NodeValueType);
@@ -801,7 +794,7 @@ export const parseTemplate = (
             if (str !== "") {
               updClass.call(node, str);
             }
-            push.call(newValues, {
+            newValues.push({
               render: fnClass,
               ...(val as ClassType)
             } as NodeValueType);
@@ -857,220 +850,266 @@ export const parseTemplate = (
               if (newData !== "") {
                 updClass.call(node, newData);
               }
-              push.call(newValues, {
+              newValues.push({
                 render: fnClass,
                 ...(val as ClassType)
               } as NodeValueType);
             };
           } else {
-            if (isEach) {
-              switch (currentKey.originType) {
-                case 1:
-                  return (
-                    newValues: NodeValuesType,
-                    val: ValueType,
-                    node: ChildNode,
-                    renderDynamic: (...args: any[]) => any,
-                    indexData: any,
-                    eachIndex?: number,
-                    importData?: ImportDataType,
-                    key?: string,
-                    exportFunctions?: any,
-                    currentExport?: ExportDataType | ExportDynamicType
-                  ) => {
-                    const newData = (currentKey.render as any)(indexData);
-                    const fnClass = (
-                      currentIndexData: any,
-                      currentImportData: any,
-                      currentEachIndex: number | undefined
-                    ) => {
-                      const classVal = (currentKey.render as any)(
-                        currentIndexData
-                      );
-                      if ((node as Element).className !== classVal) {
-                        updClass.call(node, classVal);
-                      }
-                    };
-                    if (newData !== "") {
-                      updClass.call(node, newData);
-                    }
-                    push.call(newValues, {
-                      render: fnClass,
-                      ...(val as ClassType)
-                    } as NodeValueType);
-                  };
-                case 2:
-                  return (
-                    newValues: NodeValuesType,
-                    val: ValueType,
-                    node: ChildNode,
-                    renderDynamic: (...args: any[]) => any,
-                    indexData: any,
-                    eachIndex?: number,
-                    importData?: ImportDataType,
-                    key?: string,
-                    exportFunctions?: any,
-                    currentExport?: ExportDataType | ExportDynamicType
-                  ) => {
-                    const newData = (currentKey.render as any)(importData);
-                    const fnClass = (
-                      currentIndexData: any,
-                      currentImportData: any,
-                      currentEachIndex: number | undefined
-                    ) => {
-                      const classVal = (currentKey.render as any)(
-                        currentImportData
-                      );
-                      if ((node as Element).className !== classVal) {
-                        updClass.call(node, classVal);
-                      }
-                    };
-                    if (newData !== "") {
-                      updClass.call(node, newData);
-                    }
-                    push.call(newValues, {
-                      render: fnClass,
-                      ...(val as ClassType)
-                    } as NodeValueType);
-                  };
-                case 3:
-                  return (
-                    newValues: NodeValuesType,
-                    val: ValueType,
-                    node: ChildNode,
-                    renderDynamic: (...args: any[]) => any,
-                    indexData: any,
-                    eachIndex?: number,
-                    importData?: ImportDataType,
-                    key?: string,
-                    exportFunctions?: any,
-                    currentExport?: ExportDataType | ExportDynamicType
-                  ) => {
-                    const newData = String(eachIndex);
-                    const fnClass = (
-                      currentIndexData: any,
-                      currentImportData: any,
-                      currentEachIndex: number | undefined
-                    ) => {
-                      const classVal = String(eachIndex);
-                      if ((node as Element).className !== classVal) {
-                        updClass.call(node, classVal);
-                      }
-                    };
-                    if (newData !== "") {
-                      updClass.call(node, newData);
-                    }
-                    push.call(newValues, {
-                      render: fnClass,
-                      ...(val as ClassType)
-                    } as NodeValueType);
-                  };
-                default:
-                  return (
-                    newValues: NodeValuesType,
-                    val: ValueType,
-                    node: ChildNode,
-                    renderDynamic: (...args: any[]) => any,
-                    indexData: any,
-                    eachIndex?: number,
-                    importData?: ImportDataType,
-                    key?: string,
-                    exportFunctions?: any,
-                    currentExport?: ExportDataType | ExportDynamicType
-                  ) => {
-                    const newData = String(undefined);
-                    const fnClass = (
-                      currentIndexData: any,
-                      currentImportData: any,
-                      currentEachIndex: number | undefined
-                    ) => {
-                      const classVal = String(undefined);
-                      if ((node as Element).className !== classVal) {
-                        updClass.call(node, classVal);
-                      }
-                    };
-                    if (newData !== "") {
-                      updClass.call(node, newData);
-                    }
-                    push.call(newValues, {
-                      render: fnClass,
-                      ...(val as ClassType)
-                    } as NodeValueType);
-                  };
-              }
-            } else {
-              if (currentKey.isProperty) {
-                return (
-                  newValues: NodeValuesType,
-                  val: ValueType,
-                  node: ChildNode,
-                  renderDynamic: (...args: any[]) => any,
-                  indexData: any,
-                  eachIndex?: number,
-                  importData?: ImportDataType,
-                  key?: string,
-                  exportFunctions?: any,
-                  currentExport?: ExportDataType | ExportDynamicType
+            if (currentKey.isValueSingle) {
+              const { valueSingle } = currentKey;
+              const { condition, value } = valueSingle as ValueSingleType;
+              const { render: conditionRender } = condition;
+              return (
+                newValues: NodeValuesType,
+                val: ValueType,
+                node: ChildNode,
+                renderDynamic: (...args: any[]) => any,
+                indexData: any,
+                eachIndex?: number,
+                importData?: ImportDataType,
+                key?: string,
+                exportFunctions?: any,
+                currentExport?: ExportDataType | ExportDynamicType
+              ) => {
+                const classList = (node as Element).classList;
+                const currentCondition = (
+                  conditionRender as (...args: any[]) => boolean
+                )(indexData, importData, eachIndex);
+                let oldCondition = false;
+                const fnClass = (
+                  currentIndexData: any,
+                  currentImportData: any,
+                  currentEachIndex: number | undefined
                 ) => {
-                  const firstKeyData = indexData[currentKey.originKey];
-                  const newData = renderKeyData(
-                    firstKeyData,
-                    currentKey.properties as Array<string>
-                  );
-                  const fnClass = (
-                    currentIndexData: any,
-                    currentImportData: any,
-                    currentEachIndex: number | undefined
+                  const currentCondition = (
+                    conditionRender as (...args: any[]) => boolean
+                  )(currentIndexData, currentImportData, currentEachIndex);
+                  if (oldCondition !== currentCondition) {
+                    classList.toggle(value);
+                    oldCondition = currentCondition;
+                  }
+                };
+                if (currentCondition) {
+                  classList.add(value);
+                  oldCondition = currentCondition;
+                }
+                newValues.push({
+                  render: fnClass,
+                  ...(val as ClassType)
+                } as NodeValueType);
+              };
+            } else {
+              if (isEach) {
+                switch (currentKey.originType) {
+                  case 1:
+                    return (
+                      newValues: NodeValuesType,
+                      val: ValueType,
+                      node: ChildNode,
+                      renderDynamic: (...args: any[]) => any,
+                      indexData: any,
+                      eachIndex?: number,
+                      importData?: ImportDataType,
+                      key?: string,
+                      exportFunctions?: any,
+                      currentExport?: ExportDataType | ExportDynamicType
+                    ) => {
+                      const newData = (currentKey.render as any)(indexData);
+                      const fnClass = (
+                        currentIndexData: any,
+                        currentImportData: any,
+                        currentEachIndex: number | undefined
+                      ) => {
+                        const classVal = (currentKey.render as any)(
+                          currentIndexData
+                        );
+                        if ((node as Element).className !== classVal) {
+                          updClass.call(node, classVal);
+                        }
+                      };
+                      if (newData !== "") {
+                        updClass.call(node, newData);
+                      }
+                      newValues.push({
+                        render: fnClass,
+                        ...(val as ClassType)
+                      } as NodeValueType);
+                    };
+                  case 2:
+                    return (
+                      newValues: NodeValuesType,
+                      val: ValueType,
+                      node: ChildNode,
+                      renderDynamic: (...args: any[]) => any,
+                      indexData: any,
+                      eachIndex?: number,
+                      importData?: ImportDataType,
+                      key?: string,
+                      exportFunctions?: any,
+                      currentExport?: ExportDataType | ExportDynamicType
+                    ) => {
+                      const newData = (currentKey.render as any)(importData);
+                      const fnClass = (
+                        currentIndexData: any,
+                        currentImportData: any,
+                        currentEachIndex: number | undefined
+                      ) => {
+                        const classVal = (currentKey.render as any)(
+                          currentImportData
+                        );
+                        if ((node as Element).className !== classVal) {
+                          updClass.call(node, classVal);
+                        }
+                      };
+                      if (newData !== "") {
+                        updClass.call(node, newData);
+                      }
+                      newValues.push({
+                        render: fnClass,
+                        ...(val as ClassType)
+                      } as NodeValueType);
+                    };
+                  case 3:
+                    return (
+                      newValues: NodeValuesType,
+                      val: ValueType,
+                      node: ChildNode,
+                      renderDynamic: (...args: any[]) => any,
+                      indexData: any,
+                      eachIndex?: number,
+                      importData?: ImportDataType,
+                      key?: string,
+                      exportFunctions?: any,
+                      currentExport?: ExportDataType | ExportDynamicType
+                    ) => {
+                      const newData = String(eachIndex);
+                      const fnClass = (
+                        currentIndexData: any,
+                        currentImportData: any,
+                        currentEachIndex: number | undefined
+                      ) => {
+                        const classVal = String(eachIndex);
+                        if ((node as Element).className !== classVal) {
+                          updClass.call(node, classVal);
+                        }
+                      };
+                      if (newData !== "") {
+                        updClass.call(node, newData);
+                      }
+                      newValues.push({
+                        render: fnClass,
+                        ...(val as ClassType)
+                      } as NodeValueType);
+                    };
+                  default:
+                    return (
+                      newValues: NodeValuesType,
+                      val: ValueType,
+                      node: ChildNode,
+                      renderDynamic: (...args: any[]) => any,
+                      indexData: any,
+                      eachIndex?: number,
+                      importData?: ImportDataType,
+                      key?: string,
+                      exportFunctions?: any,
+                      currentExport?: ExportDataType | ExportDynamicType
+                    ) => {
+                      const newData = String(undefined);
+                      const fnClass = (
+                        currentIndexData: any,
+                        currentImportData: any,
+                        currentEachIndex: number | undefined
+                      ) => {
+                        const classVal = String(undefined);
+                        if ((node as Element).className !== classVal) {
+                          updClass.call(node, classVal);
+                        }
+                      };
+                      if (newData !== "") {
+                        updClass.call(node, newData);
+                      }
+                      newValues.push({
+                        render: fnClass,
+                        ...(val as ClassType)
+                      } as NodeValueType);
+                    };
+                }
+              } else {
+                if (currentKey.isProperty) {
+                  return (
+                    newValues: NodeValuesType,
+                    val: ValueType,
+                    node: ChildNode,
+                    renderDynamic: (...args: any[]) => any,
+                    indexData: any,
+                    eachIndex?: number,
+                    importData?: ImportDataType,
+                    key?: string,
+                    exportFunctions?: any,
+                    currentExport?: ExportDataType | ExportDynamicType
                   ) => {
-                    const firstKeyData = currentIndexData[currentKey.originKey];
-                    const classVal = renderKeyData(
+                    const firstKeyData = indexData[currentKey.originKey];
+                    const newData = renderKeyData(
                       firstKeyData,
                       currentKey.properties as Array<string>
                     );
-                    if ((node as Element).className !== classVal) {
-                      updClass.call(node, classVal);
+                    const fnClass = (
+                      currentIndexData: any,
+                      currentImportData: any,
+                      currentEachIndex: number | undefined
+                    ) => {
+                      const firstKeyData =
+                        currentIndexData[currentKey.originKey];
+                      const classVal = renderKeyData(
+                        firstKeyData,
+                        currentKey.properties as Array<string>
+                      );
+                      if ((node as Element).className !== classVal) {
+                        updClass.call(node, classVal);
+                      }
+                    };
+                    if (newData !== "") {
+                      updClass.call(node, newData);
                     }
+                    newValues.push({
+                      render: fnClass,
+                      ...(val as ClassType)
+                    } as NodeValueType);
                   };
-                  if (newData !== "") {
-                    updClass.call(node, newData);
-                  }
-                  push.call(newValues, {
-                    render: fnClass,
-                    ...(val as ClassType)
-                  } as NodeValueType);
-                };
-              } else {
-                return (
-                  newValues: NodeValuesType,
-                  val: ValueType,
-                  node: ChildNode,
-                  renderDynamic: (...args: any[]) => any,
-                  indexData: any,
-                  eachIndex?: number,
-                  importData?: ImportDataType,
-                  key?: string,
-                  exportFunctions?: any,
-                  currentExport?: ExportDataType | ExportDynamicType
-                ) => {
-                  const newData = indexData[currentKey.originKey];
-                  const fnClass = (
-                    currentIndexData: any,
-                    currentImportData: any,
-                    currentEachIndex: number | undefined
+                } else {
+                  return (
+                    newValues: NodeValuesType,
+                    val: ValueType,
+                    node: ChildNode,
+                    renderDynamic: (...args: any[]) => any,
+                    indexData: any,
+                    eachIndex?: number,
+                    importData?: ImportDataType,
+                    key?: string,
+                    exportFunctions?: any,
+                    currentExport?: ExportDataType | ExportDynamicType
                   ) => {
-                    const classVal = currentIndexData[currentKey.originKey];
-                    if ((node as Element).className !== classVal) {
-                      updClass.call(node, classVal);
+                    const newData = indexData[currentKey.originKey];
+                    const fnClass = (
+                      currentIndexData: any,
+                      currentImportData: any,
+                      currentEachIndex: number | undefined
+                    ) => {
+                      const classVal = currentIndexData[currentKey.originKey];
+                      if ((node as Element).className !== classVal) {
+                        updClass.call(node, classVal);
+                      }
+                    };
+                    if (newData !== "") {
+                      updClass.call(node, newData);
                     }
+                    newValues.push({
+                      render: fnClass,
+                      ...(val as ClassType)
+                    } as NodeValueType);
                   };
-                  if (newData !== "") {
-                    updClass.call(node, newData);
-                  }
-                  push.call(newValues, {
-                    render: fnClass,
-                    ...(val as ClassType)
-                  } as NodeValueType);
-                };
+                }
               }
             }
           }

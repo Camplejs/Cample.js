@@ -6,11 +6,13 @@ import {
   DynamicKeyObjectType,
   KeyValuesType,
   RenderedKeyType,
+  ValueItemType,
   ValueKeyStringType,
   ValuesType
 } from "../../../types/types";
 import { renderKey } from "../render/render-key";
 import { renderKeyData } from "../render/render-key-data";
+import { renderFn3 } from "../render/render-template-functions";
 import { parseValues } from "./parse-values";
 
 const validateIsValue = (
@@ -117,21 +119,54 @@ export const parseKey = (
   if (isValue) {
     if (isValSingle) {
       const keyObjValuesValue = (val as KeyValuesType)[0];
-      keyObj.values = keyObjValuesValue;
-      keyObj.render = valueFunctions[8];
-      const setRender = (val: ValueKeyStringType) => {
-        const { valueClass } = val;
-        if (checkObject(valueClass.value)) {
-          valueClass.render = valueFunctions[7];
-        }
+      const singleValues:
+        | ValueKeyStringType
+        | [ValueKeyStringType, ValueKeyStringType] = keyObjValuesValue.values;
+      const isArray = Array.isArray(singleValues);
+      const getValueCondition = (currentVal: ValueKeyStringType): boolean => {
+        const { valueClass } = currentVal;
+        const { value } = valueClass;
+        const isValueArray = Array.isArray(value);
+        if (
+          !isValueArray &&
+          value.render === renderFn3 &&
+          typeof value.value === "string" &&
+          value.value.split(" ").length === 1
+        ) {
+          return true;
+        } else return false;
       };
-      const currentValues = keyObjValuesValue.values;
-      if (Array.isArray(currentValues)) {
-        for (let i = 0; i < currentValues.length; i++) {
-          const currentVal = currentValues[i];
-          setRender(currentVal);
-        }
-      } else setRender(currentValues);
+      if (
+        isArray ||
+        (!isArray && !getValueCondition(singleValues)) ||
+        !isClass
+      ) {
+        keyObj.values = keyObjValuesValue;
+        keyObj.render = valueFunctions[8];
+        const setRender = (val: ValueKeyStringType) => {
+          const { valueClass } = val;
+          if (checkObject(valueClass.value)) {
+            valueClass.render = valueFunctions[7];
+          }
+        };
+        const currentValues = keyObjValuesValue.values;
+        if (Array.isArray(currentValues)) {
+          for (let i = 0; i < currentValues.length; i++) {
+            const currentVal = currentValues[i];
+            setRender(currentVal);
+          }
+        } else setRender(currentValues);
+      } else {
+        delete keyObj.isValue;
+        const value = (singleValues.valueClass.value as ValueItemType)
+          .value as string;
+        keyObj.isValueSingle = true;
+        const { condition } = keyObjValuesValue;
+        keyObj.valueSingle = {
+          condition,
+          value
+        };
+      }
     } else {
       keyObj.values = val;
       keyObj.render = valueFunctions[9];

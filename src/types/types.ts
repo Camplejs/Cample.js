@@ -394,6 +394,10 @@ export type KeyValuesValueType = {
   values: ValueKeyStringType | [ValueKeyStringType, ValueKeyStringType];
   render: (...args: any[]) => void;
 };
+export type ValueSingleType = {
+  condition: KeyValuesValueConditionType;
+  value: string;
+};
 export type KeyValuesType = KeyValuesValueType[];
 export type CurrentKeyType = {
   originKey: string;
@@ -405,6 +409,8 @@ export type CurrentKeyType = {
   originType: number;
   isClass?: boolean;
   isValue?: boolean;
+  isValueSingle?: boolean;
+  valueSingle?: ValueSingleType;
 };
 export type NodeTextType = {
   key: CurrentKeyType;

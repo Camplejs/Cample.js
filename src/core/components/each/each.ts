@@ -43,14 +43,6 @@ import { renderScript } from "../../functions/render/render-script";
 import { DataComponent } from "../data-component/data-component";
 import { parseTemplate } from "../../functions/parse/parse-template";
 import { createArgumentsTemplateFunction } from "../../functions/data/create-arguments-template-function";
-import {
-  appendChild,
-  insertBefore,
-  nextSibling,
-  push,
-  remove,
-  removeChild
-} from "../../../config/config";
 import { renderDynamic2 as renderDynamic } from "../../functions/render/render-dynamics";
 import {
   renderFn1,
@@ -223,15 +215,15 @@ export class Each extends DataComponent {
           if (isNewDataEmpty && oldDataLength !== 0) {
             if (nodePrevious !== null) {
               while (
-                nextSibling.call(nodePrevious) !== null &&
-                nextSibling.call(nodePrevious) !== nodeNext
+                nodePrevious.nextSibling !== null &&
+                nodePrevious.nextSibling !== nodeNext
               ) {
-                remove.call(nextSibling.call(nodePrevious));
+                nodePrevious.nextSibling.remove();
               }
             } else {
               if (nodeNext !== null) {
                 while (nodeNext.previousSibling !== null) {
-                  remove.call(nodeNext.previousSibling);
+                  nodeNext.previousSibling.remove();
                 }
               } else {
                 parentNode.textContent = "";
@@ -243,7 +235,7 @@ export class Each extends DataComponent {
             const isNullNodeNext = nodeNext === null;
             if (isNullNodeNext) {
               nextElNode = document.createComment("");
-              appendChild.call(parentNode, nextElNode);
+              parentNode.appendChild(nextElNode);
               nodeNext = nextElNode as CharacterData;
             }
             if (this.iteration !== undefined) {
@@ -261,8 +253,8 @@ export class Each extends DataComponent {
                   importData,
                   newKey
                 );
-                push.call(currentComponent.nodes, currentNode);
-                insertBefore.call(parentNode, el, nodeNext);
+                currentComponent.nodes.push(currentNode);
+                parentNode.insertBefore(el, nodeNext);
               }
             } else {
               for (let i = 0; i < newDataLength; i++) {
@@ -278,12 +270,12 @@ export class Each extends DataComponent {
                   importData,
                   newKey
                 );
-                push.call(currentComponent.nodes, currentNode);
-                insertBefore.call(parentNode, el, nodeNext);
+                currentComponent.nodes.push(currentNode);
+                parentNode.insertBefore(el, nodeNext);
               }
             }
             if (isNullNodeNext) {
-              removeChild.call(parentNode, nextElNode as Node);
+              parentNode.removeChild(nextElNode as Node);
             }
             return;
           } else {
@@ -379,7 +371,7 @@ export class Each extends DataComponent {
               const isNullNodeNext = nodeNext === null;
               if (isNullNodeNext) {
                 nextElNode = document.createComment("");
-                appendChild.call(parentNode, nextElNode);
+                parentNode.appendChild(nextElNode);
                 nodeNext = nextElNode as CharacterData;
               }
               const currentData = newData[newLastIndex];
@@ -409,17 +401,17 @@ export class Each extends DataComponent {
                   importData,
                   newKey
                 );
-                insertBefore.call(parentNode, el, lastEl);
+                parentNode.insertBefore(el, lastEl);
                 newData[currentIndex] = currentNode;
               }
               if (isNullNodeNext) {
-                removeChild.call(parentNode, nextElNode as Node);
+                parentNode.removeChild(nextElNode as Node);
               }
             } else if (newLastIndex === newFirstIndex) {
               for (let i = oldFirstIndex; oldFirstIndex < oldLastIndex--; i++) {
                 const currentNode = oldNodes[i];
                 const { el } = currentNode;
-                removeChild.call(parentNode, el as Node);
+                parentNode.removeChild(el as Node);
               }
             } else {
               const indexesOldArr = {};
@@ -522,8 +514,7 @@ export class Each extends DataComponent {
                   const currentNode = oldNodes[currentIndex];
                   const { el } = currentNode;
                   newData[newFirstIndex] = currentNode;
-                  insertBefore.call(
-                    parentNode,
+                  parentNode.insertBefore(
                     el as Element,
                     oldNodes[oldFirstIndex].el as Element
                   );
@@ -547,8 +538,7 @@ export class Each extends DataComponent {
                   newFirstDataKey
                 );
                 newData[newFirstIndex++] = currentNode;
-                insertBefore.call(
-                  parentNode,
+                parentNode.insertBefore(
                   el,
                   oldNodes[oldFirstIndex].el as Element
                 );
@@ -558,7 +548,7 @@ export class Each extends DataComponent {
                 const isNullNodeNext = nodeNext === null;
                 if (isNullNodeNext) {
                   nextElNode = document.createComment("");
-                  appendChild.call(parentNode, nextElNode);
+                  parentNode.appendChild(nextElNode);
                   nodeNext = nextElNode as CharacterData;
                 }
                 const currentData = newData[newLastIndex];
@@ -588,11 +578,11 @@ export class Each extends DataComponent {
                     importData,
                     newKey
                   );
-                  insertBefore.call(parentNode, el, lastEl);
+                  parentNode.insertBefore(el, lastEl);
                   newData[currentIndex] = currentNode;
                 }
                 if (isNullNodeNext) {
-                  removeChild.call(parentNode, nextElNode as Node);
+                  parentNode.removeChild(nextElNode as Node);
                 }
               } else {
                 for (
@@ -603,7 +593,7 @@ export class Each extends DataComponent {
                   const currentNode = oldNodes[i];
                   if (currentNode !== undefined) {
                     const { el } = currentNode;
-                    removeChild.call(parentNode, el as Node);
+                    parentNode.removeChild(el as Node);
                   }
                 }
               }
@@ -814,7 +804,7 @@ export class Each extends DataComponent {
             template
           );
 
-          push.call(this._dynamic.data.data.components, DynamicNodeComponent);
+          this._dynamic.data.data.components.push(DynamicNodeComponent);
           return DynamicNodeComponent;
         };
 
@@ -924,7 +914,7 @@ export class Each extends DataComponent {
             importData,
             id
           };
-          push.call(this._dynamic.data.data.values, dynamicData);
+          this._dynamic.data.data.values.push(dynamicData);
           const dynamicIndex =
             this._dynamic.data.data.values.indexOf(dynamicData);
           return this._dynamic.data.data.values[
@@ -1065,8 +1055,7 @@ export class Each extends DataComponent {
                   undefined
                 );
                 const functionsArray: FunctionsArray = [];
-                push.call(
-                  functionsArray,
+                functionsArray.push(
                   (
                     parentNode: ParentNode,
                     nodePrevious?: DynamicNodeComponentNodeType,

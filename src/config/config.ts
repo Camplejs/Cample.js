@@ -27,8 +27,6 @@ export const getParentNode = (
   Object.getOwnPropertyDescriptor(Node.prototype, "parentNode") as any
 ).get as (this: Element) => any;
 
-export const addClass = DOMTokenList.prototype.add;
-export const removeClass = DOMTokenList.prototype.remove;
 export const cloneNode = Node.prototype.cloneNode;
 export const { push, indexOf, map: mapArray, unshift, pop } = Array.prototype;
 export const { split } = String.prototype;

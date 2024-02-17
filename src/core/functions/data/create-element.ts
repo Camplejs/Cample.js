@@ -1,6 +1,4 @@
 "use strict";
-
-import { cloneNode, push } from "../../../config/config";
 import {
   EachTemplateType,
   ExportDataType,
@@ -29,10 +27,10 @@ export const createElement = (
     el: templateElemenet,
     render: templateRender
   } = templateEl;
-  const el = cloneNode.call(templateElemenet, true);
+  const el = (templateElemenet as Element).cloneNode(true);
   const length = templateNodes.length;
   const nodes: Array<IndexObjNode | ChildNode | null> = [];
-  push.call(nodes, el as ChildNode);
+  nodes.push(el as ChildNode);
   const newValues: NodeValuesType = [];
   templateRender !== undefined
     ? templateRender.call(
@@ -50,8 +48,7 @@ export const createElement = (
   for (let i = 0; i < length; i++) {
     const templateNode = templateNodes[i];
     const { render, rootId } = templateNode;
-    push.call(
-      nodes,
+    nodes.push(
       (render as RenderNodeFunctionType).call(
         nodes[rootId],
         newValues,
