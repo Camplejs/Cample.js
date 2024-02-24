@@ -9,7 +9,7 @@
 [![npm-version](https://img.shields.io/npm/v/cample?logo=npm&color=0183ff&style=for-the-badge)](https://www.npmjs.com/package/cample)
 [![discussions](https://img.shields.io/badge/discussions-0183ff?style=for-the-badge&logo=github&labelColor=555555)](https://github.com/Camplejs/Cample.js/discussions)
 [![twitter](https://img.shields.io/badge/twitter-0183ff?style=for-the-badge&logo=x&labelColor=555555)](https://twitter.com/Camplejs)
-[![discord](https://img.shields.io/badge/discord-0183ff?style=for-the-badge&logo=discord&logoColor=FFF&labelColor=555555)](https://twitter.com/Camplejs)
+[![discord](https://img.shields.io/badge/discord-0183ff?style=for-the-badge&logo=discord&logoColor=FFF&labelColor=555555)](https://discord.gg/EsuX5f7s)
 
 </div>
 
