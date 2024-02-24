@@ -9,7 +9,7 @@
 [![npm-version](https://img.shields.io/npm/v/cample?logo=npm&color=0183ff&style=for-the-badge)](https://www.npmjs.com/package/cample)
 [![discussions](https://img.shields.io/badge/discussions-0183ff?style=for-the-badge&logo=github&labelColor=555555)](https://github.com/Camplejs/Cample.js/discussions)
 [![twitter](https://img.shields.io/badge/twitter-0183ff?style=for-the-badge&logo=x&labelColor=555555)](https://twitter.com/Camplejs)
-[![license](https://img.shields.io/npm/l/cample?color=0183ff&style=for-the-badge)](https://github.com/Camplejs/Cample.js/blob/main/LICENSE)
+[![discord](https://img.shields.io/badge/discord-0183ff?style=for-the-badge&logo=discord&logoColor=FFF&labelColor=555555)](https://twitter.com/Camplejs)
 
 </div>
 
@@ -21,6 +21,15 @@
 ## Why Cample.js?
 
 Cample.js is an actively developed and maintained framework that supports many modern technology solutions for creating user interfaces. The component-based approach, as well as reactivity without a virtual DOM and data export and import, will make building a site much faster than if the site was developed using js alone. Moreover, the framework is new and you can try it as something new when creating a website.
+
+## Main advantage of the framework
+
+<a href="https://krausest.github.io/js-framework-benchmark/2024/table_chrome_122.0.6261.69.html">
+  <img width="100%" src="https://github.com/Camplejs/media/blob/main/diagram.svg" alt="benchmarks" >
+</a>
+
+Performance diagram of javascript frameworks and libraries.<br/>
+Results based on <a href="https://krausest.github.io/js-framework-benchmark/2024/table_chrome_122.0.6261.69.html">122 release</a>
 
 ## Features
 
@@ -124,23 +133,6 @@ Link article: <a href="https://camplejs.github.io/documentation/reactivity.html"
 ## Changelog
 
 [Changelog](https://github.com/Camplejs/Cample.js/releases)
-
-## Benchmark
-
-| Name  | Cample.js |
-| ------------- | ------------- |
-| create rows  | 40.4  |
-| replace all rows  | 47.8  |
-| partial update  | 20.0  |
-| select row  | 5.5  |
-| swap rows  | 23.4  |
-| remove row  | 18.7  |
-| create many rows  | 412.9  |
-| append rows to large table  | 50.0  |
-| clear rows | 13.9  |
-| geometric mean | 1.14  |
-
-[Code](https://github.com/krausest/js-framework-benchmark/tree/master/frameworks/keyed/cample)
 
 ## Contribution
 
