@@ -22,7 +22,7 @@
 
 Cample.js is an actively developed and maintained framework that supports many modern technology solutions for creating user interfaces. The component-based approach, as well as reactivity without a virtual DOM and data export and import, will make building a site much faster than if the site was developed using js alone. Moreover, the framework is new and you can try it as something new when creating a website.
 
-## Main advantage of the framework
+## Main advantage of the Cample.js
 
 <a href="https://krausest.github.io/js-framework-benchmark/2024/table_chrome_122.0.6261.69.html">
   <img width="100%" src="https://github.com/Camplejs/media/blob/main/diagram.svg" alt="benchmarks" >
