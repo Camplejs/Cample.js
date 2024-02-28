@@ -4,14 +4,13 @@ import {
   ExportDataType,
   ExportDynamicType,
   ImportDataType,
-  IndexObjNode,
+  NodeNodesType,
   NodeType,
-  NodeValuesType,
-  RenderNodeFunctionType
+  RenderNodeFunctionType,
+  StackType
 } from "../../../types/types";
 
 export const createElement = (
-  renderDynamic: (...args: any[]) => any,
   indexData: any,
   index: number,
   dataId: number,
@@ -25,18 +24,21 @@ export const createElement = (
   const {
     nodes: templateNodes,
     el: templateElemenet,
-    render: templateRender
+    render: templateRender,
+    values: newValues
   } = templateEl;
   const el = (templateElemenet as Element).cloneNode(true);
   const length = templateNodes.length;
-  const nodes: Array<IndexObjNode | ChildNode | null> = [];
+  const nodes: NodeNodesType = [];
+  const lengthValues = newValues.length;
+  const stack: StackType = new Array(lengthValues);
+  const newNodes = new Array(lengthValues);
   nodes.push(el as ChildNode);
-  const newValues: NodeValuesType = [];
   templateRender !== undefined
     ? templateRender.call(
         el as ChildNode,
-        newValues,
-        renderDynamic,
+        newNodes,
+        stack,
         indexData,
         eachIndex,
         importData,
@@ -51,8 +53,8 @@ export const createElement = (
     nodes.push(
       (render as RenderNodeFunctionType).call(
         nodes[rootId],
-        newValues,
-        renderDynamic,
+        newNodes,
+        stack,
         indexData,
         eachIndex,
         importData,
@@ -66,6 +68,8 @@ export const createElement = (
     index,
     values: newValues,
     dataId,
+    nodes: newNodes,
+    stack,
     el,
     key
   };

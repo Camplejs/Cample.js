@@ -183,10 +183,10 @@ export class Each extends DataComponent {
           eachIndex: number,
           importData: any
         ) => {
-          const values = currentNode.values;
+          const { values, nodes, stack } = currentNode;
           for (let i = 0; i < values.length; i++) {
             const value = values[i];
-            value.render(indexData, importData, eachIndex, value);
+            value(nodes, stack, indexData, importData, eachIndex, value);
           }
         };
         const renderNewData = (
@@ -244,7 +244,6 @@ export class Each extends DataComponent {
                 renderIteration(i, indexData, importData);
                 const newKey = renderKey(indexData, keyValue, importData, i);
                 const { el, currentNode } = createElement(
-                  renderDynamic,
                   indexData,
                   index,
                   dataId,
@@ -261,7 +260,6 @@ export class Each extends DataComponent {
                 const indexData = data[i];
                 const newKey = renderKey(indexData, keyValue, importData, i);
                 const { el, currentNode } = createElement(
-                  renderDynamic,
                   indexData,
                   index,
                   dataId,
@@ -367,184 +365,10 @@ export class Each extends DataComponent {
               }
               break;
             }
-            if (oldLastIndex === oldFirstIndex) {
-              const isNullNodeNext = nodeNext === null;
-              if (isNullNodeNext) {
-                nextElNode = document.createComment("");
-                parentNode.appendChild(nextElNode);
-                nodeNext = nextElNode as CharacterData;
-              }
-              const currentData = newData[newLastIndex];
-              const lastEl =
-                currentData !== undefined && currentData.el !== undefined
-                  ? currentData.el
-                  : nodeNext;
-              for (
-                let currentIndex = newFirstIndex;
-                newFirstIndex < newLastIndex--;
-                currentIndex++
-              ) {
-                const currentIndexData = newData[currentIndex];
-                const newKey = renderKey(
-                  currentIndexData,
-                  keyValue,
-                  importData,
-                  currentIndex
-                );
-                const { el, currentNode } = createElement(
-                  renderDynamic,
-                  currentIndexData,
-                  index,
-                  dataId,
-                  template,
-                  currentIndex,
-                  importData,
-                  newKey
-                );
-                parentNode.insertBefore(el, lastEl);
-                newData[currentIndex] = currentNode;
-              }
-              if (isNullNodeNext) {
-                parentNode.removeChild(nextElNode as Node);
-              }
-            } else if (newLastIndex === newFirstIndex) {
-              for (let i = oldFirstIndex; oldFirstIndex < oldLastIndex--; i++) {
-                const currentNode = oldNodes[i];
-                const { el } = currentNode;
-                parentNode.removeChild(el as Node);
-              }
-            } else {
-              const indexesOldArr = {};
-              const oldLength = oldLastIndex - oldFirstIndex;
-              for (
-                let currentIndex = oldFirstIndex;
-                currentIndex < oldLength;
-                currentIndex++
-              ) {
-                indexesOldArr[oldNodes[currentIndex].key as string] =
-                  currentIndex;
-              }
-              while (
-                oldFirstIndex < oldLastIndex ||
-                newFirstIndex < newLastIndex
-              ) {
-                if (
-                  oldLastIndex === oldFirstIndex ||
-                  newLastIndex === newFirstIndex
-                ) {
-                  break;
-                }
-                if (oldNodes[oldFirstIndex] === undefined) {
-                  oldFirstIndex++;
-                  continue;
-                }
-                currentOldLastIndex = oldLastIndex - 1;
-                if (oldNodes[currentOldLastIndex] === undefined) {
-                  oldLastIndex--;
-                  continue;
-                }
-                if (
-                  oldNodes[oldFirstIndex].key ===
-                  (newFirstDataKey = renderKey(
-                    newData[newFirstIndex],
-                    keyValue,
-                    importData,
-                    newFirstIndex
-                  ))
-                ) {
-                  renderValuesNode(
-                    oldNodes[oldFirstIndex],
-                    data[newFirstIndex],
-                    newFirstIndex,
-                    importData
-                  );
-                  newData[newFirstIndex++] = oldNodes[oldFirstIndex++];
-                  continue;
-                }
-                currentNewLastIndex = newLastIndex - 1;
-                if (
-                  oldNodes[currentOldLastIndex].key ===
-                  (newLastDataKey = renderKey(
-                    newData[currentNewLastIndex],
-                    keyValue,
-                    importData,
-                    currentNewLastIndex
-                  ))
-                ) {
-                  renderValuesNode(
-                    oldNodes[currentOldLastIndex],
-                    data[currentNewLastIndex],
-                    currentNewLastIndex,
-                    importData
-                  );
-                  newData[currentNewLastIndex] = oldNodes[currentOldLastIndex];
-                  newLastIndex--;
-                  oldLastIndex--;
-                  continue;
-                }
-                if (
-                  oldNodes[oldFirstIndex].key === newLastDataKey &&
-                  oldNodes[currentOldLastIndex].key === newFirstDataKey
-                ) {
-                  renderValuesNode(
-                    oldNodes[currentOldLastIndex],
-                    data[newFirstIndex],
-                    newFirstIndex,
-                    importData
-                  );
-                  renderValuesNode(
-                    oldNodes[oldFirstIndex],
-                    data[currentNewLastIndex],
-                    currentNewLastIndex,
-                    importData
-                  );
-                  swapElements(
-                    (newData[newFirstIndex++] = oldNodes[currentOldLastIndex])
-                      .el as Element,
-                    (newData[currentNewLastIndex] = oldNodes[oldFirstIndex++])
-                      .el as Element,
-                    parentNode
-                  );
-                  newLastIndex--;
-                  oldLastIndex--;
-                  continue;
-                }
-                if (indexesOldArr[newFirstDataKey] !== undefined) {
-                  const currentIndex = indexesOldArr[newFirstDataKey];
-                  const currentNode = oldNodes[currentIndex];
-                  const { el } = currentNode;
-                  newData[newFirstIndex] = currentNode;
-                  parentNode.insertBefore(
-                    el as Element,
-                    oldNodes[oldFirstIndex].el as Element
-                  );
-                  renderValuesNode(
-                    newData[newFirstIndex],
-                    data[newFirstIndex],
-                    newFirstIndex++,
-                    importData
-                  );
-                  oldNodes[currentIndex] = undefined as unknown as NodeType;
-                  continue;
-                }
-                const { el, currentNode } = createElement(
-                  renderDynamic,
-                  newData[newFirstIndex],
-                  index,
-                  dataId,
-                  template,
-                  newFirstIndex,
-                  importData,
-                  newFirstDataKey
-                );
-                newData[newFirstIndex++] = currentNode;
-                parentNode.insertBefore(
-                  el,
-                  oldNodes[oldFirstIndex].el as Element
-                );
-                continue;
-              }
-              if (oldLastIndex === oldFirstIndex) {
+            const isAdd = oldLastIndex === oldFirstIndex;
+            const isRemove = newLastIndex === newFirstIndex;
+            if (!(isAdd && isRemove)) {
+              if (isAdd) {
                 const isNullNodeNext = nodeNext === null;
                 if (isNullNodeNext) {
                   nextElNode = document.createComment("");
@@ -569,7 +393,6 @@ export class Each extends DataComponent {
                     currentIndex
                   );
                   const { el, currentNode } = createElement(
-                    renderDynamic,
                     currentIndexData,
                     index,
                     dataId,
@@ -584,16 +407,197 @@ export class Each extends DataComponent {
                 if (isNullNodeNext) {
                   parentNode.removeChild(nextElNode as Node);
                 }
-              } else {
+              } else if (isRemove) {
                 for (
                   let i = oldFirstIndex;
                   oldFirstIndex < oldLastIndex--;
                   i++
                 ) {
                   const currentNode = oldNodes[i];
-                  if (currentNode !== undefined) {
+                  const { el } = currentNode;
+                  parentNode.removeChild(el as Node);
+                }
+              } else {
+                const indexesOldArr = {};
+                const oldLength = oldLastIndex - oldFirstIndex;
+                for (
+                  let currentIndex = oldFirstIndex;
+                  currentIndex < oldLength;
+                  currentIndex++
+                ) {
+                  indexesOldArr[oldNodes[currentIndex].key as string] =
+                    currentIndex;
+                }
+                while (
+                  oldFirstIndex < oldLastIndex ||
+                  newFirstIndex < newLastIndex
+                ) {
+                  if (
+                    oldLastIndex === oldFirstIndex ||
+                    newLastIndex === newFirstIndex
+                  ) {
+                    break;
+                  }
+                  if (oldNodes[oldFirstIndex] === undefined) {
+                    oldFirstIndex++;
+                    continue;
+                  }
+                  currentOldLastIndex = oldLastIndex - 1;
+                  if (oldNodes[currentOldLastIndex] === undefined) {
+                    oldLastIndex--;
+                    continue;
+                  }
+                  if (
+                    oldNodes[oldFirstIndex].key ===
+                    (newFirstDataKey = renderKey(
+                      newData[newFirstIndex],
+                      keyValue,
+                      importData,
+                      newFirstIndex
+                    ))
+                  ) {
+                    renderValuesNode(
+                      oldNodes[oldFirstIndex],
+                      data[newFirstIndex],
+                      newFirstIndex,
+                      importData
+                    );
+                    newData[newFirstIndex++] = oldNodes[oldFirstIndex++];
+                    continue;
+                  }
+                  currentNewLastIndex = newLastIndex - 1;
+                  if (
+                    oldNodes[currentOldLastIndex].key ===
+                    (newLastDataKey = renderKey(
+                      newData[currentNewLastIndex],
+                      keyValue,
+                      importData,
+                      currentNewLastIndex
+                    ))
+                  ) {
+                    renderValuesNode(
+                      oldNodes[currentOldLastIndex],
+                      data[currentNewLastIndex],
+                      currentNewLastIndex,
+                      importData
+                    );
+                    newData[currentNewLastIndex] =
+                      oldNodes[currentOldLastIndex];
+                    newLastIndex--;
+                    oldLastIndex--;
+                    continue;
+                  }
+                  if (
+                    oldNodes[oldFirstIndex].key === newLastDataKey &&
+                    oldNodes[currentOldLastIndex].key === newFirstDataKey
+                  ) {
+                    renderValuesNode(
+                      oldNodes[currentOldLastIndex],
+                      data[newFirstIndex],
+                      newFirstIndex,
+                      importData
+                    );
+                    renderValuesNode(
+                      oldNodes[oldFirstIndex],
+                      data[currentNewLastIndex],
+                      currentNewLastIndex,
+                      importData
+                    );
+                    swapElements(
+                      (newData[newFirstIndex++] = oldNodes[currentOldLastIndex])
+                        .el as Element,
+                      (newData[currentNewLastIndex] = oldNodes[oldFirstIndex++])
+                        .el as Element,
+                      parentNode
+                    );
+                    newLastIndex--;
+                    oldLastIndex--;
+                    continue;
+                  }
+                  if (indexesOldArr[newFirstDataKey] !== undefined) {
+                    const currentIndex = indexesOldArr[newFirstDataKey];
+                    const currentNode = oldNodes[currentIndex];
                     const { el } = currentNode;
-                    parentNode.removeChild(el as Node);
+                    newData[newFirstIndex] = currentNode;
+                    parentNode.insertBefore(
+                      el as Element,
+                      oldNodes[oldFirstIndex].el as Element
+                    );
+                    renderValuesNode(
+                      newData[newFirstIndex],
+                      data[newFirstIndex],
+                      newFirstIndex++,
+                      importData
+                    );
+                    oldNodes[currentIndex] = undefined as unknown as NodeType;
+                    continue;
+                  }
+                  const { el, currentNode } = createElement(
+                    newData[newFirstIndex],
+                    index,
+                    dataId,
+                    template,
+                    newFirstIndex,
+                    importData,
+                    newFirstDataKey
+                  );
+                  newData[newFirstIndex++] = currentNode;
+                  parentNode.insertBefore(
+                    el,
+                    oldNodes[oldFirstIndex].el as Element
+                  );
+                  continue;
+                }
+                if (oldLastIndex === oldFirstIndex) {
+                  const isNullNodeNext = nodeNext === null;
+                  if (isNullNodeNext) {
+                    nextElNode = document.createComment("");
+                    parentNode.appendChild(nextElNode);
+                    nodeNext = nextElNode as CharacterData;
+                  }
+                  const currentData = newData[newLastIndex];
+                  const lastEl =
+                    currentData !== undefined && currentData.el !== undefined
+                      ? currentData.el
+                      : nodeNext;
+                  for (
+                    let currentIndex = newFirstIndex;
+                    newFirstIndex < newLastIndex--;
+                    currentIndex++
+                  ) {
+                    const currentIndexData = newData[currentIndex];
+                    const newKey = renderKey(
+                      currentIndexData,
+                      keyValue,
+                      importData,
+                      currentIndex
+                    );
+                    const { el, currentNode } = createElement(
+                      currentIndexData,
+                      index,
+                      dataId,
+                      template,
+                      currentIndex,
+                      importData,
+                      newKey
+                    );
+                    parentNode.insertBefore(el, lastEl);
+                    newData[currentIndex] = currentNode;
+                  }
+                  if (isNullNodeNext) {
+                    parentNode.removeChild(nextElNode as Node);
+                  }
+                } else {
+                  for (
+                    let i = oldFirstIndex;
+                    oldFirstIndex < oldLastIndex--;
+                    i++
+                  ) {
+                    const currentNode = oldNodes[i];
+                    if (currentNode !== undefined) {
+                      const { el } = currentNode;
+                      parentNode.removeChild(el as Node);
+                    }
                   }
                 }
               }
@@ -854,6 +858,7 @@ export class Each extends DataComponent {
           };
 
           const { obj: newTemplateObj } = parseTemplate(
+            renderDynamic,
             [
               renderFn1,
               renderFn2,

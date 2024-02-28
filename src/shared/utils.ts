@@ -22,9 +22,7 @@ import {
   MAIN_REGEX,
   SPACE_REGEX,
   VALUE_REGEX,
-  insertBefore,
-  push,
-  replaceChild
+  push
 } from "../config/config";
 import { renderKey } from "../core/functions/render/render-key";
 
@@ -240,12 +238,10 @@ export const swapElements = (
   el2: Element,
   parentNode: ParentNode
 ) => {
-  const nextEl1 = el1.nextElementSibling;
-  insertBefore.call(
-    parentNode,
-    replaceChild.call(parentNode, el1, el2),
-    nextEl1
-  );
+  const nextEl1 = el1.nextSibling;
+  const nextEl2 = el2.nextSibling;
+  parentNode.insertBefore(el2, nextEl1);
+  parentNode.insertBefore(el1, nextEl2);
 };
 export const getAttrKeys = (
   el: Element

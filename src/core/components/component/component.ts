@@ -165,9 +165,10 @@ export class Component extends DataComponent {
       const renderDynamicNodes = () => {
         setDynamicNodes();
         this._dynamic.dynamicNodes.forEach((e) => {
-          const data = getData(this._dynamic.data.data.values, e.dataId);
-          for (const value of e.values) {
-            value.render(data, undefined, undefined, value);
+          const { dataId, values, nodes, stack } = e;
+          const data = getData(this._dynamic.data.data.values, dataId);
+          for (const value of values) {
+            value(nodes, stack, data, undefined, undefined, value);
           }
         });
         this._dynamic.dynamicNodes = [];
@@ -819,6 +820,7 @@ export class Component extends DataComponent {
                 this.functions
               );
             const { obj: newTemplateObj } = parseTemplate(
+              renderDynamic,
               [
                 renderFn1,
                 renderFn2,
@@ -857,7 +859,6 @@ export class Component extends DataComponent {
               renderImportString
             };
             const { el, currentNode } = createElement(
-              renderDynamic,
               data,
               index,
               currentId,

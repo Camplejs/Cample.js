@@ -225,6 +225,7 @@ export type EachTemplateNodesType = Array<IndexObjNode>;
 export type EachTemplateType = {
   el: Element | null;
   key?: ValueItemsType;
+  values: NodeValuesType;
   nodes: EachTemplateNodesType;
   render?: (...args: any[]) => void;
 };
@@ -422,12 +423,16 @@ export type NodeValueType = {
 } & AttributesValType &
   NodeTextType &
   ClassType;
-export type NodeValuesType = Array<NodeValueType>;
+export type NodeValuesType = Array<(...args: any[]) => void>;
+export type StackType = Array<any>;
+export type NodeNodesType = Array<ChildNode | null>;
 export type NodeType = {
   isNew?: boolean;
   index: number;
   key?: string;
   el?: Node;
+  nodes: NodeNodesType;
+  stack: StackType;
   values: NodeValuesType;
   dataId: number;
 };
