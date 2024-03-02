@@ -212,7 +212,7 @@ export class Each extends DataComponent {
           const { key } = template as EachTemplateType;
           const { render: renderKey, value: keyValue } = key as ValueItemsType;
           const data = newData;
-          if (isNewDataEmpty && oldDataLength !== 0) {
+          if (isNewDataEmpty && !isOldDataEmpty) {
             if (nodePrevious !== null) {
               while (
                 nodePrevious.nextSibling !== null &&
@@ -231,7 +231,7 @@ export class Each extends DataComponent {
             }
             currentComponent.nodes = [];
             return;
-          } else if (isOldDataEmpty && newDataLength !== 0) {
+          } else if (isOldDataEmpty && !isNewDataEmpty) {
             const isNullNodeNext = nodeNext === null;
             if (isNullNodeNext) {
               nextElNode = document.createComment("");
