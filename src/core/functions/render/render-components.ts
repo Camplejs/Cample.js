@@ -53,7 +53,7 @@ export const renderComponents = (
             importArray = [...(component.import as ImportType)];
           } else {
             const importData = component.import as ImportObjectType;
-            importArray = [...importData.value];
+            importArray = [...importData.value] as any;
           }
           if (component.bind !== undefined) {
             if (Array.isArray(component.bind)) {
@@ -80,7 +80,7 @@ export const renderComponents = (
             value: importArray,
             exportId: exportNewId
           };
-          return getArrImportString(importObj, 0);
+          return getArrImportString(importObj as any, 0);
         } else {
           createError("Import type error");
         }

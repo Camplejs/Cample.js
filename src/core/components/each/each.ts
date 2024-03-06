@@ -7,7 +7,8 @@ import {
   getKey,
   getData,
   getCurrentComponent,
-  swapElements
+  swapElements,
+  getObjData
 } from "../../../shared/utils";
 import {
   DataType,
@@ -72,6 +73,7 @@ export class Each extends DataComponent {
   public importedDataName: string;
   public iteration: IterationFunctionType | undefined;
   public indexName: string;
+  public isDataFunction: boolean;
 
   constructor(
     selector: SelectorType,
@@ -89,12 +91,16 @@ export class Each extends DataComponent {
       : "importedData";
     this.iteration = options.iteration;
     this.indexName = options.indexName ? options.indexName : "index";
+    this.isDataFunction = checkFunction(data);
     if (
       this.indexName === this.valueName ||
       this.indexName === this.importedDataName ||
       this.valueName === this.importedDataName
     ) {
       createError("Name error");
+    }
+    if (this.selector === undefined) {
+      createError("Selector error");
     }
   }
 
@@ -114,20 +120,19 @@ export class Each extends DataComponent {
       if (isFunction || typeof this.eachTemplate === "string") {
         const templateElement: any = null;
         const trim = (trimHTML && this.trimHTML === undefined) || this.trimHTML;
-        const getDynamicNode = (
+        const getEachIndex = (
           currentComponent: EachDynamicNodeComponentType,
           value: any
         ) => {
-          let result: any = undefined;
           const array = currentComponent.nodes;
-          for (let i = 0; i < array.length; i++) {
+          let i = 0;
+          for (; i < array.length; i++) {
             const item = array[i];
             if (item?.["key"] === value) {
-              result = item;
               break;
             }
           }
-          return result;
+          return i;
         };
         const getEventsFunction = (
           key: string,
@@ -765,17 +770,13 @@ export class Each extends DataComponent {
           keyEl: string | undefined,
           _: number
         ) => {
-          if (keyEl === undefined) createError("key error");
+          // if (keyEl === undefined) createError("key error");
           const currentComponent = getCurrentComponent(
             this._dynamic.data.data.components,
             dataId
           );
-          const currentDynamicNode = getDynamicNode(
-            currentComponent,
-            keyEl as string
-          );
-          const eachIndex = currentComponent.nodes.indexOf(currentDynamicNode);
-          if (eachIndex === undefined) createError("EachIndex error");
+          const eachIndex = getEachIndex(currentComponent, keyEl as string);
+          // if (eachIndex === undefined) createError("EachIndex error");
           const indexData = getData(this._dynamic.data.data.values, dataId)?.[
             eachIndex
           ];
@@ -977,11 +978,11 @@ export class Each extends DataComponent {
           importData: DataType | undefined,
           isDataFunction?: boolean
         ) => {
-          const oldData = getData(
+          const { data: oldData, index: dynamicIndex } = getObjData(
             this._dynamic.data.data.values,
             id,
             false
-          ) as DynamicEachDataType;
+          );
           const clonedOldData = (oldData.value as Array<any>).slice();
           const data = renderDynamicData(
             importData,
@@ -989,10 +990,11 @@ export class Each extends DataComponent {
             oldData?.value,
             true
           );
-          const dynamicIndex = this._dynamic.data.data.values.indexOf(oldData);
-          this._dynamic.data.data.values[dynamicIndex].oldValue = clonedOldData;
-          this._dynamic.data.data.values[dynamicIndex].value = data;
-          this._dynamic.data.data.values[dynamicIndex].importData = importData;
+          this._dynamic.data.data.values[dynamicIndex as number].oldValue =
+            clonedOldData;
+          this._dynamic.data.data.values[dynamicIndex as number].value = data;
+          this._dynamic.data.data.values[dynamicIndex as number].importData =
+            importData;
         };
         const renderComponentsDynamic = (
           index: number,
@@ -1011,76 +1013,71 @@ export class Each extends DataComponent {
             importData
           );
         };
-        if (this.selector) {
-          if (typeRender === "dynamic") {
-            const components = this._dynamic.data.data.components;
-            for (const component of components) {
-              const index = component.id;
-              if (index === undefined) createError("Index error");
-              const importObject = component.import;
-              const importIndex =
-                importObject?.importIndex !== undefined
-                  ? importObject.importIndex
-                  : 0;
-              const importData = renderImportData(
-                null,
-                exportData,
-                importObject,
-                importIndex
-              );
-              const isDataFunction = checkFunction(this.data);
-              renderComponentsDynamic(
-                index,
-                importData,
-                isDataFunction,
-                component as EachDynamicNodeComponentType
-              );
-            }
-          } else {
-            document
-              .querySelectorAll(`template[data-cample=${this.selector}]`)
-              .forEach((e, index) => {
-                const importObject = renderImport(e, this.import);
-                this.importId = renderExportId(e, importId);
-                const importData = renderImportData(e, exportData);
-                const isDataFunction = this.data && checkFunction(this.data);
-                const currentId = this._dynamic.data.data.currentId;
-                const templateData = renderTemplateData(
-                  currentId,
-                  importData,
-                  isDataFunction
-                );
-                const data = templateData?.value;
-                const isDataObject = checkObject(data);
-                renderScriptsAndStyles(
-                  data as EachDataValueType,
-                  e,
-                  "beforeLoad",
-                  importData,
-                  undefined
-                );
-                const functionsArray: FunctionsArray = [];
-                functionsArray.push(
-                  (
-                    parentNode: ParentNode,
-                    nodePrevious?: DynamicNodeComponentNodeType,
-                    nodeNext?: DynamicNodeComponentNodeType
-                  ) =>
-                    renderEach(
-                      data,
-                      isDataObject,
-                      currentId,
-                      index,
-                      parentNode,
-                      nodePrevious,
-                      nodeNext,
-                      importObject,
-                      importData
-                    )
-                );
-                renderHTML(e, templateElement, functionsArray, "each");
-              });
+        if (typeRender === "dynamic") {
+          const components = this._dynamic.data.data.components;
+          for (const component of components) {
+            const index = component.id;
+            const importObject = component.import;
+            const importIndex =
+              importObject?.importIndex !== undefined
+                ? importObject.importIndex
+                : 0;
+            const importData = renderImportData(
+              null,
+              exportData,
+              importObject,
+              importIndex
+            );
+            renderComponentsDynamic(
+              index,
+              importData,
+              this.isDataFunction,
+              component as EachDynamicNodeComponentType
+            );
           }
+        } else {
+          document
+            .querySelectorAll(`template[data-cample=${this.selector}]`)
+            .forEach((e, index) => {
+              const importObject = renderImport(e, this.import);
+              this.importId = renderExportId(e, importId);
+              const importData = renderImportData(e, exportData);
+              const currentId = this._dynamic.data.data.currentId;
+              const templateData = renderTemplateData(
+                currentId,
+                importData,
+                this.isDataFunction
+              );
+              const data = templateData?.value;
+              const isDataObject = checkObject(data);
+              renderScriptsAndStyles(
+                data as EachDataValueType,
+                e,
+                "beforeLoad",
+                importData,
+                undefined
+              );
+              const functionsArray: FunctionsArray = [];
+              functionsArray.push(
+                (
+                  parentNode: ParentNode,
+                  nodePrevious?: DynamicNodeComponentNodeType,
+                  nodeNext?: DynamicNodeComponentNodeType
+                ) =>
+                  renderEach(
+                    data,
+                    isDataObject,
+                    currentId,
+                    index,
+                    parentNode,
+                    nodePrevious,
+                    nodeNext,
+                    importObject,
+                    importData
+                  )
+              );
+              renderHTML(e, templateElement, functionsArray, "each");
+            });
         }
       } else {
         createError("templateFunction is function");

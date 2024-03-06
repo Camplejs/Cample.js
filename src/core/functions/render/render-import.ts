@@ -65,13 +65,50 @@ export const renderImport = (
                   });
                   return result;
                 };
-                const newDataArray = concatArrays(dataArr, importData.value);
+                const newDataArray = concatArrays(
+                  dataArr,
+                  importData.value as any
+                ).map((e: string) => {
+                  if (e.includes(":")) {
+                    const valueImportArr = e.split(":");
+                    if (valueImportArr.length === 2) {
+                      const objVal = {
+                        value: valueImportArr[0],
+                        index: valueImportArr[1]
+                      };
+                      return objVal;
+                    } else {
+                      createError(`Syntax value error`);
+                    }
+                  } else if (e.includes("[")) {
+                    if (!e.includes("]")) createError("Syntax value error");
+                    const dataValueArr = JSON.parse(e);
+                    // if (!Array.isArray(dataValueArr)) createError("Syntax value error");
+                    return dataValueArr;
+                  } else return e;
+                });
                 const newImport: ImportObjectType = {
-                  value: newDataArray,
+                  value: newDataArray as any,
                   exportId: oldData.exportId,
                   importIndex: oldData.importIndex
                 };
-                importObject = newImport;
+                const newImportObjectDataArray = newDataArray.map((e) => {
+                  if (Array.isArray(e)) {
+                    return {
+                      value: e,
+                      isArray: true
+                    };
+                  } else {
+                    return {
+                      value: e
+                    };
+                  }
+                });
+                const newImportObject = {
+                  ...newImport,
+                  value: newImportObjectDataArray
+                };
+                importObject = newImportObject as any;
                 const newVal = getArrImportString(newImport, oldData.index);
                 if (newVal) {
                   el.setAttribute("data-cample-import", newVal);

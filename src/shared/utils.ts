@@ -239,9 +239,7 @@ export const swapElements = (
   parentNode: ParentNode
 ) => {
   const nextEl1 = el1.nextSibling;
-  const nextEl2 = el2.nextSibling;
-  parentNode.insertBefore(el2, nextEl1);
-  parentNode.insertBefore(el1, nextEl2);
+  parentNode.insertBefore(parentNode.replaceChild(el1, el2), nextEl1);
 };
 export const getAttrKeys = (
   el: Element
@@ -374,6 +372,30 @@ export const getData = (
     return isValue ? data.value : data;
   } else return undefined;
 };
+export const getObjData = (
+  values: DynamicDataType[],
+  dataId: number,
+  isValue = true
+) => {
+  let data: any = undefined;
+  let i = 0;
+  for (; i < values.length; i++) {
+    const item = values[i];
+    if (item?.id === dataId) {
+      data = item;
+      break;
+    }
+  }
+  if (data) {
+    return {
+      data: isValue ? data.value : data,
+      index: i
+    };
+  } else
+    return {
+      data: undefined
+    };
+};
 export const getKey = (key: string) => {
   const newKey = renderKey(key);
   return checkObject(newKey) ? (newKey as DynamicKeyObjectType).key : newKey;
@@ -439,7 +461,7 @@ export const getArrImportString = (
   index: number
 ) => {
   if (obj && obj.value && Array.isArray(obj.value)) {
-    obj.value = obj.value.map((val) => val.replace(SPACE_REGEX, ""));
+    obj.value = obj.value.map((val) => (val as any).replace(SPACE_REGEX, ""));
     const importString = obj.value.join(";");
     const importObj: ImportObjectStringType = {
       import: importString,

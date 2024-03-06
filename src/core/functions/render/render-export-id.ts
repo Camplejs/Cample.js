@@ -9,7 +9,7 @@ export const renderExportId = (
   if (el) {
     if (el.hasAttribute("data-cample-import")) {
       let dataSet = el.getAttribute("data-cample-import");
-      if (dataSet) {
+      if (dataSet !== null) {
         dataSet = dataSet.replace(SPACE_REGEX, "");
         const obj = JSON.parse(dataSet);
         if (obj && obj.exportId) {

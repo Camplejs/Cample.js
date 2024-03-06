@@ -12,7 +12,9 @@ export const renderComponentDynamicKeyData = (
   renderedKey?: [string, boolean, ArrayStringType]
 ): any => {
   const dynamicKeyRendered =
-    renderedKey ?? renderComponentDynamicKey(renderKey(key));
+    renderedKey !== undefined
+      ? renderedKey
+      : renderComponentDynamicKey(renderKey(key));
   const dynamicKey: string = dynamicKeyRendered[0];
   const isProperty = dynamicKeyRendered[1];
   const properties = dynamicKeyRendered[2];

@@ -9,6 +9,13 @@ export type CampleOptionsType = {
 
 export type ImportType = Array<string>;
 
+export type ImportArrayItemType = {
+  value: string | Array<string>;
+  isArray?: boolean;
+};
+
+export type ImportArrayType = Array<ImportArrayItemType>;
+
 export type BindType = Array<string>;
 
 export type TemplateType = string | undefined;
@@ -16,7 +23,7 @@ export type TemplateType = string | undefined;
 export type IndexType = number;
 
 export type ImportObjectType = {
-  value: ImportType;
+  value: ImportArrayType;
   exportId?: ExportIdType;
   isDynamic?: boolean;
   importIndex?: IndexType;

@@ -11,7 +11,7 @@ export const renderFunctions = (
   isEach: boolean = false
 ) => {
   for (const functionName in functionsList) {
-    if (isEach && functions.hasOwnProperty(functionName)) {
+    if (isEach && functions[functionName] !== undefined) {
       createError("Function cannot be called the same as functionName");
     }
     functionsObject[functionName] = renderFunction(

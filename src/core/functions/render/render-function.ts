@@ -7,7 +7,7 @@ export const renderFunction = (functions: FunctionsType, val: any) => {
   let funcUser = undefined;
   if (val.length === 2) {
     const functionName = val[1];
-    if (functions.hasOwnProperty(functionName)) {
+    if (functions[functionName] !== undefined) {
       const func = functions[functionName];
       const exportFunc = val[0];
       funcUser = exportFunc.bind(this, func);

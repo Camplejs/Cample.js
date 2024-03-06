@@ -50,20 +50,15 @@ export class Cample {
         exportId: number,
         index = 0
       ) => {
-        if (selector && this.exportData.hasOwnProperty(selector)) {
-          this.exportData[selector].value[exportId][index] = data;
-          this.exportData[selector].components.forEach((e) => {
-            e.render(
-              this.trimHTML,
-              selector && this.exportData.hasOwnProperty(selector)
-                ? this.exportData[selector].value
-                : undefined,
-              e._getExportId !== undefined
-                ? options[e]._getExportId
-                : undefined,
-              "dynamic"
-            );
-          });
+        this.exportData[selector].value[exportId][index] = data;
+        for (let i = 0; i < this.exportData[selector].components.length; i++) {
+          const e = this.exportData[selector].components[i];
+          e.render(
+            this.trimHTML,
+            this.exportData[selector].value,
+            undefined,
+            "dynamic"
+          );
         }
       };
       renderStyle(this.style);
@@ -83,7 +78,7 @@ export class Cample {
         if (selector && this.exportData.hasOwnProperty(selector)) {
           setComponents(selector, options[e]);
         }
-        if (options[e]._getExport) {
+        if (options[e]._getExport !== undefined) {
           const exportData = checkFunction(options[e]._getExport)
             ? options[e]._getExport(setExport)
             : options[e]._getExport;
