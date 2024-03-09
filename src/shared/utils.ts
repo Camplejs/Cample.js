@@ -9,6 +9,7 @@ import {
   ExportCampleDataType,
   ExportDataValueType,
   ExportIdType,
+  FunctionsObjType,
   FunctionsOptionValueType,
   ImportObjectStringType,
   ImportObjectType,
@@ -354,6 +355,15 @@ export const getCurrentComponent = (
     }
   }
   return currentComponent as EachDynamicNodeComponentType;
+};
+export const getDataFunctions = (data: FunctionsObjType) => {
+  const result = Object.entries(data).map(([key, value]) => {
+    return {
+      key,
+      value: Array.isArray(value) ? value[1] : value
+    };
+  });
+  return result;
 };
 export const getData = (
   values: DynamicDataType[],

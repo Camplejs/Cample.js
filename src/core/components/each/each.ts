@@ -8,7 +8,8 @@ import {
   getData,
   getCurrentComponent,
   swapElements,
-  getObjData
+  getObjData,
+  getDataFunctions
 } from "../../../shared/utils";
 import {
   DataType,
@@ -651,27 +652,27 @@ export class Each extends DataComponent {
                     index,
                     this._dynamic.data.data.values[index].importData
                   );
-                  renderFunctionsData(
-                    updateFunction,
-                    dataId,
-                    undefined,
-                    index,
-                    undefined,
-                    currentComponent
-                  );
+                  // renderFunctionsData(
+                  //   updateFunction,
+                  //   dataId,
+                  //   undefined,
+                  //   index,
+                  //   undefined,
+                  //   currentComponent
+                  // );
                 }
               }
             }
           } else {
             this.data = attribute;
-            renderFunctionsData(
-              updateFunction,
-              dataId,
-              undefined,
-              index,
-              undefined,
-              currentComponent
-            );
+            // renderFunctionsData(
+            //   updateFunction,
+            //   dataId,
+            //   undefined,
+            //   index,
+            //   undefined,
+            //   currentComponent
+            // );
           }
         };
         const getDefaultData = (dataId: IdType) => {
@@ -839,14 +840,17 @@ export class Each extends DataComponent {
             [this.functionName]: this.valueName
           };
           const setDataFunctions = () => {
-            renderFunctionsData(
-              updateFunction,
-              dataId,
-              dataFunction,
-              index,
-              undefined,
-              currentComponent
-            );
+            if (this._isDataFunctions) {
+              const objDataFunctions = getDataFunctions(dataFunction);
+              renderFunctionsData(
+                updateFunction,
+                dataId,
+                objDataFunctions,
+                index,
+                undefined,
+                currentComponent
+              );
+            }
           };
 
           const runRenderFunction = () => {

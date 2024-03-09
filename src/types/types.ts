@@ -288,6 +288,8 @@ export type ComponentDynamicNodeComponentType = {
   exportData?: ExportDataType;
   nodes: Array<NodeType>;
   exportObject?: ExportObjectDataType;
+  exportObjData?: any;
+  exportConstructor?: any;
   import?: ImportObjectType;
 };
 export type ArrayAnyType = Array<any>;

@@ -1,9 +1,5 @@
 "use-strict";
-import {
-  IdType,
-  FunctionsObjType,
-  EachDynamicNodeComponentType
-} from "../../../types/types";
+import { IdType, EachDynamicNodeComponentType } from "../../../types/types";
 
 export const renderFunctionsData = (
   updateFunction: (
@@ -15,15 +11,13 @@ export const renderFunctionsData = (
     currentComponent?: EachDynamicNodeComponentType
   ) => void,
   id: IdType,
-  functions: FunctionsObjType | undefined,
+  functions: any,
   index: number,
   isRender?: boolean,
   currentComponent?: EachDynamicNodeComponentType
 ): void => {
-  if (functions) {
-    Object.entries(functions).forEach(([fn, value]) => {
-      const val: string = Array.isArray(value) ? value[1] : value;
-      updateFunction(fn, val, id, index, isRender, currentComponent);
-    });
+  for (let i = 0; i < functions.length; i++) {
+    const { key, value } = functions[i];
+    updateFunction(key, value, id, index, isRender, currentComponent);
   }
 };

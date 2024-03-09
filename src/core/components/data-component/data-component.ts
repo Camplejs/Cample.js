@@ -29,6 +29,7 @@ export class DataComponent extends ParentComponent {
   public dataFunctions?: FunctionsObjType;
   public functions?: FunctionsOptionType;
   public setExportData?: (...args: any[]) => any;
+  public _isDataFunctions: boolean;
 
   constructor(
     selector: SelectorType,
@@ -46,6 +47,7 @@ export class DataComponent extends ParentComponent {
     this.dataFunctions = options.dataFunctions;
     this.functions = options.functions;
     this.values = options.values !== undefined ? options.values : undefined;
+    this._isDataFunctions = this.dataFunctions !== undefined;
   }
 
   get _getImport(): ImportObjectType | undefined {
