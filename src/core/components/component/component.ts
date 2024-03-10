@@ -143,11 +143,14 @@ export class Component extends DataComponent {
         return this._dynamic.data.data.values[dynamicIndex];
       };
       const renderDynamicNodes = () => {
-        for (const component of this._dynamic.data.data.components) {
-          for (const e of component.nodes) {
+        for (let i = 0; i < this._dynamic.data.data.components.length; i++) {
+          const component = this._dynamic.data.data.components[i];
+          for (let j = 0; j < component.nodes.length; j++) {
+            const e = component.nodes[j];
             const { dataId, values, nodes, stack } = e;
             const data = getData(this._dynamic.data.data.values, dataId);
-            for (const value of values) {
+            for (let k = 0; k < values.length; k++) {
+              const value = values[k];
               value(nodes, stack, data, undefined, undefined, value);
             }
           }
@@ -205,7 +208,8 @@ export class Component extends DataComponent {
                 this.setExportData !== undefined &&
                 exportData !== undefined
               ) {
-                for (const [key, value] of Object.entries(exportData)) {
+                for (const key in exportData) {
+                  const value = exportData[key];
                   this.setExportData(key, value, this.exportId, index);
                 }
               }
@@ -232,7 +236,8 @@ export class Component extends DataComponent {
           exportObject as ExportObjectDataType;
         const newExportData = {};
         if (exportObject !== undefined) {
-          for (const { key } of exportObjData) {
+          for (let i = 0; i < exportObjData.length; i++) {
+            const { key } = exportObjData[i];
             if (constructor[key] !== undefined) {
               const newExportObject = getDynamicExportObjectData(
                 { ...exportConstructor[key] },
@@ -266,25 +271,27 @@ export class Component extends DataComponent {
           data: {},
           functions: {}
         };
-        for (const { key, value } of obj.data) {
+        for (let i = 0; i < obj.data.length; i++) {
+          const { key, value } = obj.data[i];
           const currentVal = [...value];
           newObj.data[key] = currentVal;
-          for (let i = 0; i < currentVal.length; i++) {
-            const val = currentVal[i];
+          for (let j = 0; j < currentVal.length; j++) {
+            const val = currentVal[j];
             const isIndex =
               indexesValue?.["data"][key] &&
-              indexesValue["data"][key].indexOf(i) > -1;
-            newObj["data"][key][i] = isIndex
+              indexesValue["data"][key].indexOf(j) > -1;
+            newObj["data"][key][j] = isIndex
               ? renderNewData(val as string)
               : val;
           }
         }
-        for (const { key, value } of obj.functions) {
+        for (let i = 0; i < obj.functions.length; i++) {
+          const { key, value } = obj.functions[i];
           const currentVal = [...(value as ExportTemplateFunctionArrayType)];
           newObj.functions[key] = currentVal;
-          for (let i = 0; i < currentVal.length; i++) {
-            const val = currentVal[i];
-            newObj.functions[key][i] = renderFunction(functions, val);
+          for (let j = 0; j < currentVal.length; j++) {
+            const val = currentVal[j];
+            newObj.functions[key][j] = renderFunction(functions, val);
           }
         }
         return newObj;
@@ -841,7 +848,8 @@ export class Component extends DataComponent {
       const trim = (trimHTML && this.trimHTML === undefined) || this.trimHTML;
       if (typeRender === "dynamic") {
         const components = this._dynamic.data.data.components;
-        for (const component of components) {
+        for (let i = 0; i < components.length; i++) {
+          const component = components[i];
           const index = component.id;
           const importObject = component.import;
           const importIndex =

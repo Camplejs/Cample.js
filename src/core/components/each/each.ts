@@ -1019,7 +1019,8 @@ export class Each extends DataComponent {
         };
         if (typeRender === "dynamic") {
           const components = this._dynamic.data.data.components;
-          for (const component of components) {
+          for (let i = 0; i < components.length; i++) {
+            const component = components[i];
             const index = component.id;
             const importObject = component.import;
             const importIndex =
