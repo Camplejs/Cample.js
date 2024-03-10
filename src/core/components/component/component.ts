@@ -203,16 +203,6 @@ export class Component extends DataComponent {
               renderNewFunction(id, index);
               const currentComponent = getComponent(index);
               renderDynamicExportData(currentComponent, index);
-              const exportData = currentComponent.exportData;
-              if (
-                this.setExportData !== undefined &&
-                exportData !== undefined
-              ) {
-                for (const key in exportData) {
-                  const value = exportData[key];
-                  this.setExportData(key, value, this.exportId, index);
-                }
-              }
             }
           }
         } else {
@@ -246,6 +236,8 @@ export class Component extends DataComponent {
                 functions
               );
               newExportData[key] = newExportObject;
+              if (this.setExportData !== undefined)
+                this.setExportData(key, newExportObject, this.exportId, index);
             } else {
               createError("Export data render error");
             }
