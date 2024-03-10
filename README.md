@@ -99,9 +99,8 @@ const newComponent = component(
 cample("#app", {
   trimHTML: true,
 }).render(
-  `
-<template data-cample="new-component"></template>
-`,
+`<template data-cample="new-component">
+</template>`,
   {
     newComponent,
   }
