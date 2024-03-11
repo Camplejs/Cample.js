@@ -182,14 +182,15 @@ export class Component extends DataComponent {
         attribute: any,
         key: string,
         id: IdType,
-        index: number
+        index: number,
+        currentComponent: ComponentDynamicNodeComponentType
       ) => {
         if (id !== undefined) {
           let data: any = undefined;
           let index = -1;
           for (let i = 0; i < this._dynamic.data.data.values.length; i++) {
             const e = this._dynamic.data.data.values[i];
-            if (e?.id === id) {
+            if (e !== undefined && e.id === id) {
               data = e;
               index = i;
               break;
@@ -201,7 +202,6 @@ export class Component extends DataComponent {
             if (checkObject(dataIndex) && val[key] !== undefined) {
               val[key] = attribute;
               renderNewFunction(id, index);
-              const currentComponent = getComponent(index);
               renderDynamicExportData(currentComponent, index);
             }
           }
@@ -488,20 +488,29 @@ export class Component extends DataComponent {
         }
       };
       const getComponent = (index: number) => {
-        const componentArray = this._dynamic.data.data.components.filter(
-          (e) => e?.id === index
-        );
-        return componentArray[0] as ComponentDynamicNodeComponentType;
+        let result: any = undefined;
+        for (let i = 0; i < this._dynamic.data.data.components.length; i++) {
+          const e = this._dynamic.data.data.components[i];
+          if (e?.id === index) {
+            result = e;
+            break;
+          }
+        }
+        return result as ComponentDynamicNodeComponentType;
       };
       const getDefaultData = (id: IdType, key: string) => {
-        const data = this._dynamic.data.data.values.filter((e) => e?.id === id);
-        if (data.length > 1) {
-          createError("id is unique");
+        let data: any = undefined;
+        for (let i = 0; i < this._dynamic.data.data.values.length; i++) {
+          const e = this._dynamic.data.data.values[i];
+          if (e !== undefined && e.id === id) {
+            data = e;
+            break;
+          }
         }
         const defaultData =
           id !== undefined
-            ? data && data[0] && data[0].value
-              ? data[0].value[key]
+            ? data !== undefined && data.value
+              ? data.value[key]
               : undefined
             : this.data && this.data[key]
               ? this.data[key]
@@ -524,9 +533,15 @@ export class Component extends DataComponent {
         } else {
           component.dataFunctions[name] = (attribute: any = updateData) => {
             if (typeof attribute === "function") {
-              newFunction(attribute(getDefaultData(id, key)), key, id, index);
+              newFunction(
+                attribute(getDefaultData(id, key)),
+                key,
+                id,
+                index,
+                component
+              );
             } else {
-              newFunction(attribute, key, id, index);
+              newFunction(attribute, key, id, index, component);
             }
           };
         }
