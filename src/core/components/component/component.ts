@@ -491,7 +491,7 @@ export class Component extends DataComponent {
         let result: any = undefined;
         for (let i = 0; i < this._dynamic.data.data.components.length; i++) {
           const e = this._dynamic.data.data.components[i];
-          if (e?.id === index) {
+          if (e !== undefined && e.id === index) {
             result = e;
             break;
           }
