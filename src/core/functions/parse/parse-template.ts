@@ -11,18 +11,20 @@ import {
 import {
   checkFunction,
   createError,
+  getData,
   getElement,
   getTextKey
 } from "../../../shared/utils";
 import {
+  ArrayStringType,
   CurrentKeyType,
+  DynamicDataType,
+  DynamicEachDataType,
   DynamicEl,
   DynamicNodesObjectType,
   DynamicTextType,
   EachTemplateType,
-  EventEachGetDataType,
   EventEachGetFunctionType,
-  EventGetDataType,
   ExportDataType,
   ExportDynamicType,
   FunctionEventType,
@@ -76,6 +78,7 @@ export const parseTemplate = (
   valueName?: string,
   importedDataName?: string,
   indexName?: string,
+  eachValues?: (DynamicEachDataType | DynamicDataType)[],
   isEach?: boolean
 ): {
   obj: EachTemplateType;
@@ -312,17 +315,46 @@ export const parseTemplate = (
       functions
     );
     if (!checkFunction(fn)) createError("Data key is of function type");
-    const setEvent = (element: Element, keyEl?: string) => {
-      renderListeners(element, fn, args, keyEvent, (key: string) =>
-        isEach
-          ? (getEventsData as EventEachGetDataType)(key, id, keyEl, index)
-          : (getEventsData as EventGetDataType)(key, id)
+    const setEvent = (
+      element: Element,
+      currentComponent: any,
+      keyEl?: string
+    ) => {
+      let getFnEventsData: any;
+      if (isEach) {
+        const eachValue = getData(eachValues as any, id, false);
+        getFnEventsData = (
+          key: string,
+          renderedKey: [string, boolean, ArrayStringType],
+          isValueKey: boolean
+        ) =>
+          (getEventsData as any)(
+            key,
+            id,
+            currentComponent,
+            keyEl,
+            index,
+            renderedKey,
+            isValueKey,
+            eachValue
+          );
+      } else {
+        getFnEventsData = (key: string) => (getEventsData as any)(key, id);
+      }
+      renderListeners(
+        element,
+        fn,
+        args,
+        keyEvent,
+        getFnEventsData,
+        isEach,
+        valueName
       );
     };
     const newVal: ValueType = {
       id: elId,
       type: 0,
-      render: (element: Element, keyEl: string) => setEvent(element, keyEl)
+      render: setEvent
     };
     values[indexValue] = newVal;
   }
@@ -333,6 +365,7 @@ export const parseTemplate = (
       case 0:
         return (
           val: ValueType,
+          currentComponent: any,
           nodes: Element[],
           stack: StackType,
           node: ChildNode,
@@ -344,7 +377,7 @@ export const parseTemplate = (
           currentExport?: ExportDataType | ExportDynamicType
         ) => {
           const { render } = val;
-          (render as FunctionEventType)(node, key);
+          (render as FunctionEventType)(node, currentComponent, key);
         };
       case 1:
         if (valKey.isValue) {
@@ -376,6 +409,7 @@ export const parseTemplate = (
           obj.values.push(fnText);
           return (
             val: ValueType,
+            currentComponent: any,
             nodes: Element[],
             stack: StackType,
             node: ChildNode,
@@ -426,6 +460,7 @@ export const parseTemplate = (
                     obj.values.push(fnText1);
                     return (
                       val: ValueType,
+                      currentComponent: any,
                       nodes: Element[],
                       stack: StackType,
                       node: ChildNode,
@@ -459,6 +494,7 @@ export const parseTemplate = (
                     obj.values.push(fnText2);
                     return (
                       val: ValueType,
+                      currentComponent: any,
                       nodes: Element[],
                       stack: StackType,
                       node: ChildNode,
@@ -492,6 +528,7 @@ export const parseTemplate = (
                   obj.values.push(fnText3);
                   return (
                     val: ValueType,
+                    currentComponent: any,
                     nodes: Element[],
                     stack: StackType,
                     node: ChildNode,
@@ -525,6 +562,7 @@ export const parseTemplate = (
                 obj.values.push(fnText4);
                 return (
                   val: ValueType,
+                  currentComponent: any,
                   nodes: Element[],
                   stack: StackType,
                   node: ChildNode,
@@ -558,6 +596,7 @@ export const parseTemplate = (
                 obj.values.push(fnText5);
                 return (
                   val: ValueType,
+                  currentComponent: any,
                   nodes: Element[],
                   stack: StackType,
                   node: ChildNode,
@@ -591,6 +630,7 @@ export const parseTemplate = (
                 obj.values.push(fnText);
                 return (
                   val: ValueType,
+                  currentComponent: any,
                   nodes: Element[],
                   stack: StackType,
                   node: ChildNode,
@@ -629,6 +669,7 @@ export const parseTemplate = (
               obj.values.push(fnText);
               return (
                 val: ValueType,
+                currentComponent: any,
                 nodes: Element[],
                 stack: StackType,
                 node: ChildNode,
@@ -665,6 +706,7 @@ export const parseTemplate = (
               obj.values.push(fnText);
               return (
                 val: ValueType,
+                currentComponent: any,
                 nodes: Element[],
                 stack: StackType,
                 node: ChildNode,
@@ -702,6 +744,7 @@ export const parseTemplate = (
         obj.values.push(fnAttr);
         return (
           val: ValueType,
+          currentComponent: any,
           nodes: Element[],
           stack: StackType,
           node: ChildNode,
@@ -720,6 +763,7 @@ export const parseTemplate = (
       case 3:
         return (
           val: ValueType,
+          currentComponent: any,
           nodes: Element[],
           stack: StackType,
           node: ChildNode,
@@ -773,6 +817,7 @@ export const parseTemplate = (
           obj.values.push(fnClass);
           return (
             val: ValueType,
+            currentComponent: any,
             nodes: Element[],
             stack: StackType,
             node: ChildNode,
@@ -825,6 +870,7 @@ export const parseTemplate = (
             obj.values.push(fnClass);
             return (
               val: ValueType,
+              currentComponent: any,
               nodes: Element[],
               stack: StackType,
               node: ChildNode,
@@ -875,6 +921,7 @@ export const parseTemplate = (
               obj.values.push(fnClass);
               return (
                 val: ValueType,
+                currentComponent: any,
                 nodes: Element[],
                 stack: StackType,
                 node: ChildNode,
@@ -917,6 +964,7 @@ export const parseTemplate = (
                     obj.values.push(fnClass1);
                     return (
                       val: ValueType,
+                      currentComponent: any,
                       nodes: Element[],
                       stack: StackType,
                       node: ChildNode,
@@ -952,6 +1000,7 @@ export const parseTemplate = (
                     obj.values.push(fnClass2);
                     return (
                       val: ValueType,
+                      currentComponent: any,
                       nodes: Element[],
                       stack: StackType,
                       node: ChildNode,
@@ -985,6 +1034,7 @@ export const parseTemplate = (
                     obj.values.push(fnClass3);
                     return (
                       val: ValueType,
+                      currentComponent: any,
                       nodes: Element[],
                       stack: StackType,
                       node: ChildNode,
@@ -1018,6 +1068,7 @@ export const parseTemplate = (
                     obj.values.push(fnClass);
                     return (
                       val: ValueType,
+                      currentComponent: any,
                       nodes: Element[],
                       stack: StackType,
                       node: ChildNode,
@@ -1057,6 +1108,7 @@ export const parseTemplate = (
                   obj.values.push(fnClass);
                   return (
                     val: ValueType,
+                    currentComponent: any,
                     nodes: Element[],
                     stack: StackType,
                     node: ChildNode,
@@ -1094,6 +1146,7 @@ export const parseTemplate = (
                   obj.values.push(fnClass);
                   return (
                     val: ValueType,
+                    currentComponent: any,
                     nodes: Element[],
                     stack: StackType,
                     node: ChildNode,
@@ -1144,6 +1197,7 @@ export const parseTemplate = (
         currentFn = isCurrentRender
           ? function fn(
               this: Element,
+              currentComponent: any,
               nodes: Element[],
               stack: StackType,
               indexData: any,
@@ -1156,6 +1210,7 @@ export const parseTemplate = (
               const currentEl = currentRender.call(this);
               valueFn(
                 val,
+                currentComponent,
                 nodes,
                 stack,
                 currentEl,
@@ -1170,6 +1225,7 @@ export const parseTemplate = (
             }
           : function fn(
               this: Element,
+              currentComponent: any,
               nodes: Element[],
               stack: StackType,
               indexData: any,
@@ -1186,6 +1242,7 @@ export const parseTemplate = (
               }
               valueFn(
                 val,
+                currentComponent,
                 nodes,
                 stack,
                 currentEl,
@@ -1206,6 +1263,7 @@ export const parseTemplate = (
         currentFn = isCurrentRender
           ? function fn(
               this: Element,
+              currentComponent: any,
               nodes: Element[],
               stack: StackType,
               indexData: any,
@@ -1220,6 +1278,7 @@ export const parseTemplate = (
                 const valueFn = valFns[i];
                 valueFn(
                   nodeValues[i],
+                  currentComponent,
                   nodes,
                   stack,
                   currentEl,
@@ -1235,6 +1294,7 @@ export const parseTemplate = (
             }
           : function fn(
               this: Element,
+              currentComponent: any,
               nodes: Element[],
               stack: StackType,
               indexData: any,
@@ -1253,6 +1313,7 @@ export const parseTemplate = (
                 const valueFn = valFns[i];
                 valueFn(
                   nodeValues[i],
+                  currentComponent,
                   nodes,
                   stack,
                   currentEl,
@@ -1334,6 +1395,7 @@ export const parseTemplate = (
       const valueFn = renderValue(val);
       obj.render = function (
         this: Element,
+        currentComponent: any,
         nodes: Element[],
         stack: StackType,
         indexData: any,
@@ -1345,6 +1407,7 @@ export const parseTemplate = (
       ) {
         valueFn(
           val,
+          currentComponent,
           nodes,
           stack,
           this,
@@ -1363,6 +1426,7 @@ export const parseTemplate = (
       const fnsLength = valFns.length;
       obj.render = function (
         this: Element,
+        currentComponent: any,
         nodes: Element[],
         stack: StackType,
         indexData: any,
@@ -1376,6 +1440,7 @@ export const parseTemplate = (
           const valueFn = valFns[i];
           valueFn(
             nodeValues[i],
+            currentComponent,
             nodes,
             stack,
             this,

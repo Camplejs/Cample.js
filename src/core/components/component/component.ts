@@ -947,6 +947,7 @@ export class Component extends DataComponent {
               renderImportString
             };
             const { el, currentNode } = createElement(
+              currentComponent,
               data,
               index,
               currentId,

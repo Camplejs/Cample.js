@@ -5,8 +5,6 @@ import {
   checkObject,
   cloneValue,
   getKey,
-  getData,
-  getCurrentComponent,
   swapElements,
   getObjData,
   getDataFunctions
@@ -33,7 +31,8 @@ import {
   EachTemplateType,
   IterationFunctionType,
   ValueItemsType,
-  FunctionsType
+  FunctionsType,
+  ArrayStringType
 } from "../../../types/types";
 import { createEachDynamicNodeComponentType } from "../../functions/data/create-each-dynamic-node-component";
 import { renderAttributes } from "../../functions/render/render-attributes";
@@ -250,6 +249,7 @@ export class Each extends DataComponent {
                 renderIteration(i, indexData, importData);
                 const newKey = renderKey(indexData, keyValue, importData, i);
                 const { el, currentNode } = createElement(
+                  currentComponent,
                   indexData,
                   index,
                   dataId,
@@ -266,6 +266,7 @@ export class Each extends DataComponent {
                 const indexData = data[i];
                 const newKey = renderKey(indexData, keyValue, importData, i);
                 const { el, currentNode } = createElement(
+                  currentComponent,
                   indexData,
                   index,
                   dataId,
@@ -399,6 +400,7 @@ export class Each extends DataComponent {
                     currentIndex
                   );
                   const { el, currentNode } = createElement(
+                    currentComponent,
                     currentIndexData,
                     index,
                     dataId,
@@ -539,6 +541,7 @@ export class Each extends DataComponent {
                     continue;
                   }
                   const { el, currentNode } = createElement(
+                    currentComponent,
                     newData[newFirstIndex],
                     index,
                     dataId,
@@ -579,6 +582,7 @@ export class Each extends DataComponent {
                       currentIndex
                     );
                     const { el, currentNode } = createElement(
+                      currentComponent,
                       currentIndexData,
                       index,
                       dataId,
@@ -768,25 +772,23 @@ export class Each extends DataComponent {
         const getEventsData = (
           key: string,
           dataId: number,
+          currentComponent: any,
           keyEl: string | undefined,
-          _: number
+          _: number,
+          renderedKey: [string, boolean, ArrayStringType],
+          isValueKey: boolean,
+          eachValue: DynamicEachDataType
         ) => {
           // if (keyEl === undefined) createError("key error");
-          const currentComponent = getCurrentComponent(
-            this._dynamic.data.data.components,
-            dataId
-          );
           const eachIndex = getEachIndex(currentComponent, keyEl as string);
           // if (eachIndex === undefined) createError("EachIndex error");
-          const indexData = getData(this._dynamic.data.data.values, dataId)?.[
-            eachIndex
-          ];
-          const importData = getImportData(dataId);
-          const newKey = getKey(key);
+          const indexData = eachValue.value[eachIndex];
+          const importData = eachValue.importData;
           const val = renderComponentDynamicKeyData(
-            newKey === this.valueName ? indexData : importData,
+            isValueKey ? indexData : importData,
             key,
-            true
+            true,
+            renderedKey
           );
           return val;
         };
@@ -891,6 +893,7 @@ export class Each extends DataComponent {
             this.valueName,
             this.importedDataName,
             this.indexName,
+            this._dynamic.data.data.values,
             true
           );
           currentComponent.template = newTemplateObj;

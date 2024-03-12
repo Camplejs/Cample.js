@@ -11,6 +11,7 @@ import {
 } from "../../../types/types";
 
 export const createElement = (
+  currentComponent: any,
   indexData: any,
   index: number,
   dataId: number,
@@ -29,14 +30,15 @@ export const createElement = (
   } = templateEl;
   const el = (templateElemenet as Element).cloneNode(true);
   const length = templateNodes.length;
-  const nodes: NodeNodesType = [];
+  const nodes: NodeNodesType = new Array(length + 1);
   const lengthValues = newValues.length;
   const stack: StackType = new Array(lengthValues);
   const newNodes = new Array(lengthValues);
-  nodes.push(el as ChildNode);
+  nodes[0] = el as ChildNode;
   templateRender !== undefined
     ? templateRender.call(
         el as ChildNode,
+        currentComponent,
         newNodes,
         stack,
         indexData,
@@ -50,18 +52,17 @@ export const createElement = (
   for (let i = 0; i < length; i++) {
     const templateNode = templateNodes[i];
     const { render, rootId } = templateNode;
-    nodes.push(
-      (render as RenderNodeFunctionType).call(
-        nodes[rootId],
-        newNodes,
-        stack,
-        indexData,
-        eachIndex,
-        importData,
-        key,
-        exportFunctions,
-        currentExport
-      )
+    nodes[i + 1] = (render as RenderNodeFunctionType).call(
+      nodes[rootId],
+      currentComponent,
+      newNodes,
+      stack,
+      indexData,
+      eachIndex,
+      importData,
+      key,
+      exportFunctions,
+      currentExport
     );
   }
   const currentNode: NodeType = {

@@ -339,7 +339,9 @@ export type EventEachGetDataType = (
   key: string,
   dataId: number,
   keyEl: string | undefined,
-  index: number
+  index: number,
+  renderedKey: [string, boolean, ArrayStringType],
+  newKey: RenderedKeyType
 ) => any;
 
 export type EventEachGetFunctionType = (
