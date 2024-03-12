@@ -11,14 +11,12 @@ import {
 import {
   checkFunction,
   createError,
-  getData,
   getElement,
   getTextKey
 } from "../../../shared/utils";
 import {
   ArrayStringType,
   CurrentKeyType,
-  DynamicDataType,
   DynamicEachDataType,
   DynamicEl,
   DynamicNodesObjectType,
@@ -78,7 +76,6 @@ export const parseTemplate = (
   valueName?: string,
   importedDataName?: string,
   indexName?: string,
-  eachValues?: (DynamicEachDataType | DynamicDataType)[],
   isEach?: boolean
 ): {
   obj: EachTemplateType;
@@ -318,29 +315,27 @@ export const parseTemplate = (
     const setEvent = (
       element: Element,
       currentComponent: any,
-      keyEl?: string
+      keyEl?: string,
+      eachValue?: any
     ) => {
       let getFnEventsData: any;
-      if (isEach) {
-        const eachValue = getData(eachValues as any, id, false);
-        getFnEventsData = (
-          key: string,
-          renderedKey: [string, boolean, ArrayStringType],
-          isValueKey: boolean
-        ) =>
-          (getEventsData as any)(
-            key,
-            id,
-            currentComponent,
-            keyEl,
-            index,
-            renderedKey,
-            isValueKey,
-            eachValue
-          );
-      } else {
-        getFnEventsData = (key: string) => (getEventsData as any)(key, id);
-      }
+      getFnEventsData = isEach
+        ? (
+            key: string,
+            renderedKey: [string, boolean, ArrayStringType],
+            isValueKey: boolean
+          ) =>
+            (getEventsData as any)(
+              key,
+              id,
+              currentComponent,
+              keyEl,
+              index,
+              renderedKey,
+              isValueKey,
+              eachValue
+            )
+        : (getFnEventsData = (key: string) => (getEventsData as any)(key, id));
       renderListeners(
         element,
         fn,
@@ -374,10 +369,11 @@ export const parseTemplate = (
           importData?: ImportDataType,
           key?: string,
           exportFunctions?: any,
-          currentExport?: ExportDataType | ExportDynamicType
+          currentExport?: ExportDataType | ExportDynamicType,
+          eachValue?: DynamicEachDataType
         ) => {
           const { render } = val;
-          (render as FunctionEventType)(node, currentComponent, key);
+          (render as FunctionEventType)(node, currentComponent, key, eachValue);
         };
       case 1:
         if (valKey.isValue) {
@@ -418,7 +414,8 @@ export const parseTemplate = (
             importData?: ImportDataType,
             key?: string,
             exportFunctions?: any,
-            currentExport?: ExportDataType | ExportDynamicType
+            currentExport?: ExportDataType | ExportDynamicType,
+            eachValue?: DynamicEachDataType
           ) => {
             const str = {
               value: ""
@@ -469,7 +466,8 @@ export const parseTemplate = (
                       importData?: ImportDataType,
                       key?: string,
                       exportFunctions?: any,
-                      currentExport?: ExportDataType | ExportDynamicType
+                      currentExport?: ExportDataType | ExportDynamicType,
+                      eachValue?: DynamicEachDataType
                     ) => {
                       stack[stackLength] = indexData[currentProp];
                       (node as Text).data = stack[stackLength];
@@ -503,7 +501,8 @@ export const parseTemplate = (
                       importData?: ImportDataType,
                       key?: string,
                       exportFunctions?: any,
-                      currentExport?: ExportDataType | ExportDynamicType
+                      currentExport?: ExportDataType | ExportDynamicType,
+                      eachValue?: DynamicEachDataType
                     ) => {
                       stack[stackLength] = (valKey.render as any)(indexData);
                       (node as Text).data = stack[stackLength];
@@ -537,7 +536,8 @@ export const parseTemplate = (
                     importData?: ImportDataType,
                     key?: string,
                     exportFunctions?: any,
-                    currentExport?: ExportDataType | ExportDynamicType
+                    currentExport?: ExportDataType | ExportDynamicType,
+                    eachValue?: DynamicEachDataType
                   ) => {
                     stack[stackLength] = indexData;
                     (node as Text).data = stack[stackLength];
@@ -571,7 +571,8 @@ export const parseTemplate = (
                   importData?: ImportDataType,
                   key?: string,
                   exportFunctions?: any,
-                  currentExport?: ExportDataType | ExportDynamicType
+                  currentExport?: ExportDataType | ExportDynamicType,
+                  eachValue?: DynamicEachDataType
                 ) => {
                   stack[stackLength] = (valKey.render as any)(importData);
                   (node as Text).data = stack[stackLength];
@@ -605,7 +606,8 @@ export const parseTemplate = (
                   importData?: ImportDataType,
                   key?: string,
                   exportFunctions?: any,
-                  currentExport?: ExportDataType | ExportDynamicType
+                  currentExport?: ExportDataType | ExportDynamicType,
+                  eachValue?: DynamicEachDataType
                 ) => {
                   stack[stackLength] = eachIndex;
                   (node as Text).data = stack[stackLength] as unknown as string;
@@ -639,7 +641,8 @@ export const parseTemplate = (
                   importData?: ImportDataType,
                   key?: string,
                   exportFunctions?: any,
-                  currentExport?: ExportDataType | ExportDynamicType
+                  currentExport?: ExportDataType | ExportDynamicType,
+                  eachValue?: DynamicEachDataType
                 ) => {
                   stack[stackLength] = undefined;
                   (node as Text).data = stack[stackLength] as unknown as string;
@@ -678,7 +681,8 @@ export const parseTemplate = (
                 importData?: ImportDataType,
                 key?: string,
                 exportFunctions?: any,
-                currentExport?: ExportDataType | ExportDynamicType
+                currentExport?: ExportDataType | ExportDynamicType,
+                eachValue?: DynamicEachDataType
               ) => {
                 const firstKeyData = indexData[valKey.originKey];
                 stack[stackLength] = renderKeyData(
@@ -715,7 +719,8 @@ export const parseTemplate = (
                 importData?: ImportDataType,
                 key?: string,
                 exportFunctions?: any,
-                currentExport?: ExportDataType | ExportDynamicType
+                currentExport?: ExportDataType | ExportDynamicType,
+                eachValue?: DynamicEachDataType
               ) => {
                 stack[stackLength] = indexData[valKey.originKey];
                 (node as Text).data = stack[stackLength];
@@ -753,7 +758,8 @@ export const parseTemplate = (
           importData?: ImportDataType,
           key?: string,
           exportFunctions?: any,
-          currentExport?: ExportDataType | ExportDynamicType
+          currentExport?: ExportDataType | ExportDynamicType,
+          eachValue?: DynamicEachDataType
         ) => {
           const fnNew = (key: CurrentKeyType) =>
             renderDynamic(key, indexData, importData, eachIndex);
@@ -772,7 +778,8 @@ export const parseTemplate = (
           importData?: ImportDataType,
           key?: string,
           exportFunctions?: any,
-          currentExport?: ExportDataType | ExportDynamicType
+          currentExport?: ExportDataType | ExportDynamicType,
+          eachValue?: DynamicEachDataType
         ) => {
           const componentName = (node as Element).getAttribute("data-cample");
           const keyImportString = val.value;
@@ -826,7 +833,8 @@ export const parseTemplate = (
             importData?: ImportDataType,
             key?: string,
             exportFunctions?: any,
-            currentExport?: ExportDataType | ExportDynamicType
+            currentExport?: ExportDataType | ExportDynamicType,
+            eachValue?: DynamicEachDataType
           ) => {
             const str = renderClass(
               indexData,
@@ -879,7 +887,8 @@ export const parseTemplate = (
               importData?: ImportDataType,
               key?: string,
               exportFunctions?: any,
-              currentExport?: ExportDataType | ExportDynamicType
+              currentExport?: ExportDataType | ExportDynamicType,
+              eachValue?: DynamicEachDataType
             ) => {
               const str = {
                 value: ""
@@ -930,7 +939,8 @@ export const parseTemplate = (
                 importData?: ImportDataType,
                 key?: string,
                 exportFunctions?: any,
-                currentExport?: ExportDataType | ExportDynamicType
+                currentExport?: ExportDataType | ExportDynamicType,
+                eachValue?: DynamicEachDataType
               ) => {
                 const currentCondition = (
                   conditionRender as (...args: any[]) => boolean
@@ -973,7 +983,8 @@ export const parseTemplate = (
                       importData?: ImportDataType,
                       key?: string,
                       exportFunctions?: any,
-                      currentExport?: ExportDataType | ExportDynamicType
+                      currentExport?: ExportDataType | ExportDynamicType,
+                      eachValue?: DynamicEachDataType
                     ) => {
                       const newData = (currentKey.render as any)(indexData);
                       if (newData !== "") {
@@ -1009,7 +1020,8 @@ export const parseTemplate = (
                       importData?: ImportDataType,
                       key?: string,
                       exportFunctions?: any,
-                      currentExport?: ExportDataType | ExportDynamicType
+                      currentExport?: ExportDataType | ExportDynamicType,
+                      eachValue?: DynamicEachDataType
                     ) => {
                       const newData = (currentKey.render as any)(importData);
                       if (newData !== "") {
@@ -1043,7 +1055,8 @@ export const parseTemplate = (
                       importData?: ImportDataType,
                       key?: string,
                       exportFunctions?: any,
-                      currentExport?: ExportDataType | ExportDynamicType
+                      currentExport?: ExportDataType | ExportDynamicType,
+                      eachValue?: DynamicEachDataType
                     ) => {
                       const newData = String(eachIndex);
                       if (newData !== "") {
@@ -1077,7 +1090,8 @@ export const parseTemplate = (
                       importData?: ImportDataType,
                       key?: string,
                       exportFunctions?: any,
-                      currentExport?: ExportDataType | ExportDynamicType
+                      currentExport?: ExportDataType | ExportDynamicType,
+                      eachValue?: DynamicEachDataType
                     ) => {
                       const newData = String(undefined);
                       if (newData !== "") {
@@ -1117,7 +1131,8 @@ export const parseTemplate = (
                     importData?: ImportDataType,
                     key?: string,
                     exportFunctions?: any,
-                    currentExport?: ExportDataType | ExportDynamicType
+                    currentExport?: ExportDataType | ExportDynamicType,
+                    eachValue?: DynamicEachDataType
                   ) => {
                     const firstKeyData = indexData[currentKey.originKey];
                     const newData = renderKeyData(
@@ -1155,7 +1170,8 @@ export const parseTemplate = (
                     importData?: ImportDataType,
                     key?: string,
                     exportFunctions?: any,
-                    currentExport?: ExportDataType | ExportDynamicType
+                    currentExport?: ExportDataType | ExportDynamicType,
+                    eachValue?: DynamicEachDataType
                   ) => {
                     const newData = indexData[currentKey.originKey];
                     if (newData !== "") {
@@ -1205,7 +1221,8 @@ export const parseTemplate = (
               importData?: ImportDataType,
               key?: string,
               exportFunctions?: any,
-              currentExport?: ExportDataType | ExportDynamicType
+              currentExport?: ExportDataType | ExportDynamicType,
+              eachValue?: DynamicEachDataType
             ) {
               const currentEl = currentRender.call(this);
               valueFn(
@@ -1219,7 +1236,8 @@ export const parseTemplate = (
                 importData,
                 key,
                 exportFunctions,
-                currentExport
+                currentExport,
+                eachValue
               );
               return currentEl;
             }
@@ -1233,7 +1251,8 @@ export const parseTemplate = (
               importData?: ImportDataType,
               key?: string,
               exportFunctions?: any,
-              currentExport?: ExportDataType | ExportDynamicType
+              currentExport?: ExportDataType | ExportDynamicType,
+              eachValue?: DynamicEachDataType
             ) {
               let currentEl = this;
               for (let j = 0; j < arrLength; j++) {
@@ -1251,7 +1270,8 @@ export const parseTemplate = (
                 importData,
                 key,
                 exportFunctions,
-                currentExport
+                currentExport,
+                eachValue
               );
               return currentEl;
             };
@@ -1271,7 +1291,8 @@ export const parseTemplate = (
               importData?: ImportDataType,
               key?: string,
               exportFunctions?: any,
-              currentExport?: ExportDataType | ExportDynamicType
+              currentExport?: ExportDataType | ExportDynamicType,
+              eachValue?: DynamicEachDataType
             ) {
               const currentEl = currentRender.call(this);
               for (let i = 0; i < fnsLength; i++) {
@@ -1287,7 +1308,8 @@ export const parseTemplate = (
                   importData,
                   key,
                   exportFunctions,
-                  currentExport
+                  currentExport,
+                  eachValue
                 );
               }
               return currentEl;
@@ -1302,7 +1324,8 @@ export const parseTemplate = (
               importData?: ImportDataType,
               key?: string,
               exportFunctions?: any,
-              currentExport?: ExportDataType | ExportDynamicType
+              currentExport?: ExportDataType | ExportDynamicType,
+              eachValue?: DynamicEachDataType
             ) {
               let currentEl = this;
               for (let j = 0; j < arrLength; j++) {
@@ -1322,7 +1345,8 @@ export const parseTemplate = (
                   importData,
                   key,
                   exportFunctions,
-                  currentExport
+                  currentExport,
+                  eachValue
                 );
               }
               return currentEl;
@@ -1403,7 +1427,8 @@ export const parseTemplate = (
         importData?: ImportDataType,
         key?: string,
         exportFunctions?: any,
-        currentExport?: ExportDataType | ExportDynamicType
+        currentExport?: ExportDataType | ExportDynamicType,
+        eachValue?: DynamicEachDataType
       ) {
         valueFn(
           val,
@@ -1416,7 +1441,8 @@ export const parseTemplate = (
           importData,
           key,
           exportFunctions,
-          currentExport
+          currentExport,
+          eachValue
         );
       };
     } else {
@@ -1434,7 +1460,8 @@ export const parseTemplate = (
         importData?: ImportDataType,
         key?: string,
         exportFunctions?: any,
-        currentExport?: ExportDataType | ExportDynamicType
+        currentExport?: ExportDataType | ExportDynamicType,
+        eachValue?: DynamicEachDataType
       ) {
         for (let i = 0; i < fnsLength; i++) {
           const valueFn = valFns[i];
@@ -1449,7 +1476,8 @@ export const parseTemplate = (
             importData,
             key,
             exportFunctions,
-            currentExport
+            currentExport,
+            eachValue
           );
         }
       };

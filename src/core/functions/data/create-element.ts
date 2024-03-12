@@ -1,5 +1,6 @@
 "use strict";
 import {
+  DynamicEachDataType,
   EachTemplateType,
   ExportDataType,
   ExportDynamicType,
@@ -16,6 +17,7 @@ export const createElement = (
   index: number,
   dataId: number,
   templateEl: EachTemplateType,
+  eachValue?: DynamicEachDataType,
   eachIndex?: number,
   importData?: ImportDataType,
   key?: string,
@@ -46,7 +48,8 @@ export const createElement = (
         importData,
         key,
         exportFunctions,
-        currentExport
+        currentExport,
+        eachValue
       )
     : null;
   for (let i = 0; i < length; i++) {
@@ -62,7 +65,8 @@ export const createElement = (
       importData,
       key,
       exportFunctions,
-      currentExport
+      currentExport,
+      eachValue
     );
   }
   const currentNode: NodeType = {

@@ -955,6 +955,7 @@ export class Component extends DataComponent {
               undefined,
               undefined,
               undefined,
+              undefined,
               exportFunctions,
               this.export
             );

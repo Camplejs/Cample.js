@@ -200,7 +200,8 @@ export class Each extends DataComponent {
           currentComponent: EachDynamicNodeComponentType,
           dataId: number,
           index: number,
-          importData: ImportDataType | undefined
+          importData: ImportDataType | undefined,
+          eachValue: DynamicEachDataType
         ) => {
           const oldDataLength = oldData.length;
           const newDataLength = newData.length;
@@ -254,6 +255,7 @@ export class Each extends DataComponent {
                   index,
                   dataId,
                   template,
+                  eachValue,
                   i,
                   importData,
                   newKey
@@ -271,6 +273,7 @@ export class Each extends DataComponent {
                   index,
                   dataId,
                   template,
+                  eachValue,
                   i,
                   importData,
                   newKey
@@ -405,6 +408,7 @@ export class Each extends DataComponent {
                     index,
                     dataId,
                     template,
+                    eachValue,
                     currentIndex,
                     importData,
                     newKey
@@ -546,6 +550,7 @@ export class Each extends DataComponent {
                     index,
                     dataId,
                     template,
+                    eachValue,
                     newFirstIndex,
                     importData,
                     newFirstDataKey
@@ -587,6 +592,7 @@ export class Each extends DataComponent {
                       index,
                       dataId,
                       template,
+                      eachValue,
                       currentIndex,
                       importData,
                       newKey
@@ -654,7 +660,8 @@ export class Each extends DataComponent {
                     currentComponent,
                     dataId,
                     index,
-                    this._dynamic.data.data.values[index].importData
+                    this._dynamic.data.data.values[index].importData,
+                    this._dynamic.data.data.values[index] as DynamicEachDataType
                   );
                   // renderFunctionsData(
                   //   updateFunction,
@@ -893,7 +900,6 @@ export class Each extends DataComponent {
             this.valueName,
             this.importedDataName,
             this.indexName,
-            this._dynamic.data.data.values,
             true
           );
           currentComponent.template = newTemplateObj;
@@ -903,7 +909,10 @@ export class Each extends DataComponent {
             currentComponent,
             dataId,
             index,
-            importData
+            importData,
+            this._dynamic.data.data.values[
+              this._dynamic.data.data.currentId
+            ] as DynamicEachDataType
           );
           renderScriptsAndStyles(
             data,
@@ -1017,7 +1026,8 @@ export class Each extends DataComponent {
             currentComponent,
             index,
             index,
-            importData
+            importData,
+            data as DynamicEachDataType
           );
         };
         if (typeRender === "dynamic") {
