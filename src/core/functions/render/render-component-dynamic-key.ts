@@ -5,21 +5,27 @@ import {
   DynamicKeyObjectType,
   DynamicKeyType
 } from "../../../types/types";
-
+import { renderKeyData } from "./render-key-data";
 export const renderComponentDynamicKey = (
   key: DynamicKeyType | undefined
-): [string, boolean, ArrayStringType] => {
+): {
+  dynamicKey: string;
+  renderDynamicKeyData: any;
+} => {
   let newKey: string;
-  let isProperty = false;
   let properties: ArrayStringType = [];
+  let renderDynamicKeyData: any = (data: any) => data;
   if (checkObject(key)) {
     const dynamicKeyObject = key as DynamicKeyObjectType;
     newKey = dynamicKeyObject.key;
     if (dynamicKeyObject.properties.length > 0) {
-      isProperty = true;
       properties = dynamicKeyObject.properties;
+      renderDynamicKeyData = (data: any) => renderKeyData(data, properties);
     }
   } else newKey = key as string;
 
-  return [newKey, isProperty, properties];
+  return {
+    dynamicKey: newKey,
+    renderDynamicKeyData
+  };
 };

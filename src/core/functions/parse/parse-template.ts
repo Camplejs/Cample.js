@@ -15,7 +15,6 @@ import {
   getTextKey
 } from "../../../shared/utils";
 import {
-  ArrayStringType,
   CurrentKeyType,
   DynamicEachDataType,
   DynamicEl,
@@ -23,6 +22,7 @@ import {
   DynamicTextType,
   EachTemplateType,
   EventEachGetFunctionType,
+  EventGetDataType,
   ExportDataType,
   ExportDynamicType,
   FunctionEventType,
@@ -38,7 +38,6 @@ import {
   ValueType,
   ValuesType
 } from "../../../types/types";
-import { renderListeners } from "../data/render-listeners";
 import { updateAttributes } from "../data/update-attributes";
 import { renderComponentTemplate } from "../render/render-component-template";
 import { renderEl } from "../render/render-el";
@@ -68,7 +67,8 @@ export const parseTemplate = (
   id: number,
   values?: ValuesType,
   trim?: boolean,
-  getEventsData?: any,
+  getEventsData1?: any,
+  getEventsData2?: EventGetDataType,
   getEventsFunction?: EventEachGetFunctionType,
   setDataFunctions?: () => void,
   renderFunctions?: () => void,
@@ -163,10 +163,12 @@ export const parseTemplate = (
     if (node.nodeType === Node.ELEMENT_NODE) {
       parseText(node as Element);
       renderEl(
+        isEach,
         valueFunctions,
         eventArray,
         node as Element,
-        getEventsData,
+        getEventsData1,
+        getEventsData2,
         newNode,
         dynamicNodesObj,
         id,
@@ -299,7 +301,7 @@ export const parseTemplate = (
     indexValue,
     args,
     keyEvent,
-    getEventsData,
+    getEventsData1,
     getEventsFunction,
     renderedKey,
     id,
@@ -312,40 +314,47 @@ export const parseTemplate = (
       functions
     );
     if (!checkFunction(fn)) createError("Data key is of function type");
-    const setEvent = (
-      element: Element,
-      currentComponent: any,
-      keyEl?: string,
-      eachValue?: any
-    ) => {
-      let getFnEventsData: any;
-      getFnEventsData = isEach
-        ? (
-            key: string,
-            renderedKey: [string, boolean, ArrayStringType],
-            isValueKey: boolean
-          ) =>
-            (getEventsData as any)(
-              key,
-              id,
-              currentComponent,
-              keyEl,
-              index,
-              renderedKey,
-              isValueKey,
-              eachValue
-            )
-        : (getFnEventsData = (key: string) => (getEventsData as any)(key, id));
-      renderListeners(
-        element,
-        fn,
-        args,
-        keyEvent,
-        getFnEventsData,
-        isEach,
-        valueName
-      );
-    };
+    let setEvent: any;
+    if (isEach === true) {
+      setEvent = (
+        element: Element,
+        currentComponent: any,
+        keyEl?: string,
+        eachValue?: any
+      ) => {
+        if (element) {
+          const eventFn = () => {
+            const newArgs = args.map(({ key, renderedKey, getEventsDataFn }) =>
+              getEventsDataFn(
+                key,
+                currentComponent,
+                keyEl,
+                index,
+                renderedKey,
+                eachValue
+              )
+            );
+            fn().apply(this, newArgs);
+          };
+          element.addEventListener(keyEvent, eventFn);
+        }
+      };
+    } else {
+      setEvent = (
+        element: Element,
+        currentComponent: any,
+        keyEl?: string,
+        eachValue?: any
+      ) => {
+        if (element) {
+          const eventFn = () => {
+            const newArgs = args.map((e: any) => getEventsData1(e));
+            fn().apply(this, newArgs);
+          };
+          element.addEventListener(keyEvent, eventFn);
+        }
+      };
+    }
     const newVal: ValueType = {
       id: elId,
       type: 0,

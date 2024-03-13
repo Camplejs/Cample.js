@@ -31,8 +31,7 @@ import {
   EachTemplateType,
   IterationFunctionType,
   ValueItemsType,
-  FunctionsType,
-  ArrayStringType
+  FunctionsType
 } from "../../../types/types";
 import { createEachDynamicNodeComponentType } from "../../functions/data/create-each-dynamic-node-component";
 import { renderAttributes } from "../../functions/render/render-attributes";
@@ -149,7 +148,7 @@ export class Each extends DataComponent {
           if (newKey === this.valueName) createError("key error");
           const importData = getImportData(dataId);
           const renderedKey = renderComponentDynamicKey(renderKey(key));
-          const isImport = renderedKey[0] === this.importedDataName;
+          const isImport = renderedKey.dynamicKey === this.importedDataName;
           let val = undefined;
           if (isImport) {
             val = renderComponentDynamicKeyData(
@@ -776,27 +775,39 @@ export class Each extends DataComponent {
             return data.importData;
           } else return undefined;
         };
-        const getEventsData = (
+
+        const getEventsData1 = (
           key: string,
-          dataId: number,
           currentComponent: any,
           keyEl: string | undefined,
           _: number,
-          renderedKey: [string, boolean, ArrayStringType],
-          isValueKey: boolean,
+          renderedKey: {
+            dynamicKey: string;
+            renderDynamicKeyData: any;
+          },
           eachValue: DynamicEachDataType
         ) => {
-          // if (keyEl === undefined) createError("key error");
           const eachIndex = getEachIndex(currentComponent, keyEl as string);
-          // if (eachIndex === undefined) createError("EachIndex error");
           const indexData = eachValue.value[eachIndex];
+          const { renderDynamicKeyData } = renderedKey;
+          const val = renderDynamicKeyData(indexData);
+          return val;
+        };
+
+        const getEventsData2 = (
+          key: string,
+          currentComponent: any,
+          keyEl: string | undefined,
+          _: number,
+          renderedKey: {
+            dynamicKey: string;
+            renderDynamicKeyData: any;
+          },
+          eachValue: DynamicEachDataType
+        ) => {
           const importData = eachValue.importData;
-          const val = renderComponentDynamicKeyData(
-            isValueKey ? indexData : importData,
-            key,
-            true,
-            renderedKey
-          );
+          const { renderDynamicKeyData } = renderedKey;
+          const val = renderDynamicKeyData(importData);
           return val;
         };
 
@@ -892,7 +903,8 @@ export class Each extends DataComponent {
             dataId,
             this.values,
             trim,
-            getEventsData,
+            getEventsData1,
+            getEventsData2 as any,
             getEventsFunction,
             setDataFunctions,
             runRenderFunction,

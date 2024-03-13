@@ -7,7 +7,12 @@ import {
   removeAttribute,
   setAttribute
 } from "../../../config/config";
-import { createError, testRegex, testValuesRegex } from "../../../shared/utils";
+import {
+  createError,
+  getKey,
+  testRegex,
+  testValuesRegex
+} from "../../../shared/utils";
 import {
   AttributesValType,
   CurrentKeyType,
@@ -24,8 +29,11 @@ import {
 } from "../../../types/types";
 import { parseKey } from "../parse/parse-key";
 import { renderEventKey } from "../render/render-event-key";
+import { renderComponentDynamicKey } from "./render-component-dynamic-key";
+import { renderKey } from "./render-key";
 
 export const renderEl = (
+  isEach: boolean | undefined,
   valueFunctions: [
     (...args: any[]) => string,
     (...args: any[]) => string,
@@ -42,7 +50,8 @@ export const renderEl = (
   ],
   eventArray: any[],
   el: Element,
-  getEventsData: EventGetDataType | EventEachGetDataType,
+  getEventsData1: EventGetDataType | EventEachGetDataType,
+  getEventsData2: EventGetDataType | undefined,
   newNode: IndexObjNode,
   dynamicNodesObj: DynamicNodesObjectType,
   id: number,
@@ -144,13 +153,26 @@ export const renderEl = (
               });
               const renderedKey = renderEventKey(key);
               const args = [...renderedKey.arguments].filter(Boolean);
+              const currentArgs =
+                isEach === true
+                  ? args.map((e) => {
+                      return {
+                        key: e,
+                        renderedKey: renderComponentDynamicKey(renderKey(e)),
+                        getEventsDataFn:
+                          getKey(e) === valueName
+                            ? getEventsData1
+                            : getEventsData2
+                      };
+                    })
+                  : args;
               const keyEvent = e.name.substring(1);
               const event = {
                 elId: 0,
                 indexValue: values.length,
-                args,
+                args: currentArgs,
                 keyEvent,
-                getEventsData,
+                getEventsData1,
                 getEventsFunction,
                 renderedKey,
                 id,

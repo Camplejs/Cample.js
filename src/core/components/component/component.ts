@@ -929,6 +929,7 @@ export class Component extends DataComponent {
               this.values,
               trim,
               getEventsData,
+              undefined,
               getEventsFunction,
               setDataFunctions,
               runRenderFunction,
