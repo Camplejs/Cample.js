@@ -157,7 +157,6 @@ export const renderEl = (
                 isEach === true
                   ? args.map((e) => {
                       return {
-                        key: e,
                         renderedKey: renderComponentDynamicKey(renderKey(e)),
                         getEventsDataFn:
                           getKey(e) === valueName

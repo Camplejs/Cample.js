@@ -1,4 +1,5 @@
 "use strict";
+import { EACH_INDEX_NAME } from "../../../config/config";
 import {
   DynamicEachDataType,
   EachTemplateType,
@@ -14,7 +15,6 @@ import {
 export const createElement = (
   currentComponent: any,
   indexData: any,
-  index: number,
   dataId: number,
   templateEl: EachTemplateType,
   eachValue?: DynamicEachDataType,
@@ -31,6 +31,7 @@ export const createElement = (
     values: newValues
   } = templateEl;
   const el = (templateElemenet as Element).cloneNode(true);
+  el[EACH_INDEX_NAME] = eachIndex;
   const length = templateNodes.length;
   const nodes: NodeNodesType = new Array(length + 1);
   const lengthValues = newValues.length;
@@ -41,6 +42,7 @@ export const createElement = (
     ? templateRender.call(
         el as ChildNode,
         currentComponent,
+        el,
         newNodes,
         stack,
         indexData,
@@ -58,6 +60,7 @@ export const createElement = (
     nodes[i + 1] = (render as RenderNodeFunctionType).call(
       nodes[rootId],
       currentComponent,
+      el,
       newNodes,
       stack,
       indexData,
@@ -70,7 +73,6 @@ export const createElement = (
     );
   }
   const currentNode: NodeType = {
-    index,
     values: newValues,
     dataId,
     nodes: newNodes,

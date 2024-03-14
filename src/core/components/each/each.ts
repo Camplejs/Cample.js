@@ -6,7 +6,6 @@ import {
   cloneValue,
   getKey,
   swapElements,
-  getObjData,
   getDataFunctions
 } from "../../../shared/utils";
 import {
@@ -63,6 +62,7 @@ import { renderFunctions } from "../../functions/render/render-functions";
 import { renderComponentDynamicKeyData } from "../../functions/data/render-component-dynamic-key-data";
 import { renderKey } from "../../functions/render/render-key";
 import { renderComponentDynamicKey } from "../../functions/render/render-component-dynamic-key";
+import { EACH_INDEX_NAME } from "../../../config/config";
 
 export class Each extends DataComponent {
   public data: EachDataFunctionType;
@@ -119,20 +119,6 @@ export class Each extends DataComponent {
       if (isFunction || typeof this.eachTemplate === "string") {
         const templateElement: any = null;
         const trim = (trimHTML && this.trimHTML === undefined) || this.trimHTML;
-        const getEachIndex = (
-          currentComponent: EachDynamicNodeComponentType,
-          value: any
-        ) => {
-          const array = currentComponent.nodes;
-          let i = 0;
-          for (; i < array.length; i++) {
-            const item = array[i];
-            if (item?.["key"] === value) {
-              break;
-            }
-          }
-          return i;
-        };
         const getEventsFunction = (
           key: string,
           dataId: number,
@@ -251,7 +237,6 @@ export class Each extends DataComponent {
                 const { el, currentNode } = createElement(
                   currentComponent,
                   indexData,
-                  index,
                   dataId,
                   template,
                   eachValue,
@@ -269,7 +254,6 @@ export class Each extends DataComponent {
                 const { el, currentNode } = createElement(
                   currentComponent,
                   indexData,
-                  index,
                   dataId,
                   template,
                   eachValue,
@@ -341,6 +325,12 @@ export class Each extends DataComponent {
                   importData
                 );
                 newData[currentNewLastIndex] = oldNodes[currentOldLastIndex];
+                if (
+                  newData[currentNewLastIndex].el[EACH_INDEX_NAME] !==
+                  currentNewLastIndex
+                )
+                  newData[currentNewLastIndex].el[EACH_INDEX_NAME] =
+                    currentNewLastIndex;
                 newLastIndex--;
                 oldLastIndex--;
                 continue;
@@ -361,13 +351,13 @@ export class Each extends DataComponent {
                   currentNewLastIndex,
                   importData
                 );
-                swapElements(
-                  (newData[newFirstIndex++] = oldNodes[currentOldLastIndex])
-                    .el as Element,
-                  (newData[currentNewLastIndex] = oldNodes[oldFirstIndex++])
-                    .el as Element,
-                  parentNode
-                );
+                const el1 = (newData[newFirstIndex] =
+                  oldNodes[currentOldLastIndex]).el as Element;
+                const el2 = (newData[currentNewLastIndex] =
+                  oldNodes[oldFirstIndex++]).el as Element;
+                el1[EACH_INDEX_NAME] = newFirstIndex++;
+                el2[EACH_INDEX_NAME] = currentNewLastIndex;
+                swapElements(el1, el2, parentNode);
                 newLastIndex--;
                 oldLastIndex--;
                 continue;
@@ -404,7 +394,6 @@ export class Each extends DataComponent {
                   const { el, currentNode } = createElement(
                     currentComponent,
                     currentIndexData,
-                    index,
                     dataId,
                     template,
                     eachValue,
@@ -473,7 +462,14 @@ export class Each extends DataComponent {
                       newFirstIndex,
                       importData
                     );
-                    newData[newFirstIndex++] = oldNodes[oldFirstIndex++];
+                    newData[newFirstIndex] = oldNodes[oldFirstIndex++];
+                    if (
+                      newData[newFirstIndex].el[EACH_INDEX_NAME] !==
+                      newFirstIndex
+                    )
+                      newData[newFirstIndex].el[EACH_INDEX_NAME] =
+                        newFirstIndex;
+                    newFirstIndex++;
                     continue;
                   }
                   currentNewLastIndex = newLastIndex - 1;
@@ -494,6 +490,12 @@ export class Each extends DataComponent {
                     );
                     newData[currentNewLastIndex] =
                       oldNodes[currentOldLastIndex];
+                    if (
+                      newData[currentNewLastIndex].el[EACH_INDEX_NAME] !==
+                      currentNewLastIndex
+                    )
+                      newData[currentNewLastIndex].el[EACH_INDEX_NAME] =
+                        currentNewLastIndex;
                     newLastIndex--;
                     oldLastIndex--;
                     continue;
@@ -514,13 +516,13 @@ export class Each extends DataComponent {
                       currentNewLastIndex,
                       importData
                     );
-                    swapElements(
-                      (newData[newFirstIndex++] = oldNodes[currentOldLastIndex])
-                        .el as Element,
-                      (newData[currentNewLastIndex] = oldNodes[oldFirstIndex++])
-                        .el as Element,
-                      parentNode
-                    );
+                    const el1 = (newData[newFirstIndex] =
+                      oldNodes[currentOldLastIndex]).el as Element;
+                    const el2 = (newData[currentNewLastIndex] =
+                      oldNodes[oldFirstIndex++]).el as Element;
+                    el1[EACH_INDEX_NAME] = newFirstIndex++;
+                    el2[EACH_INDEX_NAME] = currentNewLastIndex;
+                    swapElements(el1, el2, parentNode);
                     newLastIndex--;
                     oldLastIndex--;
                     continue;
@@ -530,6 +532,7 @@ export class Each extends DataComponent {
                     const currentNode = oldNodes[currentIndex];
                     const { el } = currentNode;
                     newData[newFirstIndex] = currentNode;
+                    (el as Element)[EACH_INDEX_NAME] = newFirstIndex;
                     parentNode.insertBefore(
                       el as Element,
                       oldNodes[oldFirstIndex].el as Element
@@ -546,7 +549,6 @@ export class Each extends DataComponent {
                   const { el, currentNode } = createElement(
                     currentComponent,
                     newData[newFirstIndex],
-                    index,
                     dataId,
                     template,
                     eachValue,
@@ -588,7 +590,6 @@ export class Each extends DataComponent {
                     const { el, currentNode } = createElement(
                       currentComponent,
                       currentIndexData,
-                      index,
                       dataId,
                       template,
                       eachValue,
@@ -777,9 +778,7 @@ export class Each extends DataComponent {
         };
 
         const getEventsData1 = (
-          key: string,
-          currentComponent: any,
-          keyEl: string | undefined,
+          mainEl: Element,
           _: number,
           renderedKey: {
             dynamicKey: string;
@@ -787,7 +786,7 @@ export class Each extends DataComponent {
           },
           eachValue: DynamicEachDataType
         ) => {
-          const eachIndex = getEachIndex(currentComponent, keyEl as string);
+          const eachIndex = mainEl[EACH_INDEX_NAME];
           const indexData = eachValue.value[eachIndex];
           const { renderDynamicKeyData } = renderedKey;
           const val = renderDynamicKeyData(indexData);
@@ -795,9 +794,7 @@ export class Each extends DataComponent {
         };
 
         const getEventsData2 = (
-          key: string,
-          currentComponent: any,
-          keyEl: string | undefined,
+          mainEl: Element,
           _: number,
           renderedKey: {
             dynamicKey: string;
@@ -1006,23 +1003,16 @@ export class Each extends DataComponent {
           importData: DataType | undefined,
           isDataFunction?: boolean
         ) => {
-          const { data: oldData, index: dynamicIndex } = getObjData(
-            this._dynamic.data.data.values,
-            id,
-            false
-          );
-          const clonedOldData = (oldData.value as Array<any>).slice();
+          const oldData = this._dynamic.data.data.values[id];
           const data = renderDynamicData(
             importData,
             isDataFunction,
-            oldData?.value,
+            (oldData as DynamicEachDataType)?.value,
             true
           );
-          this._dynamic.data.data.values[dynamicIndex as number].oldValue =
-            clonedOldData;
-          this._dynamic.data.data.values[dynamicIndex as number].value = data;
-          this._dynamic.data.data.values[dynamicIndex as number].importData =
-            importData;
+          this._dynamic.data.data.values[id].oldValue = oldData.value;
+          this._dynamic.data.data.values[id].value = data;
+          this._dynamic.data.data.values[id].importData = importData;
         };
         const renderComponentsDynamic = (
           index: number,

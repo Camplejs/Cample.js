@@ -439,7 +439,6 @@ export type StackType = Array<any>;
 export type NodeNodesType = Array<ChildNode | null>;
 export type NodeType = {
   isNew?: boolean;
-  index: number;
   key?: string;
   el?: Node;
   nodes: NodeNodesType;

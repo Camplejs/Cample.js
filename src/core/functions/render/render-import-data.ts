@@ -31,7 +31,7 @@ export const renderImportData = (
         //   createError("Index included");
         // }
         if (exportData[exportId] !== undefined) {
-          for (let e of currentImport) {
+          for (const e of currentImport) {
             if (Array.isArray(e)) {
               if (e.length === 2) {
                 const key = e[0];
@@ -39,10 +39,10 @@ export const renderImportData = (
                 const currentData = exportData[exportId][currentIndex];
                 if (currentData) {
                   if (currentData.data[key] !== undefined) {
-                    if (!result) result = {};
+                    if (result === undefined) result = {};
                     result[key] = currentData.data[key][indexKey];
                   } else if (currentData.functions[key] !== undefined) {
-                    if (!result) result = {};
+                    if (result === undefined) result = {};
                     result[key] = currentData.functions[key][indexKey];
                   } else {
                     createError(`Property value "${e[0]}" not found`);
@@ -54,14 +54,13 @@ export const renderImportData = (
                 createError(`Syntax value error`);
               }
             } else {
-              e = e as string;
               const currentData = exportData[exportId][currentIndex];
               const setData = (data: object, key: string) => {
                 const value = data[key];
-                if (!result) result = {};
+                if (result === undefined) result = {};
                 result[key] = value[0];
               };
-              if (currentData) {
+              if (currentData !== undefined) {
                 if (currentData.data[e] !== undefined) {
                   setData(currentData.data, e);
                 } else if (currentData.functions[e] !== undefined) {
@@ -94,7 +93,8 @@ export const renderImportData = (
     //   createError("Index included");
     // }
     if ((exportData as any)[exportId] !== undefined) {
-      for (let e of currentImport as any) {
+      for (let i = 0; i < (currentImport as any).length; i++) {
+        const e = (currentImport as any)[i];
         if (e.isArray !== undefined) {
           const val = e.value;
           const key = val[0];
@@ -114,20 +114,19 @@ export const renderImportData = (
             createError(`Data error`);
           }
         } else {
-          e = e.value;
           const currentData = (exportData as any)[exportId][currentIndex];
           const setData = (data: object, key: string) => {
             const value = data[key];
             if (result === undefined) result = {};
             result[key] = value[0];
           };
-          if (currentData) {
-            if (currentData.data[e] !== undefined) {
-              setData(currentData.data, e);
-            } else if (currentData.functions[e] !== undefined) {
-              setData(currentData.functions, e);
+          if (currentData !== undefined) {
+            if (currentData.data[e.value] !== undefined) {
+              setData(currentData.data, e.value);
+            } else if (currentData.functions[e.value] !== undefined) {
+              setData(currentData.functions, e.value);
             } else {
-              createError(`Property value "${e}" not found`);
+              createError(`Property value "${e.value}" not found`);
             }
           } else {
             createError(`Data error`);

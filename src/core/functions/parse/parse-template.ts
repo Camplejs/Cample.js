@@ -319,20 +319,14 @@ export const parseTemplate = (
       setEvent = (
         element: Element,
         currentComponent: any,
+        mainEl: Element,
         keyEl?: string,
         eachValue?: any
       ) => {
         if (element) {
           const eventFn = () => {
-            const newArgs = args.map(({ key, renderedKey, getEventsDataFn }) =>
-              getEventsDataFn(
-                key,
-                currentComponent,
-                keyEl,
-                index,
-                renderedKey,
-                eachValue
-              )
+            const newArgs = args.map(({ renderedKey, getEventsDataFn }) =>
+              getEventsDataFn(mainEl, index, renderedKey, eachValue)
             );
             fn().apply(this, newArgs);
           };
@@ -343,6 +337,7 @@ export const parseTemplate = (
       setEvent = (
         element: Element,
         currentComponent: any,
+        mainEl: Element,
         keyEl?: string,
         eachValue?: any
       ) => {
@@ -370,6 +365,7 @@ export const parseTemplate = (
         return (
           val: ValueType,
           currentComponent: any,
+          mainEl: Element,
           nodes: Element[],
           stack: StackType,
           node: ChildNode,
@@ -382,7 +378,13 @@ export const parseTemplate = (
           eachValue?: DynamicEachDataType
         ) => {
           const { render } = val;
-          (render as FunctionEventType)(node, currentComponent, key, eachValue);
+          (render as FunctionEventType)(
+            node,
+            currentComponent,
+            mainEl,
+            key,
+            eachValue
+          );
         };
       case 1:
         if (valKey.isValue) {
@@ -415,6 +417,7 @@ export const parseTemplate = (
           return (
             val: ValueType,
             currentComponent: any,
+            mainEl: Element,
             nodes: Element[],
             stack: StackType,
             node: ChildNode,
@@ -467,6 +470,7 @@ export const parseTemplate = (
                     return (
                       val: ValueType,
                       currentComponent: any,
+                      mainEl: Element,
                       nodes: Element[],
                       stack: StackType,
                       node: ChildNode,
@@ -502,6 +506,7 @@ export const parseTemplate = (
                     return (
                       val: ValueType,
                       currentComponent: any,
+                      mainEl: Element,
                       nodes: Element[],
                       stack: StackType,
                       node: ChildNode,
@@ -537,6 +542,7 @@ export const parseTemplate = (
                   return (
                     val: ValueType,
                     currentComponent: any,
+                    mainEl: Element,
                     nodes: Element[],
                     stack: StackType,
                     node: ChildNode,
@@ -572,6 +578,7 @@ export const parseTemplate = (
                 return (
                   val: ValueType,
                   currentComponent: any,
+                  mainEl: Element,
                   nodes: Element[],
                   stack: StackType,
                   node: ChildNode,
@@ -607,6 +614,7 @@ export const parseTemplate = (
                 return (
                   val: ValueType,
                   currentComponent: any,
+                  mainEl: Element,
                   nodes: Element[],
                   stack: StackType,
                   node: ChildNode,
@@ -642,6 +650,7 @@ export const parseTemplate = (
                 return (
                   val: ValueType,
                   currentComponent: any,
+                  mainEl: Element,
                   nodes: Element[],
                   stack: StackType,
                   node: ChildNode,
@@ -682,6 +691,7 @@ export const parseTemplate = (
               return (
                 val: ValueType,
                 currentComponent: any,
+                mainEl: Element,
                 nodes: Element[],
                 stack: StackType,
                 node: ChildNode,
@@ -720,6 +730,7 @@ export const parseTemplate = (
               return (
                 val: ValueType,
                 currentComponent: any,
+                mainEl: Element,
                 nodes: Element[],
                 stack: StackType,
                 node: ChildNode,
@@ -759,6 +770,7 @@ export const parseTemplate = (
         return (
           val: ValueType,
           currentComponent: any,
+          mainEl: Element,
           nodes: Element[],
           stack: StackType,
           node: ChildNode,
@@ -779,6 +791,7 @@ export const parseTemplate = (
         return (
           val: ValueType,
           currentComponent: any,
+          mainEl: Element,
           nodes: Element[],
           stack: StackType,
           node: ChildNode,
@@ -834,6 +847,7 @@ export const parseTemplate = (
           return (
             val: ValueType,
             currentComponent: any,
+            mainEl: Element,
             nodes: Element[],
             stack: StackType,
             node: ChildNode,
@@ -888,6 +902,7 @@ export const parseTemplate = (
             return (
               val: ValueType,
               currentComponent: any,
+              mainEl: Element,
               nodes: Element[],
               stack: StackType,
               node: ChildNode,
@@ -940,6 +955,7 @@ export const parseTemplate = (
               return (
                 val: ValueType,
                 currentComponent: any,
+                mainEl: Element,
                 nodes: Element[],
                 stack: StackType,
                 node: ChildNode,
@@ -984,6 +1000,7 @@ export const parseTemplate = (
                     return (
                       val: ValueType,
                       currentComponent: any,
+                      mainEl: Element,
                       nodes: Element[],
                       stack: StackType,
                       node: ChildNode,
@@ -1021,6 +1038,7 @@ export const parseTemplate = (
                     return (
                       val: ValueType,
                       currentComponent: any,
+                      mainEl: Element,
                       nodes: Element[],
                       stack: StackType,
                       node: ChildNode,
@@ -1056,6 +1074,7 @@ export const parseTemplate = (
                     return (
                       val: ValueType,
                       currentComponent: any,
+                      mainEl: Element,
                       nodes: Element[],
                       stack: StackType,
                       node: ChildNode,
@@ -1091,6 +1110,7 @@ export const parseTemplate = (
                     return (
                       val: ValueType,
                       currentComponent: any,
+                      mainEl: Element,
                       nodes: Element[],
                       stack: StackType,
                       node: ChildNode,
@@ -1132,6 +1152,7 @@ export const parseTemplate = (
                   return (
                     val: ValueType,
                     currentComponent: any,
+                    mainEl: Element,
                     nodes: Element[],
                     stack: StackType,
                     node: ChildNode,
@@ -1171,6 +1192,7 @@ export const parseTemplate = (
                   return (
                     val: ValueType,
                     currentComponent: any,
+                    mainEl: Element,
                     nodes: Element[],
                     stack: StackType,
                     node: ChildNode,
@@ -1223,6 +1245,7 @@ export const parseTemplate = (
           ? function fn(
               this: Element,
               currentComponent: any,
+              mainEl: Element,
               nodes: Element[],
               stack: StackType,
               indexData: any,
@@ -1237,6 +1260,7 @@ export const parseTemplate = (
               valueFn(
                 val,
                 currentComponent,
+                mainEl,
                 nodes,
                 stack,
                 currentEl,
@@ -1253,6 +1277,7 @@ export const parseTemplate = (
           : function fn(
               this: Element,
               currentComponent: any,
+              mainEl: Element,
               nodes: Element[],
               stack: StackType,
               indexData: any,
@@ -1271,6 +1296,7 @@ export const parseTemplate = (
               valueFn(
                 val,
                 currentComponent,
+                mainEl,
                 nodes,
                 stack,
                 currentEl,
@@ -1293,6 +1319,7 @@ export const parseTemplate = (
           ? function fn(
               this: Element,
               currentComponent: any,
+              mainEl: Element,
               nodes: Element[],
               stack: StackType,
               indexData: any,
@@ -1309,6 +1336,7 @@ export const parseTemplate = (
                 valueFn(
                   nodeValues[i],
                   currentComponent,
+                  mainEl,
                   nodes,
                   stack,
                   currentEl,
@@ -1326,6 +1354,7 @@ export const parseTemplate = (
           : function fn(
               this: Element,
               currentComponent: any,
+              mainEl: Element,
               nodes: Element[],
               stack: StackType,
               indexData: any,
@@ -1346,6 +1375,7 @@ export const parseTemplate = (
                 valueFn(
                   nodeValues[i],
                   currentComponent,
+                  mainEl,
                   nodes,
                   stack,
                   currentEl,
@@ -1429,6 +1459,7 @@ export const parseTemplate = (
       obj.render = function (
         this: Element,
         currentComponent: any,
+        mainEl: Element,
         nodes: Element[],
         stack: StackType,
         indexData: any,
@@ -1442,6 +1473,7 @@ export const parseTemplate = (
         valueFn(
           val,
           currentComponent,
+          mainEl,
           nodes,
           stack,
           this,
@@ -1462,6 +1494,7 @@ export const parseTemplate = (
       obj.render = function (
         this: Element,
         currentComponent: any,
+        mainEl: Element,
         nodes: Element[],
         stack: StackType,
         indexData: any,
@@ -1477,6 +1510,7 @@ export const parseTemplate = (
           valueFn(
             nodeValues[i],
             currentComponent,
+            mainEl,
             nodes,
             stack,
             this,

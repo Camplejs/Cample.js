@@ -950,7 +950,6 @@ export class Component extends DataComponent {
             const { el, currentNode } = createElement(
               currentComponent,
               data,
-              index,
               currentId,
               newTemplateObj,
               undefined,
