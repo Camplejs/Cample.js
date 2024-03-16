@@ -319,47 +319,77 @@ export const parseTemplate = (
     if (!checkFunction(fn)) createError("Data key is of function type");
     let setEvent: any;
     if (isEach === true) {
-      setEvent = (
-        element: Element,
-        currentComponent: any,
-        mainEl: Element,
-        keyEl?: string,
-        eachValue?: any
-      ) => {
-        if (element) {
-          const eventFn = (event: Event) => {
-            const newArgs = args.map(({ renderedKey, getEventsDataFn }) =>
-              getEventsDataFn(mainEl, index, renderedKey, eachValue)
-            );
-            fn(event).apply(this, newArgs);
-          };
-          if (keyEvent === "click") {
+      if (keyEvent === "click") {
+        setEvent = (
+          element: Element,
+          currentComponent: any,
+          mainEl: Element,
+          keyEl?: string,
+          eachValue?: any
+        ) => {
+          if (element) {
+            const eventFn = (event: Event) => {
+              const newArgs = args.map(({ renderedKey, getEventsDataFn }) =>
+                getEventsDataFn(mainEl, index, renderedKey, eachValue)
+              );
+              fn(event).apply(this, newArgs);
+            };
             element[CLICK_FUNCTION_NAME] = eventFn;
-          } else {
+          }
+        };
+      } else {
+        setEvent = (
+          element: Element,
+          currentComponent: any,
+          mainEl: Element,
+          keyEl?: string,
+          eachValue?: any
+        ) => {
+          if (element) {
+            const eventFn = (event: Event) => {
+              const newArgs = args.map(({ renderedKey, getEventsDataFn }) =>
+                getEventsDataFn(mainEl, index, renderedKey, eachValue)
+              );
+              fn(event).apply(this, newArgs);
+            };
             element.addEventListener(keyEvent, eventFn);
           }
-        }
-      };
+        };
+      }
     } else {
-      setEvent = (
-        element: Element,
-        currentComponent: any,
-        mainEl: Element,
-        keyEl?: string,
-        eachValue?: any
-      ) => {
-        if (element) {
-          const eventFn = (event: Event) => {
-            const newArgs = args.map((e: any) => getEventsData1(e));
-            fn(event).apply(this, newArgs);
-          };
-          if (keyEvent === "click") {
+      if (keyEvent === "click") {
+        setEvent = (
+          element: Element,
+          currentComponent: any,
+          mainEl: Element,
+          keyEl?: string,
+          eachValue?: any
+        ) => {
+          if (element) {
+            const eventFn = (event: Event) => {
+              const newArgs = args.map((e: any) => getEventsData1(e));
+              fn(event).apply(this, newArgs);
+            };
             element[CLICK_FUNCTION_NAME] = eventFn;
-          } else {
+          }
+        };
+      } else {
+        setEvent = (
+          element: Element,
+          currentComponent: any,
+          mainEl: Element,
+          keyEl?: string,
+          eachValue?: any
+        ) => {
+          if (element) {
+            const eventFn = (event: Event) => {
+              const newArgs = args.map((e: any) => getEventsData1(e));
+              fn(event).apply(this, newArgs);
+            };
             element.addEventListener(keyEvent, eventFn);
           }
-        }
-      };
+        };
+      }
     }
     const newVal: ValueType = {
       id: elId,
