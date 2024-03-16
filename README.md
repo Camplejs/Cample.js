@@ -15,7 +15,6 @@
 
 <div align="center"><a href="https://camplejs.github.io">Website</a> • <a href="https://camplejs.github.io/documentation/introduction.html">Documentation</a> • <a href="https://camplejs.github.io/examples.html"> Examples </a> • <a href="https://codepen.io/Camplejs">Examples source</a></div>
 <br>
-
 <div align="center"><b>Alpha version</b></div>
 
 ## Why Cample.js?
