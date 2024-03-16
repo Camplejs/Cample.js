@@ -91,7 +91,7 @@ const newComponent = component(
       };
     },
     dataFunctions: {
-      updateClicks: "dynamicData",
+      updateClicks: "dynamicData"
     },
   }
 );
@@ -101,7 +101,7 @@ cample("#app", {
 `<template data-cample="new-component">
 </template>`,
   {
-    newComponent,
+    newComponent
   }
 );
 ```
