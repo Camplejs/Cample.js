@@ -6,7 +6,8 @@ import {
   indexOf,
   pop,
   unshift,
-  updClass
+  updClass,
+  CLICK_FUNCTION_NAME
 } from "../../../config/config";
 import {
   checkFunction,
@@ -47,6 +48,7 @@ import { parseKey } from "./parse-key";
 import { parseText } from "./parse-text";
 
 export const parseTemplate = (
+  setEventListener: () => void,
   renderDynamic: (...args: any[]) => any,
   valueFunctions: [
     (...args: any[]) => string,
@@ -163,6 +165,7 @@ export const parseTemplate = (
     if (node.nodeType === Node.ELEMENT_NODE) {
       parseText(node as Element);
       renderEl(
+        setEventListener,
         isEach,
         valueFunctions,
         eventArray,
@@ -324,13 +327,17 @@ export const parseTemplate = (
         eachValue?: any
       ) => {
         if (element) {
-          const eventFn = () => {
+          const eventFn = (event: Event) => {
             const newArgs = args.map(({ renderedKey, getEventsDataFn }) =>
               getEventsDataFn(mainEl, index, renderedKey, eachValue)
             );
-            fn().apply(this, newArgs);
+            fn(event).apply(this, newArgs);
           };
-          element.addEventListener(keyEvent, eventFn);
+          if (keyEvent === "click") {
+            element[CLICK_FUNCTION_NAME] = eventFn;
+          } else {
+            element.addEventListener(keyEvent, eventFn);
+          }
         }
       };
     } else {
@@ -342,11 +349,15 @@ export const parseTemplate = (
         eachValue?: any
       ) => {
         if (element) {
-          const eventFn = () => {
+          const eventFn = (event: Event) => {
             const newArgs = args.map((e: any) => getEventsData1(e));
-            fn().apply(this, newArgs);
+            fn(event).apply(this, newArgs);
           };
-          element.addEventListener(keyEvent, eventFn);
+          if (keyEvent === "click") {
+            element[CLICK_FUNCTION_NAME] = eventFn;
+          } else {
+            element.addEventListener(keyEvent, eventFn);
+          }
         }
       };
     }

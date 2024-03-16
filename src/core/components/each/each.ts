@@ -108,6 +108,7 @@ export class Each extends DataComponent {
   }
 
   render(
+    setEventListener: () => void,
     trimHTML?: boolean,
     exportData?: ExportDataType,
     importId?: ExportIdType,
@@ -880,6 +881,7 @@ export class Each extends DataComponent {
           };
 
           const { obj: newTemplateObj } = parseTemplate(
+            setEventListener,
             renderDynamic,
             [
               renderFn1,

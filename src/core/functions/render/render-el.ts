@@ -33,6 +33,7 @@ import { renderComponentDynamicKey } from "./render-component-dynamic-key";
 import { renderKey } from "./render-key";
 
 export const renderEl = (
+  setEventListener: () => void,
   isEach: boolean | undefined,
   valueFunctions: [
     (...args: any[]) => string,
@@ -166,6 +167,9 @@ export const renderEl = (
                     })
                   : args;
               const keyEvent = e.name.substring(1);
+              if (keyEvent === "click") {
+                setEventListener();
+              }
               const event = {
                 elId: 0,
                 indexValue: values.length,
