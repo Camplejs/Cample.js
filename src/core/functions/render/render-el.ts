@@ -31,6 +31,7 @@ import { parseKey } from "../parse/parse-key";
 import { renderEventKey } from "../render/render-event-key";
 import { renderComponentDynamicKey } from "./render-component-dynamic-key";
 import { renderKey } from "./render-key";
+import { renderValues } from "./render-values";
 
 export const renderEl = (
   setEventListener: () => void,
@@ -89,10 +90,74 @@ export const renderEl = (
     return val;
   };
   const createValItem = (value: string | CurrentKeyType) => {
-    return {
-      value,
-      render: typeof value === "string" ? valueFunctions[2] : valueFunctions[3]
-    };
+    if (typeof value === "string") {
+      return {
+        value,
+        render: valueFunctions[2]
+      };
+    } else {
+      if (isEach === true) {
+        let currentRender: any;
+        if (value.isValue) {
+          currentRender = (
+            key: CurrentKeyType,
+            data: any,
+            importData: any,
+            eachIndex: number | undefined
+          ) => {
+            const str = {
+              value: ""
+            };
+            renderValues(str, key, data, importData, eachIndex);
+            return str.value;
+          };
+        } else {
+          switch (value.originType) {
+            case 1:
+              currentRender = (
+                key: CurrentKeyType,
+                data: any,
+                importData: any,
+                eachIndex: number | undefined
+              ) => (key.render as any)(data);
+              break;
+            case 2:
+              currentRender = (
+                key: CurrentKeyType,
+                data: any,
+                importData: any,
+                eachIndex: number | undefined
+              ) => (key.render as any)(importData);
+              break;
+            case 3:
+              currentRender = (
+                key: CurrentKeyType,
+                data: any,
+                importData: any,
+                eachIndex: number | undefined
+              ) => eachIndex;
+              break;
+            default:
+              currentRender = (
+                key: CurrentKeyType,
+                data: any,
+                importData: any,
+                eachIndex: number | undefined
+              ) => undefined;
+              break;
+          }
+        }
+        return {
+          value,
+          render: currentRender
+        };
+      } else {
+        return {
+          value,
+          render: valueFunctions[3]
+        };
+      }
+    }
   };
   if (regexAttr.length) {
     for (const e of regexAttr) {
