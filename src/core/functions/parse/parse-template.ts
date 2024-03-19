@@ -367,7 +367,7 @@ export const parseTemplate = (
         ) => {
           if (element) {
             const eventFn = (event: Event) => {
-              const newArgs = args.map((e: any) => getEventsData1(e));
+              const newArgs = args.map((e: any) => getEventsData1(e, id));
               fn(event).apply(this, newArgs);
             };
             element[CLICK_FUNCTION_NAME] = eventFn;
@@ -383,7 +383,7 @@ export const parseTemplate = (
         ) => {
           if (element) {
             const eventFn = (event: Event) => {
-              const newArgs = args.map((e: any) => getEventsData1(e));
+              const newArgs = args.map((e: any) => getEventsData1(e, id));
               fn(event).apply(this, newArgs);
             };
             element.addEventListener(keyEvent, eventFn);

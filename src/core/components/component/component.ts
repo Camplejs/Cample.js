@@ -223,10 +223,10 @@ export class Component extends DataComponent {
           exportObjData,
           exportConstructor
         } = currentComponent;
-        const { constructor, indexesData: indexesValue } =
-          exportObject as ExportObjectDataType;
         const newExportData = {};
         if (exportObject !== undefined) {
+          const { constructor, indexesData: indexesValue } =
+            exportObject as ExportObjectDataType;
           for (let i = 0; i < exportObjData.length; i++) {
             const { key } = exportObjData[i];
             if (constructor[key] !== undefined) {
