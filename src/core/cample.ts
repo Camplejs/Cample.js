@@ -37,33 +37,21 @@ export class Cample {
     this.template = renderTemplate(template, options);
 
     if (typeof this.selector === "string") {
-      const renderNode = (node: any, current: { cancelBubble: any }) => {
-        while (node) {
-          const eventListener = node[CLICK_FUNCTION_NAME];
-          if (eventListener && !node.disabled) {
-            eventListener.call(this, current);
-            if (current.cancelBubble) return;
-          }
-          node = node.parentNode || node.host;
-        }
-      };
       const eventListener: EventListenerOrEventListenerObject = (
         current: Event
       ) => {
-        const currentNode = current?.composedPath()[0] || current.target;
-        if (current.target !== currentNode) {
-          Object.defineProperty(current, "target", {
-            configurable: true,
-            value: currentNode
-          });
-        }
-        Object.defineProperty(current, "currentTarget", {
-          configurable: true,
-          get() {
-            return currentNode || document;
+        let node: any =
+          current.composedPath !== undefined
+            ? current.composedPath()[0]
+            : current.target;
+        while (node !== null) {
+          const eventListener = node[CLICK_FUNCTION_NAME];
+          if (eventListener !== undefined && !node.disabled) {
+            eventListener(current);
+            if (current.cancelBubble) return;
           }
-        });
-        renderNode(currentNode, current);
+          node = node.parentNode;
+        }
       };
       const el: Element | null = document.querySelector(this.selector);
       if (el !== null) {
@@ -72,7 +60,7 @@ export class Cample {
       }
       const setEventListener = () => {
         if (!this._isListener && this._el !== null) {
-          (this._el as Element).addEventListener("click", eventListener);
+          document.addEventListener("click", eventListener);
           this._isListener = true;
         }
       };
