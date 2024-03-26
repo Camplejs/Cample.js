@@ -6,8 +6,8 @@ export const CONDITION_REGEX = /!/g;
 export const TEXT_REGEX = /\{\{\s*([^}]+)\s*\}\}|([^{}]+)/g;
 export const SPACE_REGEX = /\s+/g;
 export const EXCLAMATION_POINT = /(\!)/g;
-export const EACH_INDEX_NAME = "__campleEachIndex__";
-export const CLICK_FUNCTION_NAME = "__campleFn__";
+export const EACH_INDEX_NAME = "__campleEachIndex";
+export const CLICK_FUNCTION_NAME = "__campleFn";
 
 export const { appendChild, insertBefore, removeChild, replaceChild } =
   Node.prototype;
