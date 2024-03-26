@@ -319,6 +319,7 @@ export const parseTemplate = (
     if (isEach === true) {
       if (argsLength > 0) {
         if (argsLength === 1) {
+          const { renderedKey: newRenderedKey, getEventsDataFn } = args[0];
           setEvent = (
             element: Element,
             currentComponent: any,
@@ -328,11 +329,10 @@ export const parseTemplate = (
           ) => {
             if (element) {
               const eventFn = (event: Event) => {
-                const { renderedKey, getEventsDataFn } = args[0];
                 const newArg = getEventsDataFn(
                   mainEl,
                   index,
-                  renderedKey,
+                  newRenderedKey,
                   eachValue
                 );
                 fn(event)(newArg);

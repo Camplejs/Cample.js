@@ -33,7 +33,7 @@ export class Cample {
 
     if (typeof this.selector === "string") {
       const el: Element | null = document.querySelector(this.selector);
-      if (el) el.innerHTML = this.template;
+      if (el !== null) el.innerHTML = this.template;
       Object.keys(options).forEach((e) => {
         if (options[e]._getStyle) {
           this.style += options[e]._getStyle;
