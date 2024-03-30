@@ -73,6 +73,7 @@ export class Each extends DataComponent {
   public iteration: IterationFunctionType | undefined;
   public indexName: string;
   public isDataFunction: boolean;
+  public isIteration: boolean;
 
   constructor(
     selector: SelectorType,
@@ -91,6 +92,7 @@ export class Each extends DataComponent {
     this.iteration = options.iteration;
     this.indexName = options.indexName ? options.indexName : "index";
     this.isDataFunction = checkFunction(data);
+    this.isIteration = this.iteration !== undefined;
     if (
       this.indexName === this.valueName ||
       this.indexName === this.importedDataName ||
@@ -108,7 +110,6 @@ export class Each extends DataComponent {
   }
 
   render(
-    setEventListener: () => void,
     trimHTML?: boolean,
     exportData?: ExportDataType,
     importId?: ExportIdType,
@@ -200,7 +201,6 @@ export class Each extends DataComponent {
           let nodeNext = currentComponent.nodeNext as Node;
           const nodePrevious: Element =
             currentComponent.nodePrevious as Element;
-          let nextElNode: CharacterData | null = null;
           const { key } = template as EachTemplateType;
           const { render: renderKey, value: keyValue } = key as ValueItemsType;
           const data = newData;
@@ -226,11 +226,11 @@ export class Each extends DataComponent {
           } else if (isOldDataEmpty && !isNewDataEmpty) {
             const isNullNodeNext = nodeNext === null;
             if (isNullNodeNext) {
-              nextElNode = document.createComment("");
-              parentNode.appendChild(nextElNode);
-              nodeNext = nextElNode as CharacterData;
+              nodeNext = document.createComment("");
+              parentNode.appendChild(nodeNext);
             }
-            if (this.iteration !== undefined) {
+            currentComponent.nodes = new Array(newDataLength);
+            if (this.isIteration) {
               for (let i = 0; i < newDataLength; i++) {
                 const indexData = data[i];
                 renderIteration(i, indexData, importData);
@@ -245,7 +245,7 @@ export class Each extends DataComponent {
                   importData,
                   newKey
                 );
-                currentComponent.nodes.push(currentNode);
+                currentComponent.nodes[i] = currentNode;
                 parentNode.insertBefore(el, nodeNext);
               }
             } else {
@@ -262,12 +262,12 @@ export class Each extends DataComponent {
                   importData,
                   newKey
                 );
-                currentComponent.nodes.push(currentNode);
+                currentComponent.nodes[i] = currentNode;
                 parentNode.insertBefore(el, nodeNext);
               }
             }
             if (isNullNodeNext) {
-              parentNode.removeChild(nextElNode as Node);
+              parentNode.removeChild(nodeNext as Node);
             }
             return;
           } else {
@@ -371,9 +371,8 @@ export class Each extends DataComponent {
               if (isAdd) {
                 const isNullNodeNext = nodeNext === null;
                 if (isNullNodeNext) {
-                  nextElNode = document.createComment("");
-                  parentNode.appendChild(nextElNode);
-                  nodeNext = nextElNode as CharacterData;
+                  nodeNext = document.createComment("");
+                  parentNode.appendChild(nodeNext);
                 }
                 const currentData = newData[newLastIndex];
                 const lastEl =
@@ -406,7 +405,7 @@ export class Each extends DataComponent {
                   newData[currentIndex] = currentNode;
                 }
                 if (isNullNodeNext) {
-                  parentNode.removeChild(nextElNode as Node);
+                  parentNode.removeChild(nodeNext as Node);
                 }
               } else if (isRemove) {
                 for (
@@ -567,9 +566,8 @@ export class Each extends DataComponent {
                 if (oldLastIndex === oldFirstIndex) {
                   const isNullNodeNext = nodeNext === null;
                   if (isNullNodeNext) {
-                    nextElNode = document.createComment("");
-                    parentNode.appendChild(nextElNode);
-                    nodeNext = nextElNode as CharacterData;
+                    nodeNext = document.createComment("");
+                    parentNode.appendChild(nodeNext);
                   }
                   const currentData = newData[newLastIndex];
                   const lastEl =
@@ -602,7 +600,7 @@ export class Each extends DataComponent {
                     newData[currentIndex] = currentNode;
                   }
                   if (isNullNodeNext) {
-                    parentNode.removeChild(nextElNode as Node);
+                    parentNode.removeChild(nodeNext as Node);
                   }
                 } else {
                   for (
@@ -620,7 +618,7 @@ export class Each extends DataComponent {
               }
             }
             currentComponent.nodes = newData;
-            if (this.iteration !== undefined) {
+            if (this.isIteration) {
               for (let i = 0; i < newDataLength; i++) {
                 renderIteration(i, currentComponent.nodes[i], importData);
               }
@@ -881,7 +879,6 @@ export class Each extends DataComponent {
           };
 
           const { obj: newTemplateObj } = parseTemplate(
-            setEventListener,
             renderDynamic,
             [
               renderFn1,

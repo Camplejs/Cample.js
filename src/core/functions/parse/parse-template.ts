@@ -6,8 +6,7 @@ import {
   indexOf,
   pop,
   unshift,
-  updClass,
-  CLICK_FUNCTION_NAME
+  updClass
 } from "../../../config/config";
 import {
   checkFunction,
@@ -48,7 +47,6 @@ import { parseKey } from "./parse-key";
 import { parseText } from "./parse-text";
 
 export const parseTemplate = (
-  setEventListener: () => void,
   renderDynamic: (...args: any[]) => any,
   valueFunctions: [
     (...args: any[]) => string,
@@ -165,7 +163,6 @@ export const parseTemplate = (
     if (node.nodeType === Node.ELEMENT_NODE) {
       parseText(node as Element);
       renderEl(
-        setEventListener,
         isEach,
         valueFunctions,
         eventArray,
@@ -320,57 +317,9 @@ export const parseTemplate = (
     let setEvent: any;
     const argsLength = args.length;
     if (isEach === true) {
-      if (keyEvent === "click") {
-        if (argsLength > 0) {
-          if (argsLength === 1) {
-            const { renderedKey: newRenderedKey, getEventsDataFn } = args[0];
-            setEvent = (
-              element: Element,
-              currentComponent: any,
-              mainEl: Element,
-              keyEl?: string,
-              eachValue?: any
-            ) => {
-              if (element) {
-                const eventFn = (event: Event) => {
-                  const newArg = getEventsDataFn(
-                    mainEl,
-                    index,
-                    newRenderedKey,
-                    eachValue
-                  );
-                  fn(event)(newArg);
-                };
-                element[CLICK_FUNCTION_NAME] = eventFn;
-              }
-            };
-          } else {
-            setEvent = (
-              element: Element,
-              currentComponent: any,
-              mainEl: Element,
-              keyEl?: string,
-              eachValue?: any
-            ) => {
-              if (element) {
-                const eventFn = (event: Event) => {
-                  const newArgs = new Array(argsLength);
-                  for (let i = 0; i < argsLength; i++) {
-                    const { renderedKey, getEventsDataFn } = args[i];
-                    newArgs[i] = getEventsDataFn(
-                      mainEl,
-                      index,
-                      renderedKey,
-                      eachValue
-                    );
-                  }
-                  fn(event)(...newArgs);
-                };
-                element[CLICK_FUNCTION_NAME] = eventFn;
-              }
-            };
-          }
-        } else {
+      if (argsLength > 0) {
+        if (argsLength === 1) {
+          const { renderedKey: newRenderedKey, getEventsDataFn } = args[0];
           setEvent = (
             element: Element,
             currentComponent: any,
@@ -380,62 +329,17 @@ export const parseTemplate = (
           ) => {
             if (element) {
               const eventFn = (event: Event) => {
-                fn(event)();
+                const newArg = getEventsDataFn(
+                  mainEl,
+                  index,
+                  newRenderedKey,
+                  eachValue
+                );
+                fn(event)(newArg);
               };
-              element[CLICK_FUNCTION_NAME] = eventFn;
+              element.addEventListener(keyEvent, eventFn);
             }
           };
-        }
-      } else {
-        if (argsLength > 0) {
-          if (argsLength === 1) {
-            const { renderedKey: newRenderedKey, getEventsDataFn } = args[0];
-            setEvent = (
-              element: Element,
-              currentComponent: any,
-              mainEl: Element,
-              keyEl?: string,
-              eachValue?: any
-            ) => {
-              if (element) {
-                const eventFn = (event: Event) => {
-                  const newArg = getEventsDataFn(
-                    mainEl,
-                    index,
-                    newRenderedKey,
-                    eachValue
-                  );
-                  fn(event)(newArg);
-                };
-                element.addEventListener(keyEvent, eventFn);
-              }
-            };
-          } else {
-            setEvent = (
-              element: Element,
-              currentComponent: any,
-              mainEl: Element,
-              keyEl?: string,
-              eachValue?: any
-            ) => {
-              if (element) {
-                const eventFn = (event: Event) => {
-                  const newArgs = new Array(argsLength);
-                  for (let i = 0; i < argsLength; i++) {
-                    const { renderedKey, getEventsDataFn } = args[i];
-                    newArgs[i] = getEventsDataFn(
-                      mainEl,
-                      index,
-                      renderedKey,
-                      eachValue
-                    );
-                  }
-                  fn(event)(...newArgs);
-                };
-                element.addEventListener(keyEvent, eventFn);
-              }
-            };
-          }
         } else {
           setEvent = (
             element: Element,
@@ -446,80 +350,70 @@ export const parseTemplate = (
           ) => {
             if (element) {
               const eventFn = (event: Event) => {
-                fn(event)();
+                const newArgs = new Array(argsLength);
+                for (let i = 0; i < argsLength; i++) {
+                  const { renderedKey, getEventsDataFn } = args[i];
+                  newArgs[i] = getEventsDataFn(
+                    mainEl,
+                    index,
+                    renderedKey,
+                    eachValue
+                  );
+                }
+                fn(event)(...newArgs);
               };
               element.addEventListener(keyEvent, eventFn);
             }
           };
         }
+      } else {
+        setEvent = (
+          element: Element,
+          currentComponent: any,
+          mainEl: Element,
+          keyEl?: string,
+          eachValue?: any
+        ) => {
+          if (element) {
+            const eventFn = (event: Event) => {
+              fn(event)();
+            };
+            element.addEventListener(keyEvent, eventFn);
+          }
+        };
       }
     } else {
-      if (keyEvent === "click") {
-        if (argsLength > 0) {
-          setEvent = (
-            element: Element,
-            currentComponent: any,
-            mainEl: Element,
-            keyEl?: string,
-            eachValue?: any
-          ) => {
-            if (element) {
-              const eventFn = (event: Event) => {
-                const newArgs = args.map((e: any) => getEventsData1(e, id));
-                fn(event)(...newArgs);
-              };
-              element[CLICK_FUNCTION_NAME] = eventFn;
-            }
-          };
-        } else {
-          setEvent = (
-            element: Element,
-            currentComponent: any,
-            mainEl: Element,
-            keyEl?: string,
-            eachValue?: any
-          ) => {
-            if (element) {
-              const eventFn = (event: Event) => {
-                fn(event)();
-              };
-              element[CLICK_FUNCTION_NAME] = eventFn;
-            }
-          };
-        }
+      if (argsLength > 0) {
+        setEvent = (
+          element: Element,
+          currentComponent: any,
+          mainEl: Element,
+          keyEl?: string,
+          eachValue?: any
+        ) => {
+          if (element) {
+            const eventFn = (event: Event) => {
+              const newArgs = args.map((e: any) => getEventsData1(e, id));
+              fn(event)(...newArgs);
+            };
+            element.addEventListener(keyEvent, eventFn);
+          }
+        };
       } else {
-        if (argsLength > 0) {
-          setEvent = (
-            element: Element,
-            currentComponent: any,
-            mainEl: Element,
-            keyEl?: string,
-            eachValue?: any
-          ) => {
-            if (element) {
-              const eventFn = (event: Event) => {
-                const newArgs = args.map((e: any) => getEventsData1(e, id));
-                fn(event)(...newArgs);
-              };
-              element.addEventListener(keyEvent, eventFn);
-            }
-          };
-        } else {
-          setEvent = (
-            element: Element,
-            currentComponent: any,
-            mainEl: Element,
-            keyEl?: string,
-            eachValue?: any
-          ) => {
-            if (element) {
-              const eventFn = (event: Event) => {
-                fn(event)();
-              };
-              element.addEventListener(keyEvent, eventFn);
-            }
-          };
-        }
+        setEvent = (
+          element: Element,
+          currentComponent: any,
+          mainEl: Element,
+          keyEl?: string,
+          eachValue?: any
+        ) => {
+          if (element) {
+            const eventFn = (event: Event) => {
+              fn(event)();
+            };
+            element.addEventListener(keyEvent, eventFn);
+          }
+        };
       }
     }
     const newVal: ValueType = {
