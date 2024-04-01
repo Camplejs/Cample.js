@@ -67,6 +67,8 @@ import { createElement } from "../../functions/data/create-element";
 import { renderFunction } from "../../functions/render/render-function";
 import { renderFunctions } from "../../functions/render/render-functions";
 import { renderComponentDynamicKeyData } from "../../functions/data/render-component-dynamic-key-data";
+import { renderKey } from "../../functions/render/render-key";
+import { renderComponentDynamicKey } from "../../functions/render/render-component-dynamic-key";
 
 export class Component extends DataComponent {
   public data: DataComponentType;
@@ -251,10 +253,11 @@ export class Component extends DataComponent {
         index: number,
         functions: FunctionsType
       ) => {
-        const renderNewData = (value: string) => {
-          // const values = getValues(index);
+        const renderNewData = (value: any) => {
           const val = renderComponentDynamicKeyData(
             getData(this._dynamic.data.data.values, index),
+            value,
+            false,
             value
           );
           return val;
@@ -264,16 +267,14 @@ export class Component extends DataComponent {
           functions: {}
         };
         for (let i = 0; i < obj.data.length; i++) {
-          const { key, value } = obj.data[i];
-          const currentVal = [...value];
+          const { key, value, renderedValues } = obj.data[i];
+          const currentVal = value.slice();
           newObj.data[key] = currentVal;
           for (let j = 0; j < currentVal.length; j++) {
             const val = currentVal[j];
-            const isIndex =
-              indexesValue?.["data"][key] &&
-              indexesValue["data"][key].indexOf(j) > -1;
+            const isIndex = renderedValues[j].isIndex;
             newObj["data"][key][j] = isIndex
-              ? renderNewData(val as string)
+              ? renderNewData(renderedValues[j].val)
               : val;
           }
         }
@@ -464,14 +465,35 @@ export class Component extends DataComponent {
         } else {
           this.exportObj = exportObj;
         }
+
         if (isExportConstructor) {
           const exportConstructor = {};
-          const createArr = (obj: any) => {
+          const createArr = (obj: any, currentIndexesValues?: any) => {
             const arr = Object.entries(obj).map(([key, value]) => {
-              return {
-                key,
-                value
-              };
+              if (currentIndexesValues !== undefined) {
+                const renderedValues: any[] = [];
+                if (value) {
+                  for (let i = 0; i < (value as any).length; i++) {
+                    const val = renderComponentDynamicKey(renderKey(value[i]));
+                    const isIndex =
+                      currentIndexesValues[key] &&
+                      currentIndexesValues[key].indexOf(i) > -1;
+                    renderedValues.push({
+                      val,
+                      isIndex
+                    });
+                  }
+                }
+                return {
+                  key,
+                  value,
+                  renderedValues
+                };
+              } else
+                return {
+                  key,
+                  value
+                };
             });
             return arr;
           };
@@ -480,7 +502,10 @@ export class Component extends DataComponent {
               data: [] as any,
               functions: [] as any
             };
-            newVal.data = createArr((value as any).data);
+            newVal.data = createArr(
+              (value as any).data,
+              indexesValue?.[key]["data"]
+            );
             newVal.functions = createArr((value as any).functions);
             exportConstructor[key] = newVal;
           }
