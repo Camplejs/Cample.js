@@ -10,6 +10,7 @@ import {
 } from "../../../config/config";
 import {
   checkFunction,
+  checkObject,
   createError,
   getElement,
   getTextKey
@@ -87,6 +88,7 @@ export const parseTemplate = (
   const obj: EachTemplateType = {
     el,
     nodes: [firstNode],
+    valuesLength: 0,
     values: []
   };
   if (isEach) {
@@ -94,6 +96,7 @@ export const parseTemplate = (
       value: [],
       render: valueFunctions[0]
     };
+    obj.valuesImport = [];
   }
   let i = -1;
   const eventArray: any[] = [];
@@ -426,6 +429,34 @@ export const parseTemplate = (
   const renderValue = (val: ValueType) => {
     const valKey = val.key as CurrentKeyType;
     const stackLength = obj.values.length;
+    const getIsValueData = () => {
+      if (isEach) {
+        const getIsValImport = (e: any) => {
+          const val = e.value;
+          if (checkObject(val)) {
+            const isValImport =
+              (val as any).originKey === valueName || !!val.isValueImport;
+            return isValImport;
+          } else return false;
+        };
+        const isValueData1 =
+          valKey !== undefined && valKey.originKey === valueName;
+        let isValueData2 = false;
+        const { classes } = val;
+        if (classes !== undefined) {
+          const { value } = classes;
+          if (Array.isArray(value)) {
+            isValueData2 = value.some((e) => {
+              return !getIsValImport(e);
+            });
+          } else {
+            isValueData2 = !getIsValImport(value);
+          }
+        }
+        return isValueData1 || isValueData2;
+      } else return false;
+    };
+    const isImport = isEach && !getIsValueData();
     switch (val.type) {
       case 0:
         return (
@@ -479,7 +510,7 @@ export const parseTemplate = (
               stack[stackLength] = newData;
             }
           };
-          obj.values.push(fnText);
+          (obj[isImport ? "valuesImport" : "values"] as any).push(fnText);
           return (
             val: ValueType,
             currentComponent: any,
@@ -532,7 +563,9 @@ export const parseTemplate = (
                         stack[stackLength] = newData;
                       }
                     };
-                    obj.values.push(fnText1);
+                    (obj[isImport ? "valuesImport" : "values"] as any).push(
+                      fnText1
+                    );
                     return (
                       val: ValueType,
                       currentComponent: any,
@@ -568,7 +601,9 @@ export const parseTemplate = (
                         stack[stackLength] = newData;
                       }
                     };
-                    obj.values.push(fnText2);
+                    (obj[isImport ? "valuesImport" : "values"] as any).push(
+                      fnText2
+                    );
                     return (
                       val: ValueType,
                       currentComponent: any,
@@ -604,7 +639,9 @@ export const parseTemplate = (
                       stack[stackLength] = newData;
                     }
                   };
-                  obj.values.push(fnText3);
+                  (obj[isImport ? "valuesImport" : "values"] as any).push(
+                    fnText3
+                  );
                   return (
                     val: ValueType,
                     currentComponent: any,
@@ -640,7 +677,9 @@ export const parseTemplate = (
                     stack[stackLength] = newData;
                   }
                 };
-                obj.values.push(fnText4);
+                (obj[isImport ? "valuesImport" : "values"] as any).push(
+                  fnText4
+                );
                 return (
                   val: ValueType,
                   currentComponent: any,
@@ -676,7 +715,9 @@ export const parseTemplate = (
                     stack[stackLength] = newData;
                   }
                 };
-                obj.values.push(fnText5);
+                (obj[isImport ? "valuesImport" : "values"] as any).push(
+                  fnText5
+                );
                 return (
                   val: ValueType,
                   currentComponent: any,
@@ -712,7 +753,7 @@ export const parseTemplate = (
                     stack[stackLength] = newData;
                   }
                 };
-                obj.values.push(fnText);
+                (obj[isImport ? "valuesImport" : "values"] as any).push(fnText);
                 return (
                   val: ValueType,
                   currentComponent: any,
@@ -753,7 +794,7 @@ export const parseTemplate = (
                   stack[stackLength] = newData;
                 }
               };
-              obj.values.push(fnText);
+              (obj[isImport ? "valuesImport" : "values"] as any).push(fnText);
               return (
                 val: ValueType,
                 currentComponent: any,
@@ -792,7 +833,7 @@ export const parseTemplate = (
                   stack[stackLength] = newData;
                 }
               };
-              obj.values.push(fnText);
+              (obj[isImport ? "valuesImport" : "values"] as any).push(fnText);
               return (
                 val: ValueType,
                 currentComponent: any,
@@ -832,7 +873,7 @@ export const parseTemplate = (
             );
           updateAttributes(nodes[stackLength] as DynamicEl, val, fnNew);
         };
-        obj.values.push(fnAttr);
+        (obj[isImport ? "valuesImport" : "values"] as any).push(fnAttr);
         return (
           val: ValueType,
           currentComponent: any,
@@ -909,7 +950,7 @@ export const parseTemplate = (
               updClass.call(node, classVal);
             }
           };
-          obj.values.push(fnClass);
+          (obj[isImport ? "valuesImport" : "values"] as any).push(fnClass);
           return (
             val: ValueType,
             currentComponent: any,
@@ -964,7 +1005,7 @@ export const parseTemplate = (
                 updClass.call(node, classVal);
               }
             };
-            obj.values.push(fnClass);
+            (obj[isImport ? "valuesImport" : "values"] as any).push(fnClass);
             return (
               val: ValueType,
               currentComponent: any,
@@ -1017,7 +1058,7 @@ export const parseTemplate = (
                   stack[stackLength] = currentCondition;
                 }
               };
-              obj.values.push(fnClass);
+              (obj[isImport ? "valuesImport" : "values"] as any).push(fnClass);
               return (
                 val: ValueType,
                 currentComponent: any,
@@ -1062,7 +1103,9 @@ export const parseTemplate = (
                         updClass.call(node, classVal);
                       }
                     };
-                    obj.values.push(fnClass1);
+                    (obj[isImport ? "valuesImport" : "values"] as any).push(
+                      fnClass1
+                    );
                     return (
                       val: ValueType,
                       currentComponent: any,
@@ -1100,7 +1143,9 @@ export const parseTemplate = (
                         updClass.call(node, classVal);
                       }
                     };
-                    obj.values.push(fnClass2);
+                    (obj[isImport ? "valuesImport" : "values"] as any).push(
+                      fnClass2
+                    );
                     return (
                       val: ValueType,
                       currentComponent: any,
@@ -1136,7 +1181,9 @@ export const parseTemplate = (
                         updClass.call(node, classVal);
                       }
                     };
-                    obj.values.push(fnClass3);
+                    (obj[isImport ? "valuesImport" : "values"] as any).push(
+                      fnClass3
+                    );
                     return (
                       val: ValueType,
                       currentComponent: any,
@@ -1172,7 +1219,9 @@ export const parseTemplate = (
                         updClass.call(node, classVal);
                       }
                     };
-                    obj.values.push(fnClass);
+                    (obj[isImport ? "valuesImport" : "values"] as any).push(
+                      fnClass
+                    );
                     return (
                       val: ValueType,
                       currentComponent: any,
@@ -1214,7 +1263,9 @@ export const parseTemplate = (
                       updClass.call(node, classVal);
                     }
                   };
-                  obj.values.push(fnClass);
+                  (obj[isImport ? "valuesImport" : "values"] as any).push(
+                    fnClass
+                  );
                   return (
                     val: ValueType,
                     currentComponent: any,
@@ -1254,7 +1305,9 @@ export const parseTemplate = (
                       updClass.call(node, classVal);
                     }
                   };
-                  obj.values.push(fnClass);
+                  (obj[isImport ? "valuesImport" : "values"] as any).push(
+                    fnClass
+                  );
                   return (
                     val: ValueType,
                     currentComponent: any,
@@ -1593,5 +1646,10 @@ export const parseTemplate = (
     }
   }
   obj.nodes.shift();
+  if (obj.valuesImport) {
+    obj.valuesLength = obj.values.length + obj.valuesImport.length;
+  } else {
+    obj.valuesLength = obj.values.length;
+  }
   return { obj };
 };

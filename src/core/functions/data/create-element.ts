@@ -28,13 +28,14 @@ export const createElement = (
     nodes: templateNodes,
     el: templateElemenet,
     render: templateRender,
-    values: newValues
+    values: newValues,
+    valuesImport,
+    valuesLength: lengthValues
   } = templateEl;
   const el = (templateElemenet as Element).cloneNode(true);
   el[EACH_INDEX_NAME] = eachIndex;
   const length = templateNodes.length;
   const nodes: NodeNodesType = new Array(length + 1);
-  const lengthValues = newValues.length;
   const stack: StackType = new Array(lengthValues);
   const newNodes = new Array(lengthValues);
   nodes[0] = el as ChildNode;
@@ -74,6 +75,7 @@ export const createElement = (
   }
   const currentNode: NodeType = {
     values: newValues,
+    valuesImport,
     dataId,
     nodes: newNodes,
     stack,

@@ -207,9 +207,10 @@ const parseCondition = (
   valueName?: string,
   importedDataName?: string,
   indexName?: string
-): KeyValuesValueConditionType => {
+): { mainCurrentVal: KeyValuesValueConditionType; isValueImport: boolean } => {
   const renderDynamic = valueFunctions[0];
   let string = condition;
+  let isValueImport = false;
   const CONDITION_REGEX = /(\(|\)|\|\||&&|>=|<=|!==|===)/g;
   string = string.replace(SPACE_REGEX, "");
   let filtredString = split.call(string, CONDITION_REGEX).filter(Boolean);
@@ -416,6 +417,9 @@ const parseCondition = (
               false,
               true
             );
+            if (key.originKey !== undefined && !isValueImport) {
+              isValueImport = key.originKey === importedDataName;
+            }
             const currentOperandOperation: number =
               currentOperation === 0 ? 33 : 32;
             const [render, type] = getRender(
@@ -774,7 +778,7 @@ const parseCondition = (
     }
   };
   structuringValue(mainCurrentVal);
-  return mainCurrentVal;
+  return { mainCurrentVal, isValueImport };
 };
 const parseValue = (
   valueFunctions: [
@@ -877,7 +881,7 @@ export const parseValues = (
     keyValues = [];
     for (const [key, value] of Object.entries(val)) {
       const isArray = Array.isArray(value);
-      const condition = parseCondition(
+      const { mainCurrentVal: condition, isValueImport } = parseCondition(
         valueFunctions,
         key,
         valueName,
@@ -903,6 +907,7 @@ export const parseValues = (
           );
       const keyValue: KeyValuesValueType = {
         condition,
+        isValueImport,
         values: valueKeyValue,
         render: !isArray ? valueFunctions[3] : valueFunctions[4]
       };

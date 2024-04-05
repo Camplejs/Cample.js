@@ -96,6 +96,12 @@ export const parseKey = (
     key: isValue ? (renderedKey as string) : key,
     originType
   };
+  if (val) {
+    const isValKey = val.some((e) => {
+      return e.isValueImport;
+    });
+    keyObj.isValueImport = isValKey;
+  }
   if (isValue) {
     keyObj.isValue = isValue;
   }

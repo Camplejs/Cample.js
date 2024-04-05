@@ -234,6 +234,8 @@ export type EachTemplateType = {
   key?: ValueItemsType;
   values: NodeValuesType;
   nodes: EachTemplateNodesType;
+  valuesLength: number;
+  valuesImport?: NodeValuesType;
   render?: (...args: any[]) => void;
 };
 
@@ -403,6 +405,7 @@ export type ValueKeyStringType = {
 
 export type KeyValuesValueType = {
   condition: KeyValuesValueConditionType;
+  isValueImport: boolean;
   values: ValueKeyStringType | [ValueKeyStringType, ValueKeyStringType];
   render: (...args: any[]) => void;
 };
@@ -415,6 +418,7 @@ export type CurrentKeyType = {
   originKey: string;
   key: string;
   properties?: Array<string>;
+  isValueImport?: boolean;
   values?: KeyValuesType | KeyValuesValueType;
   render?: (...args: any[]) => any;
   isProperty?: boolean;
@@ -442,6 +446,7 @@ export type NodeType = {
   key?: string;
   el?: Node;
   nodes: NodeNodesType;
+  valuesImport?: NodeValuesType;
   stack: StackType;
   values: NodeValuesType;
   dataId: number;

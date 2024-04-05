@@ -173,11 +173,18 @@ export class Each extends DataComponent {
           currentNode: NodeType,
           indexData: any,
           eachIndex: number,
-          importData: any
+          importData: any,
+          oldData: any
         ) => {
-          const { values, nodes, stack } = currentNode;
-          for (let i = 0; i < values.length; i++) {
-            const value = values[i];
+          const { values, nodes, stack, valuesImport } = currentNode;
+          if (oldData[eachIndex] !== indexData) {
+            for (let i = 0; i < values.length; i++) {
+              const value = values[i];
+              value(nodes, stack, indexData, importData, eachIndex, value);
+            }
+          }
+          for (let i = 0; i < (valuesImport as any).length; i++) {
+            const value = (valuesImport as any)[i];
             value(nodes, stack, indexData, importData, eachIndex, value);
           }
         };
@@ -303,7 +310,8 @@ export class Each extends DataComponent {
                   oldNodes[oldFirstIndex],
                   data[newFirstIndex],
                   newFirstIndex,
-                  importData
+                  importData,
+                  oldData
                 );
                 newData[newFirstIndex++] = oldNodes[oldFirstIndex++];
                 continue;
@@ -323,7 +331,8 @@ export class Each extends DataComponent {
                   oldNodes[currentOldLastIndex],
                   data[currentNewLastIndex],
                   currentNewLastIndex,
-                  importData
+                  importData,
+                  oldData
                 );
                 newData[currentNewLastIndex] = oldNodes[currentOldLastIndex];
                 if (
@@ -344,13 +353,15 @@ export class Each extends DataComponent {
                   oldNodes[currentOldLastIndex],
                   data[newFirstIndex],
                   newFirstIndex,
-                  importData
+                  importData,
+                  oldData
                 );
                 renderValuesNode(
                   oldNodes[oldFirstIndex],
                   data[currentNewLastIndex],
                   currentNewLastIndex,
-                  importData
+                  importData,
+                  oldData
                 );
                 const el1 = (newData[newFirstIndex] =
                   oldNodes[currentOldLastIndex]).el as Element;
@@ -460,7 +471,8 @@ export class Each extends DataComponent {
                       oldNodes[oldFirstIndex],
                       data[newFirstIndex],
                       newFirstIndex,
-                      importData
+                      importData,
+                      oldData
                     );
                     newData[newFirstIndex] = oldNodes[oldFirstIndex++];
                     if (
@@ -486,7 +498,8 @@ export class Each extends DataComponent {
                       oldNodes[currentOldLastIndex],
                       data[currentNewLastIndex],
                       currentNewLastIndex,
-                      importData
+                      importData,
+                      oldData
                     );
                     newData[currentNewLastIndex] =
                       oldNodes[currentOldLastIndex];
@@ -508,13 +521,15 @@ export class Each extends DataComponent {
                       oldNodes[currentOldLastIndex],
                       data[newFirstIndex],
                       newFirstIndex,
-                      importData
+                      importData,
+                      oldData
                     );
                     renderValuesNode(
                       oldNodes[oldFirstIndex],
                       data[currentNewLastIndex],
                       currentNewLastIndex,
-                      importData
+                      importData,
+                      oldData
                     );
                     const el1 = (newData[newFirstIndex] =
                       oldNodes[currentOldLastIndex]).el as Element;
@@ -541,7 +556,8 @@ export class Each extends DataComponent {
                       newData[newFirstIndex],
                       data[newFirstIndex],
                       newFirstIndex++,
-                      importData
+                      importData,
+                      oldData
                     );
                     oldNodes[currentIndex] = undefined as unknown as NodeType;
                     continue;
