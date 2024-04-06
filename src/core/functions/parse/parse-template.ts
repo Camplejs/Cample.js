@@ -1648,6 +1648,32 @@ export const parseTemplate = (
   obj.nodes.shift();
   if (obj.valuesImport) {
     obj.valuesLength = obj.values.length + obj.valuesImport.length;
+    const arr = obj.valuesImport;
+    const arrLength = arr.length;
+    if (arr.length === 1) {
+      obj.renderImport = arr[0];
+    } else {
+      obj.renderImport = (
+        nodes: Element[],
+        stack: StackType,
+        currentIndexData: any,
+        currentImportData: any,
+        currentEachIndex: number | undefined
+      ) => {
+        for (let i = 0; i < arrLength; i++) {
+          const value = arr[i];
+          value(
+            nodes,
+            stack,
+            currentIndexData,
+            currentImportData,
+            currentEachIndex,
+            value
+          );
+        }
+      };
+    }
+    delete obj.valuesImport;
   } else {
     obj.valuesLength = obj.values.length;
   }

@@ -29,7 +29,7 @@ export const createElement = (
     el: templateElemenet,
     render: templateRender,
     values: newValues,
-    valuesImport,
+    renderImport,
     valuesLength: lengthValues
   } = templateEl;
   const el = (templateElemenet as Element).cloneNode(true);
@@ -75,7 +75,7 @@ export const createElement = (
   }
   const currentNode: NodeType = {
     values: newValues,
-    valuesImport,
+    renderImport,
     dataId,
     nodes: newNodes,
     stack,

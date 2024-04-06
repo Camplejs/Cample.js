@@ -236,6 +236,7 @@ export type EachTemplateType = {
   nodes: EachTemplateNodesType;
   valuesLength: number;
   valuesImport?: NodeValuesType;
+  renderImport?: (...args: any[]) => void;
   render?: (...args: any[]) => void;
 };
 
@@ -444,9 +445,9 @@ export type NodeNodesType = Array<ChildNode | null>;
 export type NodeType = {
   isNew?: boolean;
   key?: string;
+  renderImport?: (...args: any[]) => void;
   el?: Node;
   nodes: NodeNodesType;
-  valuesImport?: NodeValuesType;
   stack: StackType;
   values: NodeValuesType;
   dataId: number;

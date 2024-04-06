@@ -176,17 +176,14 @@ export class Each extends DataComponent {
           importData: any,
           oldData: any
         ) => {
-          const { values, nodes, stack, valuesImport } = currentNode;
+          const { values, nodes, stack, renderImport } = currentNode;
           if (oldData[eachIndex] !== indexData) {
             for (let i = 0; i < values.length; i++) {
               const value = values[i];
               value(nodes, stack, indexData, importData, eachIndex, value);
             }
           }
-          for (let i = 0; i < (valuesImport as any).length; i++) {
-            const value = (valuesImport as any)[i];
-            value(nodes, stack, indexData, importData, eachIndex, value);
-          }
+          (renderImport as any)(nodes, stack, indexData, importData, eachIndex);
         };
         const renderNewData = (
           oldData: any,
