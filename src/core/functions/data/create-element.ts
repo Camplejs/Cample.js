@@ -75,7 +75,7 @@ export const createElement = (
   }
   const currentNode: NodeType = {
     values: newValues,
-    renderImport,
+    ri: renderImport,
     dataId,
     nodes: newNodes,
     stack,

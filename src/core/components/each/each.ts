@@ -176,14 +176,14 @@ export class Each extends DataComponent {
           importData: any,
           oldData: any
         ) => {
-          const { values, nodes, stack, renderImport } = currentNode;
+          const { values, nodes, stack, ri } = currentNode;
           if (oldData[eachIndex] !== indexData) {
             for (let i = 0; i < values.length; i++) {
               const value = values[i];
               value(nodes, stack, indexData, importData, eachIndex, value);
             }
           }
-          (renderImport as any)(nodes, stack, indexData, importData, eachIndex);
+          (ri as any)(nodes, stack, indexData, importData, eachIndex);
         };
         const renderNewData = (
           oldData: any,
@@ -233,7 +233,6 @@ export class Each extends DataComponent {
               nodeNext = document.createComment("");
               parentNode.appendChild(nodeNext);
             }
-            currentComponent.nodes = new Array(newDataLength);
             if (this.isIteration) {
               for (let i = 0; i < newDataLength; i++) {
                 const indexData = data[i];
@@ -249,7 +248,7 @@ export class Each extends DataComponent {
                   importData,
                   newKey
                 );
-                currentComponent.nodes[i] = currentNode;
+                currentComponent.nodes.push(currentNode);
                 parentNode.insertBefore(el, nodeNext);
               }
             } else {
@@ -266,7 +265,7 @@ export class Each extends DataComponent {
                   importData,
                   newKey
                 );
-                currentComponent.nodes[i] = currentNode;
+                currentComponent.nodes.push(currentNode);
                 parentNode.insertBefore(el, nodeNext);
               }
             }

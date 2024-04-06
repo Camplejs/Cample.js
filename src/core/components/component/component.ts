@@ -290,6 +290,7 @@ export class Component extends DataComponent {
         functions: FunctionsType
       ) => {
         const renderNewData = (value: string) => {
+          // const values = getValues(index);
           const val = renderComponentDynamicKeyData(
             getData(this._dynamic.data.data.values, index),
             value

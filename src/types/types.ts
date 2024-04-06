@@ -445,7 +445,7 @@ export type NodeNodesType = Array<ChildNode | null>;
 export type NodeType = {
   isNew?: boolean;
   key?: string;
-  renderImport?: (...args: any[]) => void;
+  ri?: (...args: any[]) => void;
   el?: Node;
   nodes: NodeNodesType;
   stack: StackType;
