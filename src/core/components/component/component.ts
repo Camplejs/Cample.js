@@ -95,6 +95,7 @@ export class Component extends DataComponent {
   }
 
   render(
+    setEventListener: () => void,
     trimHTML?: boolean,
     exportData?: ExportDataType,
     importId?: ExportIdType,
@@ -955,6 +956,7 @@ export class Component extends DataComponent {
                 this.functions
               );
             const { obj: newTemplateObj } = parseTemplate(
+              setEventListener,
               renderDynamic,
               [
                 renderFn1,
