@@ -18,12 +18,17 @@ export const renderComponentDynamicKey = (
   if (checkObject(key)) {
     const dynamicKeyObject = key as DynamicKeyObjectType;
     newKey = dynamicKeyObject.key;
-    if (dynamicKeyObject.properties.length > 0) {
+    const length = dynamicKeyObject.properties.length;
+    if (length > 0) {
       properties = dynamicKeyObject.properties;
-      renderDynamicKeyData = (data: any) => renderKeyData(data, properties);
+      if (length === 1) {
+        const prop = properties[0];
+        renderDynamicKeyData = (data: any) => data[prop];
+      } else {
+        renderDynamicKeyData = (data: any) => renderKeyData(data, properties);
+      }
     }
   } else newKey = key as string;
-
   return {
     dynamicKey: newKey,
     renderDynamicKeyData
