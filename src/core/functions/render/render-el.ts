@@ -20,7 +20,9 @@ import {
   EventEachGetDataType,
   EventEachGetFunctionType,
   EventGetDataType,
+  ImportDataType,
   IndexObjNode,
+  ValueItemType,
   ValueItemsType,
   ValueType,
   ValueValueType,
@@ -341,8 +343,85 @@ export const renderEl = (
           };
           const keyArr = [...e.value.matchAll(TEXT_REGEX)];
           if (keyArr.length === 1) {
-            keyTemplate.value = createValItem(getVal(keyArr[0]));
-            keyTemplate.render = valueFunctions[1];
+            const val = getVal(keyArr[0]);
+            keyTemplate.value = createValItem(val);
+            if (typeof val === "string") {
+              keyTemplate.render = valueFunctions[1];
+            } else {
+              const { render: renderVal } = val;
+              if (val.properties?.length === 1 && !val.isValue) {
+                const prop = (val.properties as any)[0];
+                switch (val.originType) {
+                  case 1:
+                    keyTemplate.render = (
+                      indexData: any,
+                      value: ValueItemType,
+                      importData: ImportDataType | undefined,
+                      eachIndex?: number
+                    ) => indexData[prop];
+                    break;
+                  case 2:
+                    keyTemplate.render = (
+                      indexData: any,
+                      value: ValueItemType,
+                      importData: ImportDataType | undefined,
+                      eachIndex?: number
+                    ) => importData?.[prop];
+                    break;
+                  case 3:
+                    keyTemplate.render = ((
+                      indexData: any,
+                      value: ValueItemType,
+                      importData: ImportDataType | undefined,
+                      eachIndex?: number
+                    ) => eachIndex) as any;
+                    break;
+                  default:
+                    keyTemplate.render = ((
+                      indexData: any,
+                      value: ValueItemType,
+                      importData: ImportDataType | undefined,
+                      eachIndex?: number
+                    ) => undefined) as any;
+                    break;
+                }
+              } else {
+                switch (val.originType) {
+                  case 1:
+                    keyTemplate.render = (
+                      indexData: any,
+                      value: ValueItemType,
+                      importData: ImportDataType | undefined,
+                      eachIndex?: number
+                    ) => (renderVal as any)(indexData);
+                    break;
+                  case 2:
+                    keyTemplate.render = (
+                      indexData: any,
+                      value: ValueItemType,
+                      importData: ImportDataType | undefined,
+                      eachIndex?: number
+                    ) => (renderVal as any)(importData);
+                    break;
+                  case 3:
+                    keyTemplate.render = ((
+                      indexData: any,
+                      value: ValueItemType,
+                      importData: ImportDataType | undefined,
+                      eachIndex?: number
+                    ) => eachIndex) as any;
+                    break;
+                  default:
+                    keyTemplate.render = ((
+                      indexData: any,
+                      value: ValueItemType,
+                      importData: ImportDataType | undefined,
+                      eachIndex?: number
+                    ) => undefined) as any;
+                    break;
+                }
+              }
+            }
           } else {
             for (const txt of keyArr) {
               const val = createValItem(getVal(txt));
