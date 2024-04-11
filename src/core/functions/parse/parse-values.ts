@@ -94,6 +94,104 @@ const getTypeOperation = (operation: number, type: number): number => {
       return operation;
   }
 };
+const fn2 = (operand1: any, operand2?: any) => operand1 == operand2;
+const fn3 = (operand1: any, operand2?: any) => operand1 != operand2;
+const fn4 = (operand1: any, operand2?: any) => operand1 === operand2;
+const fn5 = (operand1: any, operand2?: any) => operand1 !== operand2;
+const fn6 = (operand1: any, operand2?: any) => operand1 > operand2;
+const fn7 = (operand1: any, operand2?: any) => operand1 >= operand2;
+const fn8 = (operand1: any, operand2?: any) => operand1 < operand2;
+const fn9 = (operand1: any, operand2?: any) => operand1 <= operand2;
+const fn10 = (operand1: any, operand2?: any) => operand1 && operand2;
+const fn11 = (operand1: any, operand2?: any) => operand1 || operand2;
+const fn12 = (operand1: any, operand2?: any) => !(operand1 == operand2);
+const fn13 = (operand1: any, operand2?: any) => !(operand1 != operand2);
+const fn14 = (operand1: any, operand2?: any) => !(operand1 === operand2);
+const fn15 = (operand1: any, operand2?: any) => !(operand1 !== operand2);
+const fn16 = (operand1: any, operand2?: any) => !(operand1 > operand2);
+const fn17 = (operand1: any, operand2?: any) => !(operand1 >= operand2);
+const fn18 = (operand1: any, operand2?: any) => !(operand1 < operand2);
+const fn19 = (operand1: any, operand2?: any) => !(operand1 <= operand2);
+const fn20 = (operand1: any, operand2?: any) => !(operand1 && operand2);
+const fn21 = (operand1: any, operand2?: any) => !(operand1 || operand2);
+const fn22 = (operand1: any, operand2?: any) => !!(operand1 == operand2);
+const fn23 = (operand1: any, operand2?: any) => !!(operand1 != operand2);
+const fn24 = (operand1: any, operand2?: any) => !!(operand1 === operand2);
+const fn25 = (operand1: any, operand2?: any) => !!(operand1 !== operand2);
+const fn26 = (operand1: any, operand2?: any) => !!(operand1 > operand2);
+const fn27 = (operand1: any, operand2?: any) => !!(operand1 >= operand2);
+const fn28 = (operand1: any, operand2?: any) => !!(operand1 < operand2);
+const fn29 = (operand1: any, operand2?: any) => !!(operand1 <= operand2);
+const fn30 = (operand1: any, operand2?: any) => !!(operand1 && operand2);
+const fn31 = (operand1: any, operand2?: any) => !!(operand1 || operand2);
+
+const getOperationRender = (render: any) => {
+  switch (render) {
+    case fn2:
+      return 2;
+    case fn3:
+      return 3;
+    case fn4:
+      return 4;
+    case fn5:
+      return 5;
+    case fn6:
+      return 6;
+    case fn7:
+      return 7;
+    case fn8:
+      return 8;
+    case fn9:
+      return 9;
+    case fn10:
+      return 10;
+    case fn11:
+      return 11;
+    case fn12:
+      return 12;
+    case fn13:
+      return 13;
+    case fn14:
+      return 14;
+    case fn15:
+      return 15;
+    case fn16:
+      return 16;
+    case fn17:
+      return 17;
+    case fn18:
+      return 18;
+    case fn19:
+      return 19;
+    case fn20:
+      return 20;
+    case fn21:
+      return 21;
+    case fn22:
+      return 22;
+    case fn23:
+      return 23;
+    case fn24:
+      return 24;
+    case fn25:
+      return 25;
+    case fn26:
+      return 26;
+    case fn27:
+      return 27;
+    case fn28:
+      return 28;
+    case fn29:
+      return 29;
+    case fn30:
+      return 30;
+    case fn31:
+      return 31;
+    default:
+      return undefined;
+  }
+};
+
 const getRender = (
   operation: number,
   renderDynamic: (...args: any[]) => string,
@@ -105,65 +203,65 @@ const getRender = (
         ? [(operand1: any) => !operand1, 1]
         : [defaultRenderBooleanFn, 2];
     case 2:
-      return (operand1: any, operand2?: any) => operand1 == operand2;
+      return fn2;
     case 3:
-      return (operand1: any, operand2?: any) => operand1 != operand2;
+      return fn3;
     case 4:
-      return (operand1: any, operand2?: any) => operand1 === operand2;
+      return fn4;
     case 5:
-      return (operand1: any, operand2?: any) => operand1 !== operand2;
+      return fn5;
     case 6:
-      return (operand1: any, operand2?: any) => operand1 > operand2;
+      return fn6;
     case 7:
-      return (operand1: any, operand2?: any) => operand1 >= operand2;
+      return fn7;
     case 8:
-      return (operand1: any, operand2?: any) => operand1 < operand2;
+      return fn8;
     case 9:
-      return (operand1: any, operand2?: any) => operand1 <= operand2;
+      return fn9;
     case 10:
-      return (operand1: any, operand2?: any) => operand1 && operand2;
+      return fn10;
     case 11:
-      return (operand1: any, operand2?: any) => operand1 || operand2;
+      return fn11;
     case 12:
-      return (operand1: any, operand2?: any) => !(operand1 == operand2);
+      return fn12;
     case 13:
-      return (operand1: any, operand2?: any) => !(operand1 != operand2);
+      return fn13;
     case 14:
-      return (operand1: any, operand2?: any) => !(operand1 === operand2);
+      return fn14;
     case 15:
-      return (operand1: any, operand2?: any) => !(operand1 !== operand2);
+      return fn15;
     case 16:
-      return (operand1: any, operand2?: any) => !(operand1 > operand2);
+      return fn16;
     case 17:
-      return (operand1: any, operand2?: any) => !(operand1 >= operand2);
+      return fn17;
     case 18:
-      return (operand1: any, operand2?: any) => !(operand1 < operand2);
+      return fn18;
     case 19:
-      return (operand1: any, operand2?: any) => !(operand1 <= operand2);
+      return fn19;
     case 20:
-      return (operand1: any, operand2?: any) => !(operand1 && operand2);
+      return fn20;
     case 21:
-      return (operand1: any, operand2?: any) => !(operand1 || operand2);
+      return fn21;
     case 22:
-      return (operand1: any, operand2?: any) => !!(operand1 == operand2);
+      return fn22;
     case 23:
-      return (operand1: any, operand2?: any) => !!(operand1 != operand2);
+      return fn23;
     case 24:
-      return (operand1: any, operand2?: any) => !!(operand1 === operand2);
+      return fn24;
     case 25:
-      return (operand1: any, operand2?: any) => !!(operand1 !== operand2);
+      return fn25;
     case 26:
-      return (operand1: any, operand2?: any) => !!(operand1 > operand2);
+      return fn26;
     case 27:
-      return (operand1: any, operand2?: any) => !!(operand1 >= operand2);
+      return fn27;
     case 28:
-      return (operand1: any, operand2?: any) => !!(operand1 < operand2);
+      return fn28;
     case 29:
-      return (operand1: any, operand2?: any) => !!(operand1 <= operand2);
+      return fn29;
     case 30:
-      return (operand1: any, operand2?: any) => !!(operand1 && operand2);
+      return fn30;
     case 31:
-      return (operand1: any, operand2?: any) => !!(operand1 || operand2);
+      return fn31;
     case 32:
       return isNot
         ? [
@@ -598,7 +696,15 @@ const parseCondition = (
     return value.value as number;
   };
   setPriority(mainCurrentVal);
-
+  const getIsOptimization = (mainCurrentVal: KeyValuesValueConditionType) => {
+    if (mainCurrentVal.operands.length === 2) {
+      const isCondition = mainCurrentVal.operands.some(
+        (e) => (e as any).operands !== undefined
+      );
+      const isType = mainCurrentVal.operands.some((e) => (e as any).type !== 0);
+      return !isCondition && !isType;
+    } else return false;
+  };
   const structuringValue = (
     val: OperandType | OperationType | KeyValuesValueConditionType
   ) => {
@@ -777,7 +883,1241 @@ const parseCondition = (
       }
     }
   };
-  structuringValue(mainCurrentVal);
+  if (getIsOptimization(mainCurrentVal)) {
+    const optimizeValue = (val: KeyValuesValueConditionType) => {
+      delete val.priority;
+      delete val.connectingOperations;
+      delete val.isFirstOperation;
+      delete val.oldBracketType;
+      const { render: renderVal } = val;
+      const operation = getOperationRender(renderVal);
+      if (operation !== undefined) {
+        const operand1 = val.operands[0];
+        const operand2 = val.operands[1];
+        const { render: render1 } = operand1;
+        const { render: render2 } = operand2;
+        const getOperandOperationRender = (
+          render: any,
+          operand: OperandType
+        ) => {
+          delete operand.priority;
+          delete operand.type;
+          delete operand.oldType;
+          const { value } = operand;
+          if (render === renderDynamic1) {
+            if ((value as CurrentKeyType).isValue) {
+              operand.render = (
+                data: any,
+                importData: any,
+                eachIndex: number | undefined
+              ) => {
+                const str = {
+                  value: ""
+                };
+                renderValues(
+                  str,
+                  value as CurrentKeyType,
+                  data,
+                  importData,
+                  eachIndex
+                );
+                return str.value;
+              };
+            } else {
+              if ((value as CurrentKeyType).isProperty) {
+                operand.render = (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) => {
+                  const firstKeyData =
+                    data[(value as CurrentKeyType).originKey];
+                  return renderKeyData(
+                    firstKeyData,
+                    (value as CurrentKeyType).properties as Array<string>
+                  );
+                };
+              } else {
+                operand.render = (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) => data[(value as CurrentKeyType).originKey];
+              }
+            }
+          } else if (render === renderDynamic2) {
+            if ((value as CurrentKeyType).isValue) {
+              operand.render = (
+                data: any,
+                importData: any,
+                eachIndex: number | undefined
+              ) => {
+                const str = {
+                  value: ""
+                };
+                renderValues(
+                  str,
+                  value as CurrentKeyType,
+                  data,
+                  importData,
+                  eachIndex
+                );
+                return str.value;
+              };
+            } else {
+              switch ((value as CurrentKeyType).originType) {
+                case 1:
+                  if ((value as CurrentKeyType).isProperty) {
+                    if ((value as CurrentKeyType).properties?.length === 1) {
+                      const currentProp = (
+                        (value as CurrentKeyType).properties as any
+                      )[0];
+                      operand.render = (
+                        data: any,
+                        importData: any,
+                        eachIndex: number | undefined
+                      ) => data[currentProp];
+                      return 0;
+                    } else {
+                      operand.render = (
+                        data: any,
+                        importData: any,
+                        eachIndex: number | undefined
+                      ) => (value as CurrentKeyType as any)(data);
+                    }
+                  } else {
+                    operand.render = (
+                      data: any,
+                      importData: any,
+                      eachIndex: number | undefined
+                    ) => data;
+                  }
+                case 2:
+                  if ((value as CurrentKeyType).isProperty) {
+                    if ((value as CurrentKeyType).properties?.length === 1) {
+                      const currentProp = (
+                        (value as CurrentKeyType).properties as any
+                      )[0];
+                      operand.render = (
+                        data: any,
+                        importData: any,
+                        eachIndex: number | undefined
+                      ) => importData[currentProp];
+                      return 1;
+                    } else {
+                      operand.render = (
+                        data: any,
+                        importData: any,
+                        eachIndex: number | undefined
+                      ) => (value as CurrentKeyType as any)(importData);
+                    }
+                  } else {
+                    operand.render = (
+                      data: any,
+                      importData: any,
+                      eachIndex: number | undefined
+                    ) => importData;
+                  }
+                case 3:
+                  operand.render = (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => eachIndex;
+                default:
+                  operand.render = (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => undefined;
+              }
+            }
+          } else {
+            operand.render = render.bind(this, value);
+          }
+          return undefined;
+        };
+        const operation1 = getOperandOperationRender(
+          render1,
+          operand1 as OperandType
+        );
+        const operation2 = getOperandOperationRender(
+          render2,
+          operand2 as OperandType
+        );
+        if (operation1 !== undefined && operation2 !== undefined) {
+          let getOptimizeRender: any;
+          if (operation1 === 0 && operation2 === 0) {
+            getOptimizeRender = (operation: number): RenderConditionType => {
+              const { value: value1 } = operand1 as OperandType;
+              const { value: value2 } = operand2 as OperandType;
+              const currentProp1 = (
+                (value1 as CurrentKeyType).properties as any
+              )[0];
+              const currentProp2 = (
+                (value2 as CurrentKeyType).properties as any
+              )[0];
+              switch (operation) {
+                case 2:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] == data[currentProp2];
+                case 3:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] != data[currentProp2];
+                case 4:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] === data[currentProp2];
+                case 5:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] !== data[currentProp2];
+                case 6:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] > data[currentProp2];
+                case 7:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] >= data[currentProp2];
+                case 8:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] < data[currentProp2];
+                case 9:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] <= data[currentProp2];
+                case 10:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] && data[currentProp2];
+                case 11:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] || data[currentProp2];
+                case 12:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] == data[currentProp2]);
+                case 13:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] != data[currentProp2]);
+                case 14:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] === data[currentProp2]);
+                case 15:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] !== data[currentProp2]);
+                case 16:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] > data[currentProp2]);
+                case 17:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] >= data[currentProp2]);
+                case 18:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] < data[currentProp2]);
+                case 19:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] <= data[currentProp2]);
+                case 20:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] && data[currentProp2]);
+                case 21:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] || data[currentProp2]);
+                case 22:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] == data[currentProp2]);
+                case 23:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] != data[currentProp2]);
+                case 24:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] === data[currentProp2]);
+                case 25:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] !== data[currentProp2]);
+                case 26:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] > data[currentProp2]);
+                case 27:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] >= data[currentProp2]);
+                case 28:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] < data[currentProp2]);
+                case 29:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] <= data[currentProp2]);
+                case 30:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] && data[currentProp2]);
+                default:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] || data[currentProp2]);
+              }
+            };
+          } else if (operation1 === 0 && operation2 === 1) {
+            getOptimizeRender = (operation: number): RenderConditionType => {
+              const { value: value1 } = operand1 as OperandType;
+              const { value: value2 } = operand2 as OperandType;
+              const currentProp1 = (
+                (value1 as CurrentKeyType).properties as any
+              )[0];
+              const currentProp2 = (
+                (value2 as CurrentKeyType).properties as any
+              )[0];
+              switch (operation) {
+                case 2:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] == importData[currentProp2];
+                case 3:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] != importData[currentProp2];
+                case 4:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] === importData[currentProp2];
+                case 5:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] !== importData[currentProp2];
+                case 6:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] > importData[currentProp2];
+                case 7:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] >= importData[currentProp2];
+                case 8:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] < importData[currentProp2];
+                case 9:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] <= importData[currentProp2];
+                case 10:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] && importData[currentProp2];
+                case 11:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => data[currentProp1] || importData[currentProp2];
+                case 12:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] == importData[currentProp2]);
+                case 13:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] != importData[currentProp2]);
+                case 14:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] === importData[currentProp2]);
+                case 15:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] !== importData[currentProp2]);
+                case 16:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] > importData[currentProp2]);
+                case 17:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] >= importData[currentProp2]);
+                case 18:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] < importData[currentProp2]);
+                case 19:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] <= importData[currentProp2]);
+                case 20:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] && importData[currentProp2]);
+                case 21:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(data[currentProp1] || importData[currentProp2]);
+                case 22:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] == importData[currentProp2]);
+                case 23:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] != importData[currentProp2]);
+                case 24:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] === importData[currentProp2]);
+                case 25:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] !== importData[currentProp2]);
+                case 26:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] > importData[currentProp2]);
+                case 27:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] >= importData[currentProp2]);
+                case 28:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] < importData[currentProp2]);
+                case 29:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] <= importData[currentProp2]);
+                case 30:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] && importData[currentProp2]);
+                default:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(data[currentProp1] || importData[currentProp2]);
+              }
+            };
+          } else if (operation1 === 1 && operation2 === 0) {
+            getOptimizeRender = (operation: number): RenderConditionType => {
+              const { value: value1 } = operand1 as OperandType;
+              const { value: value2 } = operand2 as OperandType;
+              const currentProp1 = (
+                (value1 as CurrentKeyType).properties as any
+              )[0];
+              const currentProp2 = (
+                (value2 as CurrentKeyType).properties as any
+              )[0];
+              switch (operation) {
+                case 2:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] == data[currentProp2];
+                case 3:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] != data[currentProp2];
+                case 4:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] === data[currentProp2];
+                case 5:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] !== data[currentProp2];
+                case 6:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] > data[currentProp2];
+                case 7:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] >= data[currentProp2];
+                case 8:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] < data[currentProp2];
+                case 9:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] <= data[currentProp2];
+                case 10:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] && data[currentProp2];
+                case 11:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] || data[currentProp2];
+                case 12:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] == data[currentProp2]);
+                case 13:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] != data[currentProp2]);
+                case 14:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] === data[currentProp2]);
+                case 15:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] !== data[currentProp2]);
+                case 16:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] > data[currentProp2]);
+                case 17:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] >= data[currentProp2]);
+                case 18:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] < data[currentProp2]);
+                case 19:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] <= data[currentProp2]);
+                case 20:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] && data[currentProp2]);
+                case 21:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] || data[currentProp2]);
+                case 22:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] == data[currentProp2]);
+                case 23:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] != data[currentProp2]);
+                case 24:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] === data[currentProp2]);
+                case 25:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] !== data[currentProp2]);
+                case 26:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] > data[currentProp2]);
+                case 27:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] >= data[currentProp2]);
+                case 28:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] < data[currentProp2]);
+                case 29:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] <= data[currentProp2]);
+                case 30:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] && data[currentProp2]);
+                default:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] || data[currentProp2]);
+              }
+            };
+          } else {
+            getOptimizeRender = (operation: number): RenderConditionType => {
+              const { value: value1 } = operand1 as OperandType;
+              const { value: value2 } = operand2 as OperandType;
+              const currentProp1 = (
+                (value1 as CurrentKeyType).properties as any
+              )[0];
+              const currentProp2 = (
+                (value2 as CurrentKeyType).properties as any
+              )[0];
+              switch (operation) {
+                case 2:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] == importData[currentProp2];
+                case 3:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] != importData[currentProp2];
+                case 4:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] === importData[currentProp2];
+                case 5:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] !== importData[currentProp2];
+                case 6:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] > importData[currentProp2];
+                case 7:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] >= importData[currentProp2];
+                case 8:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] < importData[currentProp2];
+                case 9:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] <= importData[currentProp2];
+                case 10:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] && importData[currentProp2];
+                case 11:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => importData[currentProp1] || importData[currentProp2];
+                case 12:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] == importData[currentProp2]);
+                case 13:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] != importData[currentProp2]);
+                case 14:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] === importData[currentProp2]);
+                case 15:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] !== importData[currentProp2]);
+                case 16:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] > importData[currentProp2]);
+                case 17:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] >= importData[currentProp2]);
+                case 18:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] < importData[currentProp2]);
+                case 19:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] <= importData[currentProp2]);
+                case 20:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] && importData[currentProp2]);
+                case 21:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !(importData[currentProp1] || importData[currentProp2]);
+                case 22:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] == importData[currentProp2]);
+                case 23:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] != importData[currentProp2]);
+                case 24:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) =>
+                    !!(importData[currentProp1] === importData[currentProp2]);
+                case 25:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) =>
+                    !!(importData[currentProp1] !== importData[currentProp2]);
+                case 26:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] > importData[currentProp2]);
+                case 27:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] >= importData[currentProp2]);
+                case 28:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] < importData[currentProp2]);
+                case 29:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] <= importData[currentProp2]);
+                case 30:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] && importData[currentProp2]);
+                default:
+                  return (
+                    data: any,
+                    importData: any,
+                    eachIndex: number | undefined
+                  ) => !!(importData[currentProp1] || importData[currentProp2]);
+              }
+            };
+          }
+          val.render = getOptimizeRender(operation);
+        } else {
+          const getConditionOperationRender = () => {
+            switch (operation) {
+              case 2:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  (operand1 as any).render(data, importData, eachIndex) ==
+                  (operand2 as any).render(data, importData, eachIndex);
+              case 3:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  (operand1 as any).render(data, importData, eachIndex) !=
+                  (operand2 as any).render(data, importData, eachIndex);
+              case 4:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  (operand1 as any).render(data, importData, eachIndex) ===
+                  (operand2 as any).render(data, importData, eachIndex);
+              case 5:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  (operand1 as any).render(data, importData, eachIndex) !==
+                  (operand2 as any).render(data, importData, eachIndex);
+              case 6:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  (operand1 as any).render(data, importData, eachIndex) >
+                  (operand2 as any).render(data, importData, eachIndex);
+              case 7:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  (operand1 as any).render(data, importData, eachIndex) >=
+                  (operand2 as any).render(data, importData, eachIndex);
+              case 8:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  (operand1 as any).render(data, importData, eachIndex) <
+                  (operand2 as any).render(data, importData, eachIndex);
+              case 9:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  (operand1 as any).render(data, importData, eachIndex) <=
+                  (operand2 as any).render(data, importData, eachIndex);
+              case 10:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  (operand1 as any).render(data, importData, eachIndex) &&
+                  (operand2 as any).render(data, importData, eachIndex);
+              case 11:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  (operand1 as any).render(data, importData, eachIndex) ||
+                  (operand2 as any).render(data, importData, eachIndex);
+              case 12:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !(
+                    (operand1 as any).render(data, importData, eachIndex) ==
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 13:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !(
+                    (operand1 as any).render(data, importData, eachIndex) !=
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 14:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !(
+                    (operand1 as any).render(data, importData, eachIndex) ===
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 15:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !(
+                    (operand1 as any).render(data, importData, eachIndex) !==
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 16:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !(
+                    (operand1 as any).render(data, importData, eachIndex) >
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 17:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !(
+                    (operand1 as any).render(data, importData, eachIndex) >=
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 18:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !(
+                    (operand1 as any).render(data, importData, eachIndex) <
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 19:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !(
+                    (operand1 as any).render(data, importData, eachIndex) <=
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 20:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !(
+                    (operand1 as any).render(data, importData, eachIndex) &&
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 21:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !(
+                    (operand1 as any).render(data, importData, eachIndex) ||
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 22:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !!(
+                    (operand1 as any).render(data, importData, eachIndex) ==
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 23:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !!(
+                    (operand1 as any).render(data, importData, eachIndex) !=
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 24:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !!(
+                    (operand1 as any).render(data, importData, eachIndex) ===
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 25:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !!(
+                    (operand1 as any).render(data, importData, eachIndex) !==
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 26:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !!(
+                    (operand1 as any).render(data, importData, eachIndex) >
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 27:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !!(
+                    (operand1 as any).render(data, importData, eachIndex) >=
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 28:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !!(
+                    (operand1 as any).render(data, importData, eachIndex) <
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 29:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !!(
+                    (operand1 as any).render(data, importData, eachIndex) <=
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              case 30:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !!(
+                    (operand1 as any).render(data, importData, eachIndex) &&
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+              default:
+                return (
+                  data: any,
+                  importData: any,
+                  eachIndex: number | undefined
+                ) =>
+                  !!(
+                    (operand1 as any).render(data, importData, eachIndex) ||
+                    (operand2 as any).render(data, importData, eachIndex)
+                  );
+            }
+          };
+          val.render = getConditionOperationRender();
+        }
+      } else {
+        structuringValue(mainCurrentVal);
+      }
+    };
+    optimizeValue(mainCurrentVal);
+  } else {
+    structuringValue(mainCurrentVal);
+  }
   return { mainCurrentVal, isValueImport };
 };
 const parseValue = (
