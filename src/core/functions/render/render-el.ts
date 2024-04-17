@@ -213,6 +213,8 @@ export const renderEl = (
               setAttribute.call(el, e.name, "");
             } else {
               if (e.name[0] !== ":") createError("Event error");
+              const isItemEvent = e.name[1] === ":";
+              if (isItemEvent && !isEach) createError("Event error");
               let key = "";
               value.replace(MAIN_REGEX, (str, d) => {
                 const filtredKey = d.trim();
@@ -233,7 +235,7 @@ export const renderEl = (
                       };
                     })
                   : args;
-              const keyEvent = e.name.substring(1);
+              const keyEvent = e.name.substring(isItemEvent ? 2 : 1);
               if (keyEvent === "click") {
                 setEventListener();
               }
@@ -247,7 +249,8 @@ export const renderEl = (
                 renderedKey,
                 id,
                 values,
-                key
+                key,
+                isItemEvent
               };
               removeAttribute.call(el, e.name);
               eventArray.push(addValue(event as unknown as ValueType));

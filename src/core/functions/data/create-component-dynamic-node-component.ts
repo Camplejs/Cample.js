@@ -1,6 +1,7 @@
 "use strict";
 import {
   ComponentDynamicNodeComponentType,
+  DynamicDataType,
   ExportObjectDataType,
   ImportObjectType
 } from "../../../types/types";
@@ -8,7 +9,8 @@ import {
 export const createComponentDynamicNodeComponentType = (
   dataId: number,
   exportObject: ExportObjectDataType | undefined,
-  currentImport: ImportObjectType | undefined
+  currentImport: ImportObjectType | undefined,
+  value: DynamicDataType
 ): ComponentDynamicNodeComponentType => {
   const DynamicNodeComponentType: ComponentDynamicNodeComponentType = {
     id: dataId,
@@ -17,7 +19,8 @@ export const createComponentDynamicNodeComponentType = (
     nodes: [],
     exportData: undefined,
     import: currentImport,
-    exportObject
+    exportObject,
+    value
   };
   return DynamicNodeComponentType;
 };

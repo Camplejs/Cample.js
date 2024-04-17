@@ -311,7 +311,8 @@ export const parseTemplate = (
     getEventsFunction,
     renderedKey,
     id,
-    key
+    key,
+    isItemEvent
   } of eventArray) {
     const fn = (getEventsFunction as EventEachGetFunctionType)?.(
       renderedKey.key,
@@ -322,6 +323,13 @@ export const parseTemplate = (
     if (!checkFunction(fn)) createError("Data key is of function type");
     let setEvent: any;
     const argsLength = args.length;
+    const setClickEvent = isItemEvent
+      ? (element: Element, eventFn: (event: Event) => void) => {
+          element[CLICK_FUNCTION_NAME] = [eventFn, true];
+        }
+      : (element: Element, eventFn: (event: Event) => void) => {
+          element[CLICK_FUNCTION_NAME] = [eventFn];
+        };
     if (isEach === true) {
       if (keyEvent === "click") {
         if (argsLength > 0) {
@@ -344,7 +352,7 @@ export const parseTemplate = (
                   );
                   fn(event)(newArg);
                 };
-                element[CLICK_FUNCTION_NAME] = eventFn;
+                setClickEvent(element, eventFn);
               }
             };
           } else {
@@ -369,7 +377,7 @@ export const parseTemplate = (
                   }
                   fn(event)(...newArgs);
                 };
-                element[CLICK_FUNCTION_NAME] = eventFn;
+                setClickEvent(element, eventFn);
               }
             };
           }
@@ -385,7 +393,7 @@ export const parseTemplate = (
               const eventFn = (event: Event) => {
                 fn(event)();
               };
-              element[CLICK_FUNCTION_NAME] = eventFn;
+              setClickEvent(element, eventFn);
             }
           };
         }
@@ -471,7 +479,7 @@ export const parseTemplate = (
                 const newArgs = args.map((e: any) => getEventsData1(e, id));
                 fn(event)(...newArgs);
               };
-              element[CLICK_FUNCTION_NAME] = eventFn;
+              setClickEvent(element, eventFn);
             }
           };
         } else {
@@ -486,7 +494,7 @@ export const parseTemplate = (
               const eventFn = (event: Event) => {
                 fn(event)();
               };
-              element[CLICK_FUNCTION_NAME] = eventFn;
+              setClickEvent(element, eventFn);
             }
           };
         }

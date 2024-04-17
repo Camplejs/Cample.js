@@ -721,7 +721,6 @@ export class Each extends DataComponent {
           key: string,
           dataId: IdType,
           index: number,
-          _: boolean = false,
           currentComponent?: EachDynamicNodeComponentType
         ) => {
           const updateData = (attr = getDefaultData(dataId)) => {
@@ -876,7 +875,6 @@ export class Each extends DataComponent {
                 dataId,
                 objDataFunctions,
                 index,
-                undefined,
                 currentComponent
               );
             }

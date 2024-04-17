@@ -144,6 +144,7 @@ export type DynamicDataType = {
   oldValue?: DataComponentType;
   importData?: ImportDataType;
   id: number;
+  index?: number;
 };
 
 export type DynamicEachDataType = {
@@ -294,6 +295,7 @@ export type ComponentDynamicNodeComponentType = {
   exportObjData?: any;
   exportConstructor?: any;
   import?: ImportObjectType;
+  value: DynamicDataType;
 };
 export type ArrayAnyType = Array<any>;
 

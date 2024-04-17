@@ -8,7 +8,7 @@ import {
 } from "../types/types";
 import { renderTemplate } from "./functions/render/render-template";
 import { checkFunction, getExportData } from "../shared/utils";
-import { CLICK_FUNCTION_NAME } from "../config/config";
+import { CLICK_FUNCTION_NAME, EACH_INDEX_NAME } from "../config/config";
 
 export class Cample {
   public selector: SelectorType;
@@ -43,11 +43,19 @@ export class Cample {
           current.composedPath !== undefined
             ? current.composedPath()[0]
             : current.target;
+        let isItemEvent: true | undefined = undefined;
         while (node !== null) {
           const eventListener = node[CLICK_FUNCTION_NAME];
           if (eventListener !== undefined && !node.disabled) {
-            eventListener(current);
+            eventListener[0](current);
+            if (eventListener[1] !== undefined) isItemEvent = true;
             if (current.cancelBubble) return;
+          }
+          if (
+            isItemEvent !== undefined &&
+            node[EACH_INDEX_NAME] !== undefined
+          ) {
+            return;
           }
           node = node.parentNode;
         }
