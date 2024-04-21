@@ -3,13 +3,13 @@
         <img width="200" height="200" src="https://github.com/Camplejs/media/blob/main/logo_transparent.png" alt="cample" >
     </a>
 </p>
-<h1 align="center">Cample.js - fast modern javascript framework.</h1>
+<h1 align="center">Cample.js - one of the fastest frameworks without a virtual DOM on the Internet!</h1>
 <div align="center">
 
 [![npm-version](https://img.shields.io/npm/v/cample?logo=npm&color=0183ff&style=for-the-badge)](https://www.npmjs.com/package/cample)
 [![discussions](https://img.shields.io/badge/discussions-0183ff?style=for-the-badge&logo=github&labelColor=555555)](https://github.com/Camplejs/Cample.js/discussions)
 [![twitter](https://img.shields.io/badge/twitter-0183ff?style=for-the-badge&logo=x&labelColor=555555)](https://twitter.com/Camplejs)
-[![discord](https://img.shields.io/badge/discord-0183ff?style=for-the-badge&logo=discord&logoColor=FFF&labelColor=555555)](https://discord.gg/aBMdpBShju)
+[![license](https://img.shields.io/badge/MIT-0183ff?style=for-the-badge&label=license&logoColor=FFF&labelColor=555555)](https://discord.gg/aBMdpBShju)
 
 </div>
 
@@ -17,32 +17,18 @@
 <br>
 <div align="center"><b>Alpha version</b></div>
 
-## Why Cample.js?
+## About Cample.js?
 
-Cample.js is an actively developed and maintained framework that supports many modern technology solutions for creating user interfaces. The component-based approach, as well as reactivity without a virtual DOM and data export and import, will make building a site much faster than if the site was developed using js alone. Moreover, the framework is new and you can try it as something new when creating a website.
+Cample.js is an open source javascript framework for creating user interfaces. The framework works on a component-based approach, where each component can be interconnected by importing and exporting the current state. Cample.js doesn't use a virtual DOM to interact with the real DOM, which makes the reactivity process much faster.
 
 ## Main advantage
 
-<a href="https://krausest.github.io/js-framework-benchmark/2024/table_chrome_122.0.6261.69.html">
+<a href="https://krausest.github.io/js-framework-benchmark/2024/table_chrome_123.0.6312.59.html">
   <img width="100%" src="https://github.com/Camplejs/media/blob/main/diagram.svg" alt="benchmarks" >
 </a>
 
 Performance diagram of javascript frameworks and libraries.<br/>
-Results based on <a href="https://krausest.github.io/js-framework-benchmark/2024/table_chrome_122.0.6261.69.html">122 release</a>
-
-## Features
-
-Cample.js provides the following features:
-
-- Reactivity without Virtual DOM. The framework does not create large DOM trees for working with HTML.
-- Keyed implementation. Blocks in a loop will not be overwritten by new ones if their keys match.
-- Component approach. It allows to repeat many UI blocks on the site, which makes development much easier.
-- Convenient approach to working with data inside a component. Transferring data between components allows to work with components even if they are in different files
-- The frameworks make it easy to work with HTML files. The syntax of the framework itself is built on objects with HTML templates. When using modern project builders, HTML files are imported through a variable that does not pass through any function.
-- Fast.
-- CLI for creating an application.
-
-And a few others :)
+Results based on <a href="https://krausest.github.io/js-framework-benchmark/2024/table_chrome_123.0.6312.59.html">123 release</a>
 
 ## Installation
 
