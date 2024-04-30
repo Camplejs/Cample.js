@@ -3,7 +3,7 @@
         <img width="200" height="200" src="https://github.com/Camplejs/media/blob/main/logo_transparent.png" alt="cample" >
     </a>
 </p>
-<h1 align="center">Cample.js - one of the fastest frameworks without a virtual DOM on the Internet!</h1>
+<h1 align="center">(Framework at the stage of complete rework) Cample.js - one of the fastest frameworks without a virtual DOM on the Internet!</h1>
 <div align="center">
 
 [![npm-version](https://img.shields.io/npm/v/cample?logo=npm&color=0183ff&style=for-the-badge)](https://www.npmjs.com/package/cample)
