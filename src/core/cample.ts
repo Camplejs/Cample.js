@@ -70,8 +70,8 @@ export class Cample {
           .firstChild as HTMLTemplateElement;
         const nodes = elWrapper.content.childNodes;
         el.innerHTML = "";
-        for (let i = 0; i < nodes.length; i++) {
-          const currentNode = nodes[i];
+        while (nodes.length) {
+          const currentNode = nodes[nodes.length - 1];
           el.appendChild(currentNode);
         }
         this._el = el;
