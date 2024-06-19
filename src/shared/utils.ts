@@ -78,8 +78,12 @@ export const getIsValue = (key: string) => {
   } else return false;
 };
 export const getElement = (template: string, trim?: boolean) => {
-  const elWrapper = document.createElement("template");
-  elWrapper.innerHTML = trim ? template.trim() : template;
+  const elementDocument = new DOMParser().parseFromString(
+    `<template>${trim ? template.trim() : template}</template>`,
+    "text/html"
+  );
+  const elWrapper = elementDocument.childNodes[0].childNodes[0]
+    .firstChild as HTMLTemplateElement;
   if (elWrapper.content.children.length > 1) {
     createError("Component include only one node with type 'Element'");
   }
@@ -89,7 +93,7 @@ export const getElement = (template: string, trim?: boolean) => {
         if ((node as Element).tagName === "pre") return;
         break;
       case Node.TEXT_NODE:
-        if (!/\S/.test(node.textContent as string)) {
+        if (!/\S/.test(node.textContent!)) {
           node.remove();
           return;
         }
@@ -100,7 +104,9 @@ export const getElement = (template: string, trim?: boolean) => {
     }
   };
   prepareNode(elWrapper.content.childNodes[0]);
-  return elWrapper.content.firstElementChild;
+  const currentEl = elWrapper.content.firstElementChild;
+  if (!currentEl) createError("Element is undefined");
+  return currentEl;
 };
 export const isValuesEqual = (val: any, newVal: any): boolean => {
   if (val === newVal) return true;
@@ -483,12 +489,6 @@ export const getArrImportString = (
   } else {
     createError("Import value is array");
   }
-};
-
-export const checkNodes = (template: string): boolean => {
-  const el = document.createElement("template");
-  el.innerHTML = template;
-  return el.content.childNodes.length === 1;
 };
 
 export const getElements = (el: Element | null) => {

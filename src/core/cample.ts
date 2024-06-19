@@ -62,7 +62,18 @@ export class Cample {
       };
       const el: Element | null = document.querySelector(this.selector);
       if (el !== null) {
-        el.innerHTML = this.template;
+        const elementDocument = new DOMParser().parseFromString(
+          `<template>${this.template}</template>`,
+          "text/html"
+        );
+        const elWrapper = elementDocument.childNodes[0].childNodes[0]
+          .firstChild as HTMLTemplateElement;
+        const nodes = elWrapper.content.childNodes;
+        el.innerHTML = "";
+        for (let i = 0; i < nodes.length; i++) {
+          const currentNode = nodes[i];
+          el.appendChild(currentNode);
+        }
         this._el = el;
       }
       const setEventListener = () => {
