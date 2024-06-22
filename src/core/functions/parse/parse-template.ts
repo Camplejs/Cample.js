@@ -621,7 +621,7 @@ export const parseTemplate = (
             );
             const newData = str.value;
             if (stack[stackLength] !== newData) {
-              (nodes[stackLength] as ChildNode as Text).data = newData;
+              (nodes[stackLength] as ChildNode as Text).nodeValue = newData;
               stack[stackLength] = newData;
             }
           };
@@ -653,7 +653,7 @@ export const parseTemplate = (
             );
             const newData = str.value;
             stack[stackLength] = newData;
-            (node as Text).data = newData;
+            (node as Text).nodeValue = newData;
             nodes[stackLength] = node as Element;
           };
         } else {
@@ -673,7 +673,7 @@ export const parseTemplate = (
                     ) => {
                       const newData = currentIndexData[currentProp];
                       if (stack[stackLength] !== newData) {
-                        (nodes[stackLength] as ChildNode as Text).data =
+                        (nodes[stackLength] as ChildNode as Text).nodeValue =
                           newData;
                         stack[stackLength] = newData;
                       }
@@ -697,7 +697,7 @@ export const parseTemplate = (
                       eachValue?: DynamicEachDataType
                     ) => {
                       stack[stackLength] = indexData[currentProp];
-                      (node as Text).data = stack[stackLength];
+                      (node as Text).nodeValue = stack[stackLength];
                       nodes[stackLength] = node as Element;
                     };
                   } else {
@@ -711,7 +711,7 @@ export const parseTemplate = (
                     ) => {
                       const newData = (valKey.render as any)(currentIndexData);
                       if (stack[stackLength] !== newData) {
-                        (nodes[stackLength] as ChildNode as Text).data =
+                        (nodes[stackLength] as ChildNode as Text).nodeValue =
                           newData;
                         stack[stackLength] = newData;
                       }
@@ -735,7 +735,7 @@ export const parseTemplate = (
                       eachValue?: DynamicEachDataType
                     ) => {
                       stack[stackLength] = (valKey.render as any)(indexData);
-                      (node as Text).data = stack[stackLength];
+                      (node as Text).nodeValue = stack[stackLength];
                       nodes[stackLength] = node as Element;
                     };
                   }
@@ -750,7 +750,8 @@ export const parseTemplate = (
                   ) => {
                     const newData = currentIndexData;
                     if (stack[stackLength] !== newData) {
-                      (nodes[stackLength] as ChildNode as Text).data = newData;
+                      (nodes[stackLength] as ChildNode as Text).nodeValue =
+                        newData;
                       stack[stackLength] = newData;
                     }
                   };
@@ -773,7 +774,7 @@ export const parseTemplate = (
                     eachValue?: DynamicEachDataType
                   ) => {
                     stack[stackLength] = indexData;
-                    (node as Text).data = stack[stackLength];
+                    (node as Text).nodeValue = stack[stackLength];
                     nodes[stackLength] = node as Element;
                   };
                 }
@@ -788,7 +789,8 @@ export const parseTemplate = (
                 ) => {
                   const newData = (valKey.render as any)(currentImportData);
                   if (stack[stackLength] !== newData) {
-                    (nodes[stackLength] as ChildNode as Text).data = newData;
+                    (nodes[stackLength] as ChildNode as Text).nodeValue =
+                      newData;
                     stack[stackLength] = newData;
                   }
                 };
@@ -811,7 +813,7 @@ export const parseTemplate = (
                   eachValue?: DynamicEachDataType
                 ) => {
                   stack[stackLength] = (valKey.render as any)(importData);
-                  (node as Text).data = stack[stackLength];
+                  (node as Text).nodeValue = stack[stackLength];
                   nodes[stackLength] = node as Element;
                 };
               case 3:
@@ -825,7 +827,7 @@ export const parseTemplate = (
                 ) => {
                   const newData = currentEachIndex;
                   if (stack[stackLength] !== newData) {
-                    (nodes[stackLength] as ChildNode as Text).data =
+                    (nodes[stackLength] as ChildNode as Text).nodeValue =
                       newData as any;
                     stack[stackLength] = newData;
                   }
@@ -849,7 +851,9 @@ export const parseTemplate = (
                   eachValue?: DynamicEachDataType
                 ) => {
                   stack[stackLength] = eachIndex;
-                  (node as Text).data = stack[stackLength] as unknown as string;
+                  (node as Text).nodeValue = stack[
+                    stackLength
+                  ] as unknown as string;
                   nodes[stackLength] = node as Element;
                 };
               default:
@@ -863,7 +867,7 @@ export const parseTemplate = (
                 ) => {
                   const newData = undefined;
                   if (stack[stackLength] !== newData) {
-                    (nodes[stackLength] as ChildNode as Text).data =
+                    (nodes[stackLength] as ChildNode as Text).nodeValue =
                       newData as any;
                     stack[stackLength] = newData;
                   }
@@ -885,7 +889,9 @@ export const parseTemplate = (
                   eachValue?: DynamicEachDataType
                 ) => {
                   stack[stackLength] = undefined;
-                  (node as Text).data = stack[stackLength] as unknown as string;
+                  (node as Text).nodeValue = stack[
+                    stackLength
+                  ] as unknown as string;
                   nodes[stackLength] = node as Element;
                 };
             }
@@ -905,7 +911,7 @@ export const parseTemplate = (
                   valKey.properties as Array<string>
                 );
                 if (stack[stackLength] !== newData) {
-                  (nodes[stackLength] as ChildNode as Text).data = newData;
+                  (nodes[stackLength] as ChildNode as Text).nodeValue = newData;
                   stack[stackLength] = newData;
                 }
               };
@@ -930,7 +936,7 @@ export const parseTemplate = (
                   firstKeyData,
                   valKey.properties as Array<string>
                 );
-                (node as Text).data = stack[stackLength];
+                (node as Text).nodeValue = stack[stackLength];
                 nodes[stackLength] = node as Element;
               };
             } else {
@@ -944,7 +950,7 @@ export const parseTemplate = (
               ) => {
                 const newData = currentIndexData[valKey.originKey];
                 if (stack[stackLength] !== newData) {
-                  (nodes[stackLength] as ChildNode as Text).data = newData;
+                  (nodes[stackLength] as ChildNode as Text).nodeValue = newData;
                   stack[stackLength] = newData;
                 }
               };
@@ -965,7 +971,7 @@ export const parseTemplate = (
                 eachValue?: DynamicEachDataType
               ) => {
                 stack[stackLength] = indexData[valKey.originKey];
-                (node as Text).data = stack[stackLength];
+                (node as Text).nodeValue = stack[stackLength];
                 nodes[stackLength] = node as Element;
               };
             }

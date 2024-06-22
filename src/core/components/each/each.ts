@@ -271,7 +271,7 @@ export class Each extends DataComponent {
               }
             }
             if (isNullNodeNext) {
-              parentNode.removeChild(nodeNext as Node);
+              (nodeNext as ChildNode).remove();
             }
             return;
           } else {
@@ -413,7 +413,7 @@ export class Each extends DataComponent {
                   newData[currentIndex] = currentNode;
                 }
                 if (isNullNodeNext) {
-                  parentNode.removeChild(nodeNext as Node);
+                  (nodeNext as ChildNode).remove();
                 }
               } else if (isRemove) {
                 for (
@@ -423,7 +423,7 @@ export class Each extends DataComponent {
                 ) {
                   const currentNode = oldNodes[i];
                   const { el } = currentNode;
-                  parentNode.removeChild(el as Node);
+                  (el as ChildNode).remove();
                 }
               } else {
                 const indexesOldArr = {};
@@ -613,7 +613,7 @@ export class Each extends DataComponent {
                     newData[currentIndex] = currentNode;
                   }
                   if (isNullNodeNext) {
-                    parentNode.removeChild(nodeNext as Node);
+                    (nodeNext as ChildNode).remove();
                   }
                 } else {
                   for (
@@ -624,7 +624,7 @@ export class Each extends DataComponent {
                     const currentNode = oldNodes[i];
                     if (currentNode !== undefined) {
                       const { el } = currentNode;
-                      parentNode.removeChild(el as Node);
+                      (el as ChildNode).remove();
                     }
                   }
                 }
