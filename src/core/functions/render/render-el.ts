@@ -17,11 +17,13 @@ import {
   AttributesValType,
   CurrentKeyType,
   DynamicNodesObjectType,
+  EachStack,
   EventEachGetDataType,
   EventEachGetFunctionType,
   EventGetDataType,
   ImportDataType,
   IndexObjNode,
+  NodeValuesType,
   ValueItemType,
   ValueItemsType,
   ValueType,
@@ -63,9 +65,11 @@ export const renderEl = (
   optionValues?: ValuesType,
   valueName?: string,
   importedDataName?: string,
+  stackName?: string,
   indexName?: string,
   isKeyed?: boolean,
   keyTemplate?: ValueItemsType,
+  eachStackValues?: NodeValuesType,
   getEventsFunction?: EventEachGetFunctionType
 ) => {
   const arrayAttr = Array.from(el.attributes);
@@ -293,12 +297,14 @@ export const renderEl = (
                 optionValues,
                 valueName,
                 importedDataName,
+                stackName,
                 indexName,
                 true
               ) as CurrentKeyType;
             } else return e as string;
           };
-          if (arrList.length === 1) {
+          const isLength = arrList.length === 1;
+          if (isLength) {
             const val1 = getVal(arrList[0]);
             classList.value = createValItem(val1);
             delete classList.render;
@@ -307,10 +313,26 @@ export const renderEl = (
               return createValItem(getVal(e));
             });
           }
-          const newVal: ValueValueType = {
-            classes: classList
-          };
-          addValue(undefined, newVal, 4);
+          if (isLength && classList.value.value.originType === 4) {
+            const eachStackValue = (
+              el: Element,
+              eachStack: EachStack,
+              value?: any
+            ) => {
+              const renderKeyClass = classList.value.value.render;
+              const currentValue =
+                value !== undefined ? value : renderKeyClass(eachStack);
+              if (el.className !== currentValue) {
+                el.className = currentValue;
+              }
+            };
+            eachStackValues!.push(eachStackValue);
+          } else {
+            const newVal: ValueValueType = {
+              classes: classList
+            };
+            addValue(undefined, newVal, 4);
+          }
           setAttribute.call(el, "class", "");
         }
       } else {
@@ -338,6 +360,7 @@ export const renderEl = (
                 optionValues,
                 valueName,
                 importedDataName,
+                stackName,
                 indexName,
                 false
               ) as CurrentKeyType;

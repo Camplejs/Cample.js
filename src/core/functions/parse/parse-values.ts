@@ -304,6 +304,7 @@ const parseCondition = (
   condition: string,
   valueName?: string,
   importedDataName?: string,
+  stackName?: string,
   indexName?: string
 ): { mainCurrentVal: KeyValuesValueConditionType; isValueImport: boolean } => {
   const renderDynamic = valueFunctions[0];
@@ -511,6 +512,7 @@ const parseCondition = (
               undefined,
               valueName,
               importedDataName,
+              stackName,
               indexName,
               false,
               true
@@ -2136,6 +2138,7 @@ const parseValue = (
   value: string,
   valueName?: string,
   importedDataName?: string,
+  stackName?: string,
   indexName?: string
 ): ValueKeyStringType => {
   const isTestRegex = testRegex(value);
@@ -2155,6 +2158,7 @@ const parseValue = (
             undefined,
             valueName,
             importedDataName,
+            stackName,
             indexName,
             false,
             true
@@ -2214,6 +2218,7 @@ export const parseValues = (
   val: ValuesValueType,
   valueName?: string,
   importedDataName?: string,
+  stackName?: string,
   indexName?: string
 ): KeyValuesType | undefined => {
   let keyValues: KeyValuesType | undefined = undefined;

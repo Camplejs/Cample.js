@@ -72,6 +72,7 @@ export class Each extends DataComponent {
   public importedDataName: string;
   public iteration: IterationFunctionType | undefined;
   public indexName: string;
+  public stackName: string;
   public isDataFunction: boolean;
   public isIteration: boolean;
 
@@ -91,12 +92,16 @@ export class Each extends DataComponent {
       : "importedData";
     this.iteration = options.iteration;
     this.indexName = options.indexName ? options.indexName : "index";
+    this.stackName = options.stackName ? options.stackName : "stack";
     this.isDataFunction = checkFunction(data);
     this.isIteration = this.iteration !== undefined;
     if (
       this.indexName === this.valueName ||
       this.indexName === this.importedDataName ||
-      this.valueName === this.importedDataName
+      this.valueName === this.importedDataName ||
+      this.stackName === this.importedDataName ||
+      this.stackName === this.indexName ||
+      this.stackName === this.valueName
     ) {
       createError("Name error");
     }
@@ -868,16 +873,14 @@ export class Each extends DataComponent {
             [this.functionName]: this.valueName
           };
           const setDataFunctions = () => {
-            if (this._isDataFunctions) {
-              const objDataFunctions = getDataFunctions(dataFunction);
-              renderFunctionsData(
-                updateFunction,
-                dataId,
-                objDataFunctions,
-                index,
-                currentComponent
-              );
-            }
+            const objDataFunctions = getDataFunctions(dataFunction);
+            renderFunctionsData(
+              updateFunction,
+              dataId,
+              objDataFunctions,
+              index,
+              currentComponent
+            );
           };
 
           const runRenderFunction = () => {
@@ -919,6 +922,7 @@ export class Each extends DataComponent {
             currentComponent.functions,
             this.valueName,
             this.importedDataName,
+            this.stackName,
             this.indexName,
             true
           );

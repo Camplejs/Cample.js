@@ -49,11 +49,13 @@ export const parseKey = (
   values?: ValuesType,
   valueName?: string,
   importedDataName?: string,
+  stackName?: string,
   indexName?: string,
   isClass?: boolean,
   isCondition?: boolean
 ): CurrentKeyType => {
-  const [renderedKey, isValue, isObj] = validateIsValue(renderKey(key), key);
+  const currentKey = renderKey(key);
+  const [renderedKey, isValue, isObj] = validateIsValue(currentKey, key);
   const originKey = (
     isObj ? (renderedKey as DynamicKeyObjectType).key : renderedKey
   ) as string;
@@ -67,6 +69,7 @@ export const parseKey = (
         currentObj,
         valueName,
         importedDataName,
+        stackName,
         indexName
       );
     } else {
@@ -88,6 +91,9 @@ export const parseKey = (
     case indexName:
       if (isProperty) createError("Error properties");
       originType = 3;
+      break;
+    case stackName:
+      originType = 4;
       break;
   }
   const isValSingle = val?.length === 1;

@@ -237,6 +237,7 @@ export type EachTemplateType = {
   nodes: EachTemplateNodesType;
   valuesLength: number;
   valuesImport?: NodeValuesType;
+  eachStackValues?: NodeValuesType;
   renderImport?: (...args: any[]) => void;
   render?: (...args: any[]) => void;
 };
@@ -250,11 +251,14 @@ export type EachDynamicNodeComponentType = {
   parentNode: ParentNode;
   template?: EachTemplateType;
   keys?: ArrayStringType;
+  elements: ElementsType;
   dataFunctions: FunctionsType;
   functions: FunctionsType;
   nodes: Array<NodeType>;
   nodeNext: DynamicNodeComponentNodeType;
   nodePrevious: DynamicNodeComponentNodeType;
+  clearStack: ClearStackType;
+  stack: number[];
   id: number;
 };
 export type ImportDataType = {
@@ -444,6 +448,21 @@ export type NodeValueType = {
 export type NodeValuesType = Array<(...args: any[]) => void>;
 export type StackType = Array<any>;
 export type NodeNodesType = Array<ChildNode | null>;
+export type EachStack = {
+  [key: string]: any;
+};
+
+export type ClearStackType = () => void;
+
+export type SetStackType = (fn: (oldStack: EachStack) => EachStack) => void;
+
+export type EachStackType = {
+  currentStack: EachStack;
+  clearStack?: ClearStackType;
+  setStack: SetStackType;
+};
+
+export type GetStackType = () => EachStackType;
 export type NodeType = {
   isNew?: boolean;
   key?: string;
@@ -453,6 +472,7 @@ export type NodeType = {
   stack: StackType;
   values: NodeValuesType;
   dataId: number;
+  eachStack?: EachStack;
 };
 
 export type ArrayNodeType = Array<NodeType>;
@@ -581,6 +601,7 @@ export type EachOptionsType = DefaultDataOptionsType & {
   importedDataName?: string;
   componentData?: boolean;
   indexName?: string;
+  stackName?: string;
   iteration?: IterationFunctionType;
 };
 
