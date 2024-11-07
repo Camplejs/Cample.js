@@ -5,7 +5,8 @@ import {
   checkObject,
   cloneValue,
   getKey,
-  swapElements,
+  swapElements1,
+  swapElements2,
   getDataFunctions
 } from "../../../shared/utils";
 import {
@@ -239,6 +240,7 @@ export class Each extends DataComponent {
               nodeNext = document.createComment("");
               parentNode.appendChild(nodeNext);
             }
+            currentComponent.nodes = new Array(newDataLength);
             if (this.isIteration) {
               for (let i = 0; i < newDataLength; i++) {
                 const indexData = data[i];
@@ -254,7 +256,7 @@ export class Each extends DataComponent {
                   importData,
                   newKey
                 );
-                currentComponent.nodes.push(currentNode);
+                currentComponent.nodes[i] = currentNode;
                 parentNode.insertBefore(el, nodeNext);
               }
             } else {
@@ -271,7 +273,7 @@ export class Each extends DataComponent {
                   importData,
                   newKey
                 );
-                currentComponent.nodes.push(currentNode);
+                currentComponent.nodes[i] = currentNode;
                 parentNode.insertBefore(el, nodeNext);
               }
             }
@@ -365,13 +367,18 @@ export class Each extends DataComponent {
                   importData,
                   oldData
                 );
+                const elNext = newData[currentNewLastIndex + 1];
                 const el1 = (newData[newFirstIndex] =
                   oldNodes[currentOldLastIndex]).el as Element;
                 const el2 = (newData[currentNewLastIndex] =
                   oldNodes[oldFirstIndex++]).el as Element;
                 el1[EACH_INDEX_NAME] = newFirstIndex++;
                 el2[EACH_INDEX_NAME] = currentNewLastIndex;
-                swapElements(el1, el2, parentNode);
+                if (elNext) {
+                  swapElements1(el1, el2, elNext.el, parentNode);
+                } else {
+                  swapElements2(el1, el2, parentNode);
+                }
                 newLastIndex--;
                 oldLastIndex--;
                 continue;
@@ -421,14 +428,19 @@ export class Each extends DataComponent {
                   (nodeNext as ChildNode).remove();
                 }
               } else if (isRemove) {
-                for (
-                  let i = oldFirstIndex;
-                  oldFirstIndex < oldLastIndex--;
-                  i++
-                ) {
-                  const currentNode = oldNodes[i];
-                  const { el } = currentNode;
-                  (el as ChildNode).remove();
+                if (oldLastIndex - oldFirstIndex === 1) {
+                  const currentNode = oldNodes[oldFirstIndex].el;
+                  (currentNode as ChildNode).remove();
+                } else {
+                  for (
+                    let i = oldFirstIndex;
+                    oldFirstIndex < oldLastIndex--;
+                    i++
+                  ) {
+                    const currentNode = oldNodes[i];
+                    const { el } = currentNode;
+                    (el as ChildNode).remove();
+                  }
                 }
               } else {
                 const indexesOldArr = {};
@@ -533,13 +545,18 @@ export class Each extends DataComponent {
                       importData,
                       oldData
                     );
+                    const elNext = newData[currentNewLastIndex + 1];
                     const el1 = (newData[newFirstIndex] =
                       oldNodes[currentOldLastIndex]).el as Element;
                     const el2 = (newData[currentNewLastIndex] =
                       oldNodes[oldFirstIndex++]).el as Element;
                     el1[EACH_INDEX_NAME] = newFirstIndex++;
                     el2[EACH_INDEX_NAME] = currentNewLastIndex;
-                    swapElements(el1, el2, parentNode);
+                    if (elNext) {
+                      swapElements1(el1, el2, elNext.el, parentNode);
+                    } else {
+                      swapElements2(el1, el2, parentNode);
+                    }
                     newLastIndex--;
                     oldLastIndex--;
                     continue;
@@ -621,15 +638,23 @@ export class Each extends DataComponent {
                     (nodeNext as ChildNode).remove();
                   }
                 } else {
-                  for (
-                    let i = oldFirstIndex;
-                    oldFirstIndex < oldLastIndex--;
-                    i++
-                  ) {
-                    const currentNode = oldNodes[i];
+                  if (oldLastIndex - oldFirstIndex === 1) {
+                    const currentNode = oldNodes[oldFirstIndex];
                     if (currentNode !== undefined) {
                       const { el } = currentNode;
                       (el as ChildNode).remove();
+                    }
+                  } else {
+                    for (
+                      let i = oldFirstIndex;
+                      oldFirstIndex < oldLastIndex--;
+                      i++
+                    ) {
+                      const currentNode = oldNodes[i];
+                      if (currentNode !== undefined) {
+                        const { el } = currentNode;
+                        (el as ChildNode).remove();
+                      }
                     }
                   }
                 }

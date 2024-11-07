@@ -240,7 +240,17 @@ export const cloneTemplate = (obj1: TemplateExportValueType) => {
   return newObj;
 };
 
-export const swapElements = (
+export const swapElements1 = (
+  el1: Element,
+  el2: Element,
+  el3: Element,
+  parentNode: ParentNode
+) => {
+  parentNode.insertBefore(el1, el2);
+  parentNode.insertBefore(el2, el3);
+};
+
+export const swapElements2 = (
   el1: Element,
   el2: Element,
   parentNode: ParentNode
@@ -248,6 +258,7 @@ export const swapElements = (
   const nextEl1 = el1.nextSibling;
   parentNode.insertBefore(parentNode.replaceChild(el1, el2), nextEl1);
 };
+
 export const getAttrKeys = (
   el: Element
 ): [ArrayStringType, ArrayStringType] => {
